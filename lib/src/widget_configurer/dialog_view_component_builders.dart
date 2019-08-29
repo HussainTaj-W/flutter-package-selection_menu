@@ -21,7 +21,7 @@ class DialogViewComponentBuilders<T> extends ViewComponentBuilders<T> {
     SearchingIndicatorBuilder searchingIndicatorBuilder,
     MenuAnimatedContainerBuilder menuAnimatedContainerBuilder,
     ListViewBuilder listViewBuilder,
-    SearchBarContainerBuilder searchBarContainerBuilder,
+    SearchBarBuilder searchBarBuilder,
     MenuFlexValues menuFlexValues,
     MenuSizeConfiguration menuSizeConfiguration,
   }) : super(
@@ -37,8 +37,7 @@ class DialogViewComponentBuilders<T> extends ViewComponentBuilders<T> {
           menuContainerBuilder:
               menuContainerBuilder ?? dialogMenuContainerBuilder,
           listViewBuilder: listViewBuilder ?? dialogListViewBuilder,
-          searchBarContainerBuilder:
-              searchBarContainerBuilder ?? dialogSearchBarContainerBuilder,
+          searchBarBuilder: searchBarBuilder ?? dialogSearchBarBuilder,
           menuFlexValues: menuFlexValues ?? dialogMenuFlexValues,
           menuSizeConfiguration:
               menuSizeConfiguration ?? dialogMenuSizeConfiguration,
@@ -47,7 +46,7 @@ class DialogViewComponentBuilders<T> extends ViewComponentBuilders<T> {
   static MenuFlexValues dialogMenuFlexValues = MenuFlexValues(
     listView: 9,
     searchField: 5,
-    searchBarContainer: 2,
+    searchBar: 2,
     searchingIndicator: 1,
   );
 
@@ -55,14 +54,18 @@ class DialogViewComponentBuilders<T> extends ViewComponentBuilders<T> {
       MenuSizeConfiguration(
     maxWidthFraction: 0.8,
     maxHeightFraction: 0.8,
+    minHeightFraction: 0.5,
+    minWidthFraction: 0.5,
   );
 
   static ListViewBuilder dialogListViewBuilder =
       DropdownViewComponentBuilders.dropdownListViewBuilder;
 
-  static SearchBarContainerBuilder dialogSearchBarContainerBuilder =
-      (BuildContext context, Widget searchField, Widget indicator,
-          bool isSearching, MenuFlexValues menuFlexValues) {
+  static SearchBarBuilder dialogSearchBarBuilder = (BuildContext context,
+      Widget searchField,
+      Widget indicator,
+      bool isSearching,
+      MenuFlexValues menuFlexValues) {
     List<Widget> rowChildren = [];
 
     rowChildren.add(Flexible(
@@ -166,9 +169,9 @@ class DialogViewComponentBuilders<T> extends ViewComponentBuilders<T> {
   };
 
   static ButtonBuilder dialogButtonBuilder =
-      (BuildContext context, ToggleMenu toggleDropDownMenu) {
+      (BuildContext context, ToggleMenu toggleMenu) {
     return RaisedButton(
-      onPressed: toggleDropDownMenu,
+      onPressed: toggleMenu,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[

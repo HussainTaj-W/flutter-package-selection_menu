@@ -75,8 +75,8 @@ class ViewComponentBuilders<T> {
 
   /// Returns a [Widget] that wraps a search field and and searching indicator.
   ///
-  /// See [SearchBarContainerBuilder] for more details.
-  final SearchBarContainerBuilder searchBarContainerBuilder;
+  /// See [SearchBarBuilder] for more details.
+  final SearchBarBuilder searchBarBuilder;
 
   /// Defines flex values for various view components ([Widget]s).
   ///
@@ -97,7 +97,7 @@ class ViewComponentBuilders<T> {
     @required this.searchingIndicatorBuilder,
     @required this.menuAnimatedContainerBuilder,
     @required this.listViewBuilder,
-    @required this.searchBarContainerBuilder,
+    @required this.searchBarBuilder,
     @required this.menuFlexValues,
     @required this.menuSizeConfiguration,
   }) : assert(
@@ -108,7 +108,7 @@ class ViewComponentBuilders<T> {
                 searchingIndicatorBuilder != null &&
                 menuAnimatedContainerBuilder != null &&
                 listViewBuilder != null &&
-                searchBarContainerBuilder != null &&
+                searchBarBuilder != null &&
                 menuFlexValues != null &&
                 menuSizeConfiguration != null,
             """All builders and configurations are required. (except one 'dropDownButtonBuilderFromItem'). 
@@ -128,7 +128,7 @@ class ViewComponentBuilders<T> {
     SearchingIndicatorBuilder searchingIndicatorBuilder,
     MenuAnimatedContainerBuilder menuAnimatedContainerBuilder,
     ListViewBuilder listViewBuilder,
-    SearchBarContainerBuilder searchBarContainerBuilder,
+    SearchBarBuilder searchBarBuilder,
     MenuFlexValues menuFlexValues,
     MenuSizeConfiguration menuSizeConfiguration,
   }) {
@@ -145,8 +145,7 @@ class ViewComponentBuilders<T> {
       menuAnimatedContainerBuilder:
           menuAnimatedContainerBuilder ?? this.menuAnimatedContainerBuilder,
       listViewBuilder: listViewBuilder ?? this.listViewBuilder,
-      searchBarContainerBuilder:
-          searchBarContainerBuilder ?? this.searchBarContainerBuilder,
+      searchBarBuilder: searchBarBuilder ?? this.searchBarBuilder,
       menuFlexValues: menuFlexValues ?? this.menuFlexValues,
       menuSizeConfiguration:
           menuSizeConfiguration ?? this.menuSizeConfiguration,

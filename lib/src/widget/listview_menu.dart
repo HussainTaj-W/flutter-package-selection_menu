@@ -111,8 +111,8 @@ class _ListViewMenuState<T> extends State<ListViewMenu<T>> {
 
     if (widget.itemSearchMatcher != null) {
       columnChildren.add(Expanded(
-        flex: _viewComponentBuilders.menuFlexValues.searchBarContainer,
-        child: _viewComponentBuilders.searchBarContainerBuilder(
+        flex: _viewComponentBuilders.menuFlexValues.searchBar,
+        child: _viewComponentBuilders.searchBarBuilder(
             context,
             searchBar,
             searchingIndicator,

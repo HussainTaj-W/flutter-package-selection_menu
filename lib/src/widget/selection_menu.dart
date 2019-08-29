@@ -417,13 +417,12 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>> {
 
   void _showOverlayMenu() {
     if (_menuAnimationState == MenuAnimationState.Closed) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _calculateSelfDimensions();
+      _calculateSelfDimensions();
 
-        Overlay.of(context).insert(_dropDownListOverlay);
+      Overlay.of(context).insert(_dropDownListOverlay);
 
-        _dropDownListOverlay.markNeedsBuild();
-      });
+      _dropDownListOverlay.markNeedsBuild();
+
       setState(() {
         _menuAnimationState = MenuAnimationState.OpeningStart;
       });

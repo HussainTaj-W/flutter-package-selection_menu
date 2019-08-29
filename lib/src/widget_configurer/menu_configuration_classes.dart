@@ -139,10 +139,10 @@ class MenuFlexValues {
   final int searchField;
   final int searchingIndicator;
   final int listView;
-  final int searchBarContainer;
+  final int searchBar;
 
   const MenuFlexValues({
-    this.searchBarContainer,
+    this.searchBar,
     this.searchField,
     this.searchingIndicator,
     this.listView,

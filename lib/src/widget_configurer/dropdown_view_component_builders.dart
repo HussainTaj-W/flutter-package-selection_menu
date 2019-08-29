@@ -21,7 +21,7 @@ class DropdownViewComponentBuilders<T> extends ViewComponentBuilders<T> {
     SearchingIndicatorBuilder searchingIndicatorBuilder,
     MenuAnimatedContainerBuilder menuAnimatedContainerBuilder,
     ListViewBuilder listViewBuilder,
-    SearchBarContainerBuilder searchBarContainerBuilder,
+    SearchBarBuilder searchBarBuilder,
     MenuFlexValues menuFlexValues,
     MenuSizeConfiguration menuSizeConfiguration,
   }) : super(
@@ -37,8 +37,7 @@ class DropdownViewComponentBuilders<T> extends ViewComponentBuilders<T> {
           menuContainerBuilder:
               menuContainerBuilder ?? dropdownMenuContainerBuilder,
           listViewBuilder: listViewBuilder ?? dropdownListViewBuilder,
-          searchBarContainerBuilder:
-              searchBarContainerBuilder ?? dropdownSearchBarContainerBuilder,
+          searchBarBuilder: searchBarBuilder ?? dropdownSearchBarBuilder,
           menuFlexValues: menuFlexValues ?? dropdownMenuFlexValues,
           menuSizeConfiguration:
               menuSizeConfiguration ?? dropdownMenuSizeConfiguration,
@@ -47,21 +46,23 @@ class DropdownViewComponentBuilders<T> extends ViewComponentBuilders<T> {
   static MenuFlexValues dropdownMenuFlexValues = MenuFlexValues(
     listView: 9,
     searchField: 2,
-    searchBarContainer: 3,
+    searchBar: 3,
     searchingIndicator: 2,
   );
 
   static MenuSizeConfiguration dropdownMenuSizeConfiguration =
       MenuSizeConfiguration(
     minHeightFraction: 0.3,
-    minWidth: 0.3,
+    minWidthFraction: 0.3,
     maxHeightFraction: 0.8,
-    maxWidth: 0.5,
+    maxWidthFraction: 0.5,
   );
 
-  static SearchBarContainerBuilder dropdownSearchBarContainerBuilder =
-      (BuildContext context, Widget searchField, Widget indicator,
-          bool isSearching, MenuFlexValues menuFlexValues) {
+  static SearchBarBuilder dropdownSearchBarBuilder = (BuildContext context,
+      Widget searchField,
+      Widget indicator,
+      bool isSearching,
+      MenuFlexValues menuFlexValues) {
     List<Widget> columnChildren = [];
 
     columnChildren.add(Flexible(

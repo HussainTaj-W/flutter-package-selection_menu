@@ -5,64 +5,73 @@ import '../data/FlatColor.dart';
 
 // Reading previous Examples before this one is recommended.
 //
-// Code from previous example will have their comments removed and moved to the
-// end of the file to allow meaningful code to stay up top. Please do not consider
-// this example as an optimal way to place your code.
+// Code from previous example will have their comments or sections removed, simplified, and
+// moved to the end of the file to allow meaningful code to stay up top. Please
+// do not consider this example as an optimal way to place your code.
 //
 // main function has been moved to the end.
 
 class ExampleApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Size screenSize = MediaQuery.of(context).size;
-
     return Container(
       child: SelectionMenu<FlatColor>(
-        viewComponentBuilders: DropdownViewComponentBuilders<FlatColor>(
-          // MenuFlexValues are the Flex values of each component of the menu.
-          // These values help size things relatively. So that if menu size is
-          // changed, the appearance tries to stay consistent.
+        viewComponentBuilders:
+            // Since almost all builders are required for the Widget to function
+            // We extend a predefined ViewComponentBuilders with copyWith and
+            // override methods we need.
+            DialogViewComponentBuilders<FlatColor>().copyWith(
+          buttonBuilder: _buttonBuilder,
+          // This builder is used to build the default button.
+          // If SelectionMenu.showSelectedItemAsButton is true and
+          // SelectionMenu.initiallySelectedItemIndex is null, this builder is used.
           //
-          // Note: Search Bar is the combination of Search Field and
-          // Searching Indicator. So Search Field and Searching Indicator are siblings.
-          // And ListView and Search Bar are siblings.
-          //
-          // This means a flex of search field = 1 and searchingIndicator = 1
-          // means that they will always have the same size, regardless of other values.
-          // Similarly, if listView and searchBar are both 1, they'll take the
-          // same space, regardless of what searchField and searchingIndicator are.
-          menuFlexValues: MenuFlexValues(
-            searchingIndicator: 1,
-            searchBar: 1,
-            listView: 1,
-            searchField: 1,
-          ),
+          // Defined below for the sake of brevity.
 
-          menuSizeConfiguration: MenuSizeConfiguration(
-            maxHeightFraction: 0.5,
-            requestAvoidBottomInset: true,
-            enforceMinWidthToMatchButton: true,
-            enforceMaxWidthToMatchButton: true,
-          ),
-        ),
-        menuAnimationDurations: MenuAnimationDurations(
-          forward: const Duration(seconds: 1),
-          backward: const Duration(seconds: 1),
+          buttonFromItemBuilder: _buttonFromItemBuilder,
+          // This builder is used to build the button, only when an item is selected
+          // and SelectionMenu.showSelectedItemAsButton is set to true.
+          // If this builder is null, SelectionMenu uses SelectionMenu.itemBuilder
+          // in its place.
+          //
+          // Defined below for the sake of brevity.
         ),
         itemsList: colors,
         itemBuilder: this.itemBuilder,
         onItemSelected: this.onItemSelected,
         showSelectedItemAsButton: true,
-        initiallySelectedItemIndex: 0,
-        closeMenuInsteadOfPop: true,
-        closeMenuOnEmptyMenuSpaceTap: false,
-        closeMenuWhenTappedOutside: true,
-        itemSearchMatcher: this.itemSearchMatcher,
-        searchLatency: Duration(seconds: 1),
       ),
-      constraints: BoxConstraints(maxWidth: screenSize.width * 0.75),
     );
   }
+
+  static ButtonBuilder _buttonBuilder =
+      (BuildContext context, ToggleMenu toggleMenu) {
+    return RaisedButton(
+      onPressed: toggleMenu,
+      // On button press make sure to call the ToggleMenu callback. This will
+      // cause the menu to open/close.
+
+      color: Colors.white,
+      child: Text("Select Color"),
+    );
+  };
+
+  static ButtonFromItemBuilder<FlatColor> _buttonFromItemBuilder =
+      (BuildContext context, ToggleMenu toggleMenu, FlatColor color) {
+    return RaisedButton(
+      onPressed: toggleMenu,
+      // On button press make sure to call the ToggleMenu callback. This will
+      // cause the menu to open/close.
+
+      color: Color(color.hex),
+      child: Text(
+        color.name,
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+    );
+  };
 
   //region From Previous Example
 
@@ -112,7 +121,7 @@ class ExampleApp extends StatelessWidget {
     print(color.name);
   }
 
-  //endregion
+//endregion
 }
 
 //region From Previous Example

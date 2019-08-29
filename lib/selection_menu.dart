@@ -72,3 +72,4 @@ export './src/widget_configurer/dialog_view_component_builders.dart';
 export './src/widget_configurer/dropdown_view_component_builders.dart';
 export './src/widget_configurer/menu_configuration_classes.dart';
 export './src/widget_configurer/view_component_builders.dart';
+export './src/widget_configurer/view_component_type_definitions.dart';
