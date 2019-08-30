@@ -40,18 +40,18 @@
 /// ## Customization
 ///
 /// There are various customization options. The most important class is the
-/// [ViewComponentBuilders]. This base class contains methods as instance variables
+/// [ComponentsConfiguration]. This base class contains methods as instance variables
 /// that define the visual appearance of the menu list and button.
 /// SubClasses add definitions of these instance variables.
 ///
-/// There are two predefined subclasses of [ViewComponentBuilders].
-/// * [DropdownViewComponentBuilders] defines a dropdown style appearance and behavior.
-/// * [DialogViewComponentBuilders] (default) defines a popup dialog style appearance and behavior.
+/// There are two predefined subclasses of [ComponentsConfiguration].
+/// * [DropdownComponentsConfiguration] defines a dropdown style appearance and behavior.
+/// * [DialogComponentsConfiguration] (default) defines a popup dialog style appearance and behavior.
 ///
-/// [MenuSizeConfiguration] used as [ViewComponentBuilders.menuSizeConfiguration]
+/// [MenuSizeConfiguration] used as [ComponentsConfiguration.menuSizeConfiguration]
 /// defines the Size constraints of the Menu and behaviour in different conditions.
 ///
-/// See [ViewComponentBuilders] for details.
+/// See [ComponentsConfiguration] for details.
 ///
 /// TODO add docs.
 /// TODO add github repo.
@@ -61,15 +61,8 @@ library selection_menu;
 
 import './src/widget/listview_menu.dart';
 import './src/widget/selection_menu.dart';
-import './src/widget_configurer/dialog_view_component_builders.dart';
-import './src/widget_configurer/dropdown_view_component_builders.dart';
-import './src/widget_configurer/menu_configuration_classes.dart';
-import './src/widget_configurer/view_component_builders.dart';
+import './src/widget_configurers/configurations/configurations.dart';
 
 export './src/widget/listview_menu.dart';
 export './src/widget/selection_menu.dart';
-export './src/widget_configurer/dialog_view_component_builders.dart';
-export './src/widget_configurer/dropdown_view_component_builders.dart';
-export './src/widget_configurer/menu_configuration_classes.dart';
-export './src/widget_configurer/view_component_builders.dart';
-export './src/widget_configurer/view_component_type_definitions.dart';
+export './src/widget_configurers/configurations/configurations.dart';

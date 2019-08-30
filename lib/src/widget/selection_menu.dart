@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:selection_menu/src/widget_configurer/dialog_view_component_builders.dart';
-import 'package:selection_menu/src/widget_configurer/menu_configuration_classes.dart';
-import 'package:selection_menu/src/widget_configurer/view_component_builders.dart';
+import 'package:selection_menu/components.dart';
+import 'package:selection_menu/selection_menu.dart';
 
 import 'listview_menu.dart';
 
@@ -13,11 +12,11 @@ import 'listview_menu.dart';
 /// Widget.
 ///
 /// The appearance can be almost completely customized by passing a
-/// [ViewComponentBuilders] as [SelectionMenu.viewComponentBuilders].
+/// [ComponentsConfiguration] as [SelectionMenu.componentsConfiguration].
 ///
-/// There are two predefined [ViewComponentBuilders] :
-/// * [DialogViewComponentBuilders] a popup dialog style appearance.
-/// * [DropdownViewComponentBuilders] a classic dropdown style appearance.
+/// There are two predefined [ComponentsConfiguration] :
+/// * [DialogComponentsConfiguration] a popup dialog style appearance.
+/// * [DropdownComponentsConfiguration] a classic dropdown style appearance.
 ///
 /// ## Basic Usage
 ///
@@ -35,7 +34,7 @@ import 'listview_menu.dart';
 /// );
 /// ```
 ///
-/// **Using [ViewComponentBuilders]**
+/// **Using [ComponentsConfiguration]**
 ///
 /// ```dart
 /// SelectionMenu<String>(
@@ -48,7 +47,7 @@ import 'listview_menu.dart';
 ///   {
 ///     return Text(item);
 ///   },
-///   viewComponentBuilders: DialogViewComponentBuilders<String>(),
+///   componentsConfiguration: DropdownComponentsConfiguration<String>(),
 /// );
 /// ```
 ///
@@ -78,13 +77,13 @@ class SelectionMenu<T> extends StatefulWidget {
   /// If true, this Widget shows selected Item as the button.
   ///
   /// If [initiallySelectedItemIndex] is null, then a default button is shown, which
-  /// is build by [viewComponentBuilders.buttonBuilder].
+  /// is build by [componentsConfiguration.triggerComponent].
   ///
-  /// else If [viewComponentBuilders.buttonFromItemBuilder] is not null, then
+  /// else If [componentsConfiguration.triggerFromItemComponent] is not null, then
   /// it is used to show the current selected Item.
   ///
   /// else [itemBuilder] is used.
-  final bool showSelectedItemAsButton;
+  final bool showSelectedItemAsTrigger;
 
   /// If this Widget should close menu when user taps on space outside the
   /// visible container of the menu.
@@ -103,12 +102,12 @@ class SelectionMenu<T> extends StatefulWidget {
 
   /// Describes the appearance of the menu.
   ///
-  /// See [ViewComponentBuilders] for details.
+  /// See [ComponentsConfiguration] for details.
   ///
   /// If this field is provided then [menuSizeConfiguration] must be null.
-  /// Assign required size configuration to [viewComponentBuilders.menuSizeConfiguration]
+  /// Assign required size configuration to [componentsConfiguration.menuSizeConfiguration]
   /// instead.
-  final ViewComponentBuilders<T> viewComponentBuilders;
+  final ComponentsConfiguration<T> componentsConfiguration;
 
   /// The delay before performing the search.
   /// This delay allows to avoid performing search for every rapidly changing
@@ -122,8 +121,8 @@ class SelectionMenu<T> extends StatefulWidget {
   ///
   /// See [MenuSizeConfiguration] for more details.
   ///
-  /// If [viewComponentBuilders] is provided then this field must be null.
-  /// Assign the value to [viewComponentBuilders.menuSizeConfiguration] instead.
+  /// If [componentsConfiguration] is provided then this field must be null.
+  /// Assign the value to [componentsConfiguration.menuSizeConfiguration] instead.
   final MenuSizeConfiguration menuSizeConfiguration;
 
   SelectionMenu({
@@ -133,15 +132,15 @@ class SelectionMenu<T> extends StatefulWidget {
     @required this.onItemSelected,
     this.initiallySelectedItemIndex,
     this.itemSearchMatcher,
-    this.showSelectedItemAsButton = false,
+    this.showSelectedItemAsTrigger = false,
     this.closeMenuWhenTappedOutside = true,
     this.closeMenuInsteadOfPop = true,
     this.closeMenuOnEmptyMenuSpaceTap = false,
-    this.viewComponentBuilders,
+    this.componentsConfiguration,
     this.searchLatency = const Duration(milliseconds: 500),
     this.menuAnimationDurations = const MenuAnimationDurations(
         forward: Duration(milliseconds: 500),
-        backward: Duration(milliseconds: 500)),
+        reverse: Duration(milliseconds: 500)),
     this.menuSizeConfiguration,
   })  : assert(
             itemBuilder != null && itemsList != null && onItemSelected != null,
@@ -151,33 +150,32 @@ class SelectionMenu<T> extends StatefulWidget {
                 initiallySelectedItemIndex >= 0 &&
                     initiallySelectedItemIndex < itemsList.length,
             "initiallySelectedItemIndex must be >= 0 and <= itemsList.length. null is a valid value."),
-        assert(menuSizeConfiguration == null || viewComponentBuilders == null,
-            """menuSizeConfiguration already present in viewComponentBuilders. 
-  MenuSizeConfiguration can be assigned to the constructor of a ViewComponentBuilders.
-  If a ViewComponentBuilders is assigned to this Widget, 
-  then assign the MenuSizeConfiguration to this.viewComponentBuilder instead of directly to this widget."""),
+        assert(menuSizeConfiguration == null || componentsConfiguration == null,
+            """menuSizeConfiguration already present in componentsConfiguration. 
+  MenuSizeConfiguration can be assigned to the constructor of a ComponentsConfiguration.
+  If a ComponentsConfiguration is assigned to this Widget, 
+  then assign the MenuSizeConfiguration to this.componentsConfiguration.menuSizeConfiguration 
+  instead of directly to this widget."""),
         super(key: key);
 
   @override
   State<StatefulWidget> createState() => _SelectionMenuState<T>();
 }
 
-class _SelectionMenuState<T> extends State<SelectionMenu<T>> {
+class _SelectionMenuState<T> extends State<SelectionMenu<T>>
+    with TickerProviderStateMixin {
   T _currentSelectedItem;
   OverlayEntry _dropDownListOverlay;
 
   ListViewMenu<T> _listViewMenu;
 
-  /// Size of the Button
-  Size _size;
+  TriggerPositionAndSize _triggerPositionAndSize;
 
-  /// Position of the button from the top-left of the visible screen.
-  Offset _position;
   Orientation _orientation;
 
   LayerLink _buttonAndMenuLayerLink = LayerLink();
 
-  ViewComponentBuilders<T> _viewComponentBuilders;
+  ComponentsConfiguration<T> _componentsConfiguration;
 
   BoxConstraints _menuConstraints;
 
@@ -192,7 +190,7 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>> {
       itemBuilder: widget.itemBuilder,
       onItemSelected: _onMenuItemSelected,
       itemsList: widget.itemsList,
-      viewComponentBuilders: _viewComponentBuilders,
+      componentsConfiguration: _componentsConfiguration,
       onMenuEmptySpaceTap: _onMenuEmptySpaceTap,
       searchLatency: widget.searchLatency,
     );
@@ -204,12 +202,12 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>> {
 
     // Initialize Component Builders
     if (widget.menuSizeConfiguration != null) {
-      _viewComponentBuilders = widget.viewComponentBuilders ??
-          DialogViewComponentBuilders<T>()
+      _componentsConfiguration = widget.componentsConfiguration ??
+          DialogComponentsConfiguration<T>()
               .copyWith(menuSizeConfiguration: widget.menuSizeConfiguration);
     } else {
-      _viewComponentBuilders =
-          widget.viewComponentBuilders ?? DialogViewComponentBuilders<T>();
+      _componentsConfiguration =
+          widget.componentsConfiguration ?? DialogComponentsConfiguration<T>();
     }
 
     // Initialize ListViewMenu
@@ -218,7 +216,7 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>> {
       itemBuilder: widget.itemBuilder,
       onItemSelected: _onMenuItemSelected,
       itemsList: widget.itemsList,
-      viewComponentBuilders: _viewComponentBuilders,
+      componentsConfiguration: _componentsConfiguration,
       onMenuEmptySpaceTap: _onMenuEmptySpaceTap,
       searchLatency: widget.searchLatency,
     );
@@ -231,6 +229,11 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>> {
 
     // Initialize Animation State for the Menu
     _menuAnimationState = MenuAnimationState.Closed;
+
+    _triggerPositionAndSize =
+        new TriggerPositionAndSize(size: Size(0, 0), position: Offset(0, 0));
+
+    _componentsConfiguration.initSelectionMenuComponents();
   }
 
   @override
@@ -238,8 +241,8 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>> {
     if (_dropDownListOverlay == null) {
       _dropDownListOverlay = _buildOverlayEntry();
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _calculateSelfDimensions();
         _menuConstraints = _calculateConstraintsFromSizeConfiguration(context);
+        _calculateTriggerPositionAndSize();
         _dropDownListOverlay.markNeedsBuild();
       });
       _orientation = MediaQuery.of(context).orientation;
@@ -258,22 +261,23 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>> {
 
   void _scheduleDimensionCalculationAndOverlayRebuild() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _calculateSelfDimensions();
+      _calculateTriggerPositionAndSize();
 
       if (_dropDownListOverlay != null) _dropDownListOverlay.markNeedsBuild();
     });
   }
 
-  void _calculateSelfDimensions() {
+  void _calculateTriggerPositionAndSize() {
     RenderBox box = context.findRenderObject();
-    _position = box.localToGlobal(Offset.zero);
-    _size = box.size;
+    _triggerPositionAndSize.position = box.localToGlobal(Offset.zero);
+    _triggerPositionAndSize.size = box.size;
   }
 
   OverlayEntry _buildOverlayEntry() {
     return OverlayEntry(builder: (BuildContext context) {
-      Widget emptyContainer = _handleOrientationChange(context);
-      if (emptyContainer != null) return emptyContainer;
+      _handleOrientationChange(context);
+
+      _calculateTriggerPositionAndSize();
 
       List<Widget> children = [];
 
@@ -288,24 +292,27 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>> {
         children.add(back);
       }
 
-      MenuPositionAndSize positionAndSize =
-          _viewComponentBuilders.menuPositionAndSizeCalculator(
-              context,
-              _menuConstraints,
-              _position,
-              _size,
-              _viewComponentBuilders.menuSizeConfiguration);
+      MenuPositionAndSize menuPositionAndSize = _componentsConfiguration
+          .menuPositionAndSizeComponent
+          .build(MenuPositionAndSizeComponentData(
+        context: context,
+        constraints: _menuConstraints,
+        menuSizeConfiguration: _componentsConfiguration.menuSizeConfiguration,
+        triggerPositionAndSize: _triggerPositionAndSize,
+      ));
 
       Widget front = CompositedTransformFollower(
         link: _buttonAndMenuLayerLink,
-        child: _viewComponentBuilders.menuAnimatedContainerBuilder(
-          context,
-          _listViewMenu,
-          _menuAnimationState,
-          positionAndSize.constraints,
-          widget.menuAnimationDurations,
-        ),
-        offset: positionAndSize.positionOffset,
+        child: _componentsConfiguration.animationComponent
+            .build(AnimationComponentData(
+          context: context,
+          constraints: menuPositionAndSize.constraints,
+          child: _listViewMenu,
+          menuAnimationState: _menuAnimationState,
+          menuAnimationDurations: widget.menuAnimationDurations,
+          tickerProvider: this,
+        )),
+        offset: menuPositionAndSize.positionOffset,
       );
 
       children.add(front);
@@ -321,18 +328,13 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>> {
   /// Returns null when there is no change in orientation.
   /// Returns an empty Container when there is an orientation change and calculation
   /// of constraints and size is scheduled.
-  Widget _handleOrientationChange(BuildContext context) {
+  void _handleOrientationChange(BuildContext context) {
     Orientation orientation = MediaQuery.of(context).orientation;
     if (orientation != _orientation) {
       _orientation = orientation;
-      _scheduleDimensionCalculationAndOverlayRebuild();
+      _calculateTriggerPositionAndSize();
       _menuConstraints = _calculateConstraintsFromSizeConfiguration(context);
-      return Container(
-        height: 0,
-        width: 0,
-      );
     }
-    return null;
   }
 
   /// OverlayEntry - the menu - is build every time there is [_menuAnimationState] change.
@@ -356,11 +358,11 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>> {
         break;
       case MenuAnimationState.OpeningEnd:
         _menuAnimationState = MenuAnimationState.Opened;
-        Future.delayed(widget.menuAnimationDurations.forward, () {}).then((_) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            _dropDownListOverlay.markNeedsBuild();
-          });
-        });
+//        Future.delayed(widget.menuAnimationDurations.forward, () {}).then((_) {
+//          WidgetsBinding.instance.addPostFrameCallback((_) {
+//            _dropDownListOverlay.markNeedsBuild();
+//          });
+//        });
         break;
       case MenuAnimationState.ClosingStart:
         _menuAnimationState = MenuAnimationState.ClosingEnd;
@@ -369,7 +371,7 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>> {
         });
         break;
       case MenuAnimationState.ClosingEnd:
-        Future.delayed(widget.menuAnimationDurations.backward, () {}).then((_) {
+        Future.delayed(widget.menuAnimationDurations.reverse, () {}).then((_) {
           _closeOverlayMenu();
         });
         break;
@@ -384,12 +386,13 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>> {
       BuildContext context) {
     MediaQueryData mqData = MediaQuery.of(context);
 
-    MenuSizeConfiguration config = _viewComponentBuilders.menuSizeConfiguration;
+    MenuSizeConfiguration config =
+        _componentsConfiguration.menuSizeConfiguration;
     double minWidth = (config.enforceMinWidthToMatchButton
-        ? _size.width
+        ? _triggerPositionAndSize.size.width
         : config.minWidth ?? config.minWidthFraction * mqData.size.width);
     double maxWidth = (config.enforceMaxWidthToMatchButton
-        ? _size.width
+        ? _triggerPositionAndSize.size.width
         : config.maxWidth ?? mqData.size.width * config.maxWidthFraction);
 
     double maxHeight =
@@ -417,7 +420,7 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>> {
 
   void _showOverlayMenu() {
     if (_menuAnimationState == MenuAnimationState.Closed) {
-      _calculateSelfDimensions();
+      _calculateTriggerPositionAndSize();
 
       Overlay.of(context).insert(_dropDownListOverlay);
 
@@ -451,10 +454,13 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>> {
   }
 
   Widget _buildButton() {
-    if (widget.showSelectedItemAsButton && _currentSelectedItem != null) {
-      if (_viewComponentBuilders.buttonFromItemBuilder != null) {
-        return _viewComponentBuilders.buttonFromItemBuilder(
-            context, _onButtonTap, _currentSelectedItem);
+    if (widget.showSelectedItemAsTrigger && _currentSelectedItem != null) {
+      if (_componentsConfiguration.triggerFromItemComponent != null) {
+        return _componentsConfiguration.triggerFromItemComponent.build(
+            TriggerFromItemComponentData(
+                context: context,
+                toggleMenu: _onButtonTap,
+                item: _currentSelectedItem));
       }
       return GestureDetector(
         onTap: _onButtonTap,
@@ -462,7 +468,10 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>> {
       );
     }
 
-    return _viewComponentBuilders.buttonBuilder(context, _onButtonTap);
+    return _componentsConfiguration.triggerComponent.build(TriggerComponentData(
+      context: context,
+      toggleMenu: _onButtonTap,
+    ));
   }
 
   void _onMenuItemSelected(T item) {
@@ -475,5 +484,11 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>> {
 
   void _onMenuEmptySpaceTap() {
     if (widget.closeMenuOnEmptyMenuSpaceTap) _closeOverlayMenu();
+  }
+
+  @override
+  void dispose() {
+    _componentsConfiguration.disposeSelectionMenuComponents();
+    super.dispose();
   }
 }

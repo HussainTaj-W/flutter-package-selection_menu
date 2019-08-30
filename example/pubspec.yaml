@@ -20,8 +20,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-  matrix4_transform: ^1.0.9
-
   selection_menu:
     path: '../../selection_menu/'
 

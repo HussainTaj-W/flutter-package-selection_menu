@@ -18,16 +18,16 @@ class ExampleApp extends StatelessWidget {
 
     return Container(
       child: SelectionMenu<FlatColor>(
-        // ViewComponentBuilders is the core of the high customizability this
+        // ComponentsConfiguration is the core of the high customizability this
         // Widget provides.
         //
-        // The default ViewComponentBuilders is DialogViewComponentBuilder.
+        // The default ComponentsConfiguration is DialogComponentsConfiguration.
         // A second one, and the only other provided predefined so far, is
-        // DropdownViewComponentBuilders, which display a dropdown style menu.
-        viewComponentBuilders: DropdownViewComponentBuilders<FlatColor>(
-          // ViewComponentBuilders take a MenuSizeConfiguration too.
-          // If you are providing a ViewComponentBuilders and a MenuSizeConfiguration,
-          // you must provide the size configuration inside the ViewComponentBuilders.
+        // DropdownComponentsConfiguration, which display a dropdown style menu.
+        componentsConfiguration: DropdownComponentsConfiguration<FlatColor>(
+          // ComponentsConfiguration take a MenuSizeConfiguration too.
+          // If you are providing a ComponentsConfiguration and a MenuSizeConfiguration,
+          // you must provide the size configuration inside the ComponentsConfiguration.
           menuSizeConfiguration: MenuSizeConfiguration(
             maxHeightFraction: 0.5,
             requestAvoidBottomInset: true,
@@ -38,13 +38,13 @@ class ExampleApp extends StatelessWidget {
 
         menuAnimationDurations: MenuAnimationDurations(
           forward: const Duration(seconds: 1),
-          backward: const Duration(seconds: 1),
+          reverse: const Duration(seconds: 1),
         ),
 
         itemsList: colors,
         itemBuilder: this.itemBuilder,
         onItemSelected: this.onItemSelected,
-        showSelectedItemAsButton: true,
+        showSelectedItemAsTrigger: true,
         initiallySelectedItemIndex: 0,
         closeMenuInsteadOfPop: true,
         closeMenuOnEmptyMenuSpaceTap: false,
@@ -115,8 +115,11 @@ void main() => runApp(
               .redAccent, // Used by the default Dialog Style of SelectionMenu
         ),
         home: Material(
-          child: Center(
-            child: ExampleApp(),
+          child: SafeArea(
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: ExampleApp(),
+            ),
           ),
         ),
       ),

@@ -1,7 +1,7 @@
+import 'package:example/data/FlatColor.dart';
 import 'package:flutter/material.dart';
+import 'package:selection_menu/components.dart';
 import 'package:selection_menu/selection_menu.dart';
-
-import '../data/FlatColor.dart';
 
 // Reading previous Examples before this one is recommended.
 //
@@ -16,108 +16,63 @@ class ExampleApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: SelectionMenu<FlatColor>(
-        viewComponentBuilders:
-            DialogViewComponentBuilders<FlatColor>().copyWith(
-          searchFieldBuilder: _searchFieldBuilder,
-          // Builds the widget where the user enters search text
+        componentsConfiguration:
+            // Since almost all Components are required for the Widget to function
+            // We use a predefined ComponentsConfiguration. The specific components
+            // we assign will be used along with the default versions of any component
+            // that is not assigned (is null).
+
+            DialogComponentsConfiguration<FlatColor>(
+          triggerComponent: TriggerComponent(builder: _triggerBuilder),
+          // This Component is used to build the default button (trigger).
+          //
+          // If SelectionMenu.showSelectedItemAsButton is true and
+          // SelectionMenu.initiallySelectedItemIndex is null, this builder is used
+          // when the Widget is built for the first time.
           //
           // Defined below for the sake of brevity.
+          //
 
-          searchingIndicatorBuilder: _searchingIndicatorBuilder,
-          // Builds the widget that indicates search in progress.
+          triggerFromItemComponent: TriggerFromItemComponent<FlatColor>(
+              builder: _triggerFromItemBuilder),
+          // This Component is used to build the button, only when an item is selected
+          // and SelectionMenu.showSelectedItemAsButton is set to true.
+          // If this builder is null, SelectionMenu uses SelectionMenu.itemBuilder
+          // in its place.
           //
           // Defined below for the sake of brevity.
-
-          searchBarBuilder: _searchBarBuilder,
-          // Builds a widget that contains Search Field and Searching Indicator
           //
-          // Defined below for the sake of brevity.
-
-          buttonBuilder: _buttonBuilder,
-          buttonFromItemBuilder: _buttonFromItemBuilder,
         ),
-        itemSearchMatcher: this.itemSearchMatcher,
         itemsList: colors,
         itemBuilder: this.itemBuilder,
         onItemSelected: this.onItemSelected,
-        showSelectedItemAsButton: true,
+        showSelectedItemAsTrigger: true,
       ),
     );
   }
 
-  static SearchBarBuilder _searchBarBuilder = (
-    BuildContext context,
-    Widget searchField,
-    Widget searchIndicator,
-    bool isSearching,
-    MenuFlexValues values, // Example 1_basic_06 explains this parameter.
-  ) {
-    List<Widget> list = [];
-    list.add(Expanded(
-      child: searchField,
-      flex: values.searchField,
-    ));
-    if (isSearching)
-      list.add(Expanded(
-        child: searchIndicator,
-        flex: values.searchingIndicator,
-      ));
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: list,
-    );
-  };
-
-  static SearchingIndicatorBuilder _searchingIndicatorBuilder =
-      (BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(5.0),
-      child: AspectRatio(
-        aspectRatio: 1,
-        child: CircularProgressIndicator(),
-      ),
-    );
-  };
-
-  static SearchFieldBuilder _searchFieldBuilder =
-      (BuildContext context, TextEditingController controller) {
-    return TextField(
-      controller: controller,
-      // Assigning controller this way is necessary. The controller listens to
-      // changes in the field and fires search process accordingly.
-      // This controller is created and managed by SelectionMenu Widget.
-
-      decoration: InputDecoration(
-        hintText: "Search Color...",
-      ),
-    );
-  };
-
-  //region From Previous Example
-
-  static ButtonBuilder _buttonBuilder =
-      (BuildContext context, ToggleMenu toggleMenu) {
+  static Widget _triggerBuilder(TriggerComponentData data) {
     return RaisedButton(
-      onPressed: toggleMenu,
+      onPressed: data.toggleMenu,
       color: Colors.white,
       child: Text("Select Color"),
     );
-  };
+  }
 
-  static ButtonFromItemBuilder<FlatColor> _buttonFromItemBuilder =
-      (BuildContext context, ToggleMenu toggleMenu, FlatColor color) {
+  static Widget _triggerFromItemBuilder(TriggerFromItemComponentData data) {
     return RaisedButton(
-      onPressed: toggleMenu,
-      color: Color(color.hex),
+      onPressed: data.toggleMenu,
+      color: Color(data.item.hex),
       child: Text(
-        color.name,
+        data.item.name,
         style: TextStyle(
           color: Colors.white,
         ),
       ),
     );
-  };
+  }
+
+  //region From Previous Example
 
   Widget itemBuilder(BuildContext context, FlatColor color) {
     TextStyle textStyle = Theme.of(context).textTheme.body1;

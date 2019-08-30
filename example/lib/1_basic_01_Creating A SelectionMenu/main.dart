@@ -33,7 +33,7 @@ class ExampleApp extends StatelessWidget {
       // itemBuilder will be used to create the button as well as the items.
       //
       // We will later learn a better alternative to create a button using
-      // ViewComponentBuilders.buttonFromItemBuilder, in the upcoming examples.
+      // , in the upcoming examples.
       //
       // Function defined below for the sake of brevity.
 
@@ -41,8 +41,8 @@ class ExampleApp extends StatelessWidget {
       // A callback for when an item is selected.
       // Defined below for the sake of brevity.
 
-      showSelectedItemAsButton: true,
-      // Defaults to false and shows the selected Item as the button.
+      showSelectedItemAsTrigger: true,
+      // Defaults to false. When true, shows the selected Item as the button/trigger.
 
       initiallySelectedItemIndex: 0,
       // Defaults to null, which is valid and means that a default button will be

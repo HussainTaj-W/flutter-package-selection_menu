@@ -18,7 +18,7 @@ class ExampleApp extends StatelessWidget {
 
     return Container(
       child: SelectionMenu<FlatColor>(
-        viewComponentBuilders: DropdownViewComponentBuilders<FlatColor>(
+        componentsConfiguration: DropdownComponentsConfiguration<FlatColor>(
           // MenuFlexValues are the Flex values of each component of the menu.
           // These values help size things relatively. So that if menu size is
           // changed, the appearance tries to stay consistent.
@@ -31,6 +31,9 @@ class ExampleApp extends StatelessWidget {
           // means that they will always have the same size, regardless of other values.
           // Similarly, if listView and searchBar are both 1, they'll take the
           // same space, regardless of what searchField and searchingIndicator are.
+          //
+          // Of course, this behavior depends on the ComponentsConfiguration.
+          // However, it is true for the two predefined ComponentsConfigurations.
           menuFlexValues: MenuFlexValues(
             searchingIndicator: 1,
             searchBar: 1,
@@ -47,12 +50,12 @@ class ExampleApp extends StatelessWidget {
         ),
         menuAnimationDurations: MenuAnimationDurations(
           forward: const Duration(seconds: 1),
-          backward: const Duration(seconds: 1),
+          reverse: const Duration(seconds: 1),
         ),
         itemsList: colors,
         itemBuilder: this.itemBuilder,
         onItemSelected: this.onItemSelected,
-        showSelectedItemAsButton: true,
+        showSelectedItemAsTrigger: true,
         initiallySelectedItemIndex: 0,
         closeMenuInsteadOfPop: true,
         closeMenuOnEmptyMenuSpaceTap: false,
@@ -123,8 +126,11 @@ void main() => runApp(
               .redAccent, // Used by the default Dialog Style of SelectionMenu
         ),
         home: Material(
-          child: Center(
-            child: ExampleApp(),
+          child: SafeArea(
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: ExampleApp(),
+            ),
           ),
         ),
       ),

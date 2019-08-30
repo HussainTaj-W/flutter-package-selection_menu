@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:selection_menu/components.dart';
 import 'package:selection_menu/selection_menu.dart';
-import 'package:selection_menu/src/widget_configurer/dialog_view_component_builders.dart';
-import 'package:selection_menu/src/widget_configurer/view_component_builders.dart';
 
 /// Returns a [Widget] that corresponds to the data [item] of type T.
 typedef Widget ItemBuilder<T>(BuildContext context, T item);
@@ -20,7 +19,7 @@ typedef void OnMenuEmptySpaceTap();
 /// Creates a Menu Widget, that has a list and optionally a search bar.
 /// Type parameter T describes the type of Items in the List [ListViewMenu.itemsList].
 ///
-/// It uses [ViewComponentBuilders] to build various components.
+/// It uses [ComponentsConfiguration] to build various component_builders.
 class ListViewMenu<T> extends StatefulWidget {
   /// Method/Callback that converts data of type T into a [Widget].
   final ItemBuilder<T> itemBuilder;
@@ -36,9 +35,9 @@ class ListViewMenu<T> extends StatefulWidget {
   /// A callback for when an item from the list is selected.
   final OnItemSelected<T> onItemSelected;
 
-  /// The [ViewComponentBuilders] that will be used to create various components
+  /// The [ComponentsConfiguration] that will be used to create various component_builders
   /// of this Widget.
-  final ViewComponentBuilders<T> viewComponentBuilders;
+  final ComponentsConfiguration<T> componentsConfiguration;
 
   /// A callback for when empty space in the menu is tapped.
   final OnMenuEmptySpaceTap onMenuEmptySpaceTap;
@@ -55,7 +54,7 @@ class ListViewMenu<T> extends StatefulWidget {
     @required this.onItemSelected,
     this.itemSearchMatcher,
     this.onMenuEmptySpaceTap,
-    this.viewComponentBuilders,
+    this.componentsConfiguration,
     this.searchLatency = const Duration(milliseconds: 500),
   })  : assert(itemBuilder != null &&
             itemsList != null &&
@@ -67,7 +66,8 @@ class ListViewMenu<T> extends StatefulWidget {
   State<StatefulWidget> createState() => _ListViewMenuState<T>();
 }
 
-class _ListViewMenuState<T> extends State<ListViewMenu<T>> {
+class _ListViewMenuState<T> extends State<ListViewMenu<T>>
+    with TickerProviderStateMixin {
   /// List of items currently shown in the menu.
   ///
   /// This list stores filtered [widget.itemsList] from search result.
@@ -78,7 +78,7 @@ class _ListViewMenuState<T> extends State<ListViewMenu<T>> {
 
   TextEditingController _searchTextController = TextEditingController();
 
-  ViewComponentBuilders _viewComponentBuilders;
+  ComponentsConfiguration _componentsConfiguration;
 
   @override
   void initState() {
@@ -86,74 +86,72 @@ class _ListViewMenuState<T> extends State<ListViewMenu<T>> {
 
     _searchString = "";
     _isSearching = false;
-    _viewComponentBuilders =
-        widget.viewComponentBuilders ?? DialogViewComponentBuilders<T>();
+    _componentsConfiguration =
+        widget.componentsConfiguration ?? DialogComponentsConfiguration<T>();
 
     _currentItemsList = widget.itemsList;
 
     _searchTextController.addListener(_onSearchStringChange);
+
+    _componentsConfiguration.initListViewMenuComponents();
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget searchBar, searchingIndicator;
-    if (widget.itemSearchMatcher != null) {
-      searchBar = _viewComponentBuilders.searchFieldBuilder(
-          context, _searchTextController);
-      searchingIndicator =
-          _viewComponentBuilders.searchingIndicatorBuilder(context);
-    }
-    return _buildListViewMenu(searchBar, searchingIndicator);
+    final Widget searchField = _componentsConfiguration.searchFieldComponent
+        .build(SearchFieldComponentData(
+      context: context,
+      searchTextController: _searchTextController,
+    ));
+
+    final Widget searchingIndicator = _componentsConfiguration
+        .searchingIndicatorComponent
+        .build(SearchingIndicatorComponentData(
+      context: context,
+      isSearching: _isSearching,
+      tickerProvider: this,
+    ));
+
+    final Widget searchBar = _componentsConfiguration.searchBarComponent
+        .build(SearchBarComponentData(
+      menuFlexValues: _componentsConfiguration.menuFlexValues,
+      context: context,
+      isSearching: _isSearching,
+      searchingIndicator: searchingIndicator,
+      searchField: searchField,
+    ));
+
+    return _buildListViewMenu(searchBar);
   }
 
-  Widget _buildListViewMenu(Widget searchBar, Widget searchingIndicator) {
-    List<Widget> columnChildren = [];
-
-    if (widget.itemSearchMatcher != null) {
-      columnChildren.add(Expanded(
-        flex: _viewComponentBuilders.menuFlexValues.searchBar,
-        child: _viewComponentBuilders.searchBarBuilder(
-            context,
-            searchBar,
-            searchingIndicator,
-            _isSearching,
-            _viewComponentBuilders.menuFlexValues),
-      ));
-    }
-    Widget listView = _buildCurrentListListView();
-
-    columnChildren.add(
-      Expanded(
-        flex: _viewComponentBuilders.menuFlexValues.listView,
-        child: GestureDetector(
-          onTap: widget.onMenuEmptySpaceTap,
-          child: listView,
-        ),
-      ),
+  Widget _buildListViewMenu(final Widget searchBar) {
+    Widget listView = GestureDetector(
+      onTap: widget.onMenuEmptySpaceTap,
+      child: _buildCurrentListListView(),
     );
 
-    return Material(
-      color: Colors.transparent,
-      child: _viewComponentBuilders.menuContainerBuilder(
-        context,
-        ClipRect(
-          child: Column(
-            children: columnChildren,
-          ),
-        ),
-      ),
-    );
+    return _componentsConfiguration.menuComponent.build(MenuComponentData(
+      context: context,
+      menuFlexValues: _componentsConfiguration.menuFlexValues,
+      listView: listView,
+      searchBar: searchBar,
+      isSearchEnabled: widget.itemSearchMatcher != null,
+    ));
   }
 
   /// Builds a [Widget] that contains a [ListView] from the [_currentItemsList].
   Widget _buildCurrentListListView() {
-    return _viewComponentBuilders.listViewBuilder(context,
-        (BuildContext context, int index) {
-      return GestureDetector(
-        onTap: () => _onListItemTap(index),
-        child: widget.itemBuilder(context, _currentItemsList[index]),
-      );
-    }, _currentItemsList.length);
+    return _componentsConfiguration.listViewComponent
+        .build(ListViewComponentData(
+      context: context,
+      itemBuilder: (BuildContext context, int index) {
+        return GestureDetector(
+          onTap: () => _onListItemTap(index),
+          child: widget.itemBuilder(context, _currentItemsList[index]),
+        );
+      },
+      itemCount: _currentItemsList.length,
+    ));
   }
 
   /// Returns a [Future]<[List]<T>> after searching the list [widget.itemsList]
@@ -182,13 +180,15 @@ class _ListViewMenuState<T> extends State<ListViewMenu<T>> {
 
   void _performSearch(String searchString) {
     _searchList(searchString).then((List<T> result) {
-      if (searchString != _searchString) {
+      if (searchString != _searchString && mounted) {
         _performSearch(_searchString);
       }
-      setState(() {
-        _currentItemsList = result;
-        _isSearching = false;
-      });
+      if (mounted) {
+        setState(() {
+          _currentItemsList = result;
+          _isSearching = false;
+        });
+      }
     });
   }
 
@@ -199,6 +199,7 @@ class _ListViewMenuState<T> extends State<ListViewMenu<T>> {
   @override
   void dispose() {
     _searchTextController.dispose();
+    _componentsConfiguration.disposeListViewMenuComponents();
     super.dispose();
   }
 }

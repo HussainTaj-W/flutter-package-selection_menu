@@ -1,7 +1,7 @@
+import 'package:example/data/FlatColor.dart';
 import 'package:flutter/material.dart';
+import 'package:selection_menu/components.dart';
 import 'package:selection_menu/selection_menu.dart';
-
-import '../data/FlatColor.dart';
 
 // Reading previous Examples before this one is recommended.
 //
@@ -16,16 +16,16 @@ class ExampleApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: SelectionMenu<FlatColor>(
-        viewComponentBuilders:
-            DialogViewComponentBuilders<FlatColor>().copyWith(
-          listViewBuilder: _listViewBuilder,
-          // A builder that creates the ListView in which items are shown.
+        componentsConfiguration:
+            DialogComponentsConfiguration<FlatColor>().copyWith(
+          listViewComponent: ListViewComponent(builder: _listViewBuilder),
+          // A Component that builds the scrollable list in which items are shown.
           //
           // Defined below for brevity.
 
-          menuContainerBuilder: _menuContainerBuilder,
-          // A builder that wraps the menu with some Widget. The widget Card is
-          // used by the DialogComponentBuilders.
+          menuComponent: MenuComponent(builder: _menuBuilder),
+          // A Component that combines SearchBar and ListView.
+          // Much like how SearchBar combines SearchField and Searching Indicator.
           //
           // Defined below for brevity.
 
@@ -36,38 +36,49 @@ class ExampleApp extends StatelessWidget {
             minHeight: 200,
           ),
 
-          buttonBuilder: _buttonBuilder,
-          buttonFromItemBuilder: _buttonFromItemBuilder,
+          triggerComponent: TriggerComponent(builder: _triggerBuilder),
+          triggerFromItemComponent:
+              TriggerFromItemComponent(builder: _triggerFromItemBuilder),
         ),
         itemsList: colors,
         itemBuilder: this.itemBuilder,
         onItemSelected: this.onItemSelected,
-        showSelectedItemAsButton: true,
+        showSelectedItemAsTrigger: true,
       ),
     );
   }
 
-  static MenuContainerBuilder _menuContainerBuilder =
-      (BuildContext context, Widget menu) {
-    // menu is a Widget that contains Search Bar and ListView
+  static Widget _menuBuilder(MenuComponentData data) {
     return Card(
       elevation: 4,
       clipBehavior: Clip.hardEdge,
       child: Padding(
         padding: const EdgeInsets.all(5.0),
-        child: menu,
+        child: Column(
+          children: <Widget>[
+            data.isSearchEnabled
+                ? Expanded(
+                    child: data.searchBar,
+                    flex: data.menuFlexValues.searchBar,
+                  )
+                : Container(),
+            Expanded(
+              child: data.listView,
+              flex: data.menuFlexValues.listView,
+            ),
+          ],
+        ),
       ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(100),
       ),
     );
-  };
+  }
 
-  static ListViewBuilder _listViewBuilder =
-      (BuildContext context, ListViewItemBuilder itemBuilder, int itemCount) {
+  static Widget _listViewBuilder(ListViewComponentData data) {
     return ListView.separated(
-      itemBuilder: itemBuilder,
-      itemCount: itemCount,
+      itemBuilder: data.itemBuilder,
+      itemCount: data.itemCount,
       // It is important that you pass itemBuilder and itemCount to your ListView,
       // these are managed by SelectionMenu itself.
       separatorBuilder: (context, _) {
@@ -78,81 +89,29 @@ class ExampleApp extends StatelessWidget {
       },
       padding: EdgeInsets.symmetric(vertical: 50.0),
     );
-  };
+  }
 
   //region From Previous Example
 
-  static SearchBarBuilder _searchBarBuilder = (
-    BuildContext context,
-    Widget searchField,
-    Widget searchIndicator,
-    bool isSearching,
-    MenuFlexValues values, // Example 1_basic_06 explains this parameter.
-  ) {
-    List<Widget> list = [];
-    list.add(Expanded(
-      child: searchField,
-      flex: values.searchField,
-    ));
-    if (isSearching)
-      list.add(Expanded(
-        child: searchIndicator,
-        flex: values.searchingIndicator,
-      ));
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: list,
-    );
-  };
-
-  static SearchingIndicatorBuilder _searchingIndicatorBuilder =
-      (BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(5.0),
-      child: AspectRatio(
-        aspectRatio: 1,
-        child: CircularProgressIndicator(),
-      ),
-    );
-  };
-
-  static SearchFieldBuilder _searchFieldBuilder =
-      (BuildContext context, TextEditingController controller) {
-    return TextField(
-      controller: controller,
-      // Assigning controller this way is necessary. The controller listens to
-      // changes in the field and fires search process accordingly.
-      // This controller is created and managed by SelectionMenu Widget.
-
-      decoration: InputDecoration(
-        hintText: "Search Color...",
-      ),
-    );
-  };
-
-  static ButtonBuilder _buttonBuilder =
-      (BuildContext context, ToggleMenu toggleMenu) {
+  static Widget _triggerBuilder(TriggerComponentData data) {
     return RaisedButton(
-      onPressed: toggleMenu,
-      color: Colors.white,
+      onPressed: data.toggleMenu,
       child: Text("Select Color"),
     );
-  };
+  }
 
-  static ButtonFromItemBuilder<FlatColor> _buttonFromItemBuilder =
-      (BuildContext context, ToggleMenu toggleMenu, FlatColor color) {
+  static Widget _triggerFromItemBuilder(TriggerFromItemComponentData data) {
     return RaisedButton(
-      onPressed: toggleMenu,
-      color: Color(color.hex),
+      onPressed: data.toggleMenu,
+      color: Color(data.item.hex),
       child: Text(
-        color.name,
+        data.item.name,
         style: TextStyle(
           color: Colors.white,
         ),
       ),
     );
-  };
+  }
 
   Widget itemBuilder(BuildContext context, FlatColor color) {
     TextStyle textStyle = Theme.of(context).textTheme.body1;

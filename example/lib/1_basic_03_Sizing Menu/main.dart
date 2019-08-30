@@ -19,10 +19,10 @@ class ExampleApp extends StatelessWidget {
     // a Row that spans the screen width.
     // SelectionMenu has been placed in a Container with constraints to control
     // its width. However, this has its drawbacks, there can be an even better
-    // solution using ViewComponentBuilders.buttonFromItemBuilder.
-    // Builders will be demonstrated in later examples.
+    // solution using ComponentsConfiguration.TriggerFromItemComponent.
+    // ComponentsConfiguration and Builders will be demonstrated in later examples.
     //
-    // Note that SelectionMenu is just the button. The menu is an Overlay.
+    // Note that SelectionMenu is just the button (trigger). The menu is an Overlay.
 
     Size screenSize = MediaQuery.of(context).size;
 
@@ -35,7 +35,7 @@ class ExampleApp extends StatelessWidget {
           // Defaults to 1 which means 100%.
           //
           // maxWidthFraction, minWidthFraction, minHeightFraction are similar
-          // (min values default to 0).
+          // (min values default to 0 and max default to 1).
 
           minWidth: 300,
           // Defaults to null. These are flutter's logical pixel values.
@@ -47,7 +47,7 @@ class ExampleApp extends StatelessWidget {
           // Avoid bottom inset often caused by keyboard opening up.
           // Defaults to true, only shown for demonstration purposes.
           //
-          // Behavior depends on the ViewComponentBuilders used. Which will be
+          // Behavior depends on the ComponentsConfiguration used. Which will be
           // demonstrated in later examples.
 
           enforceMinWidthToMatchButton: true,
@@ -58,22 +58,22 @@ class ExampleApp extends StatelessWidget {
           // Preferred Width of the menu in logical pixels.
           //
           // Note: The menu always tries to be as wide and as high as possible in
-          // The DropDownViewBuilders and DialogViewBuilders.
+          // The DropdownComponentsConfiguration and DialogComponentsConfiguration.
           //
           // This value and MenuSizeConfiguration.height exist so that people who
-          // create their own ViewComponentBuilders.positionAndSizeBuilder can
-          // make use of it. ViewComponentBuilders are demonstrated in later examples.
+          // create their own ComponentsConfiguration.menuPositionAndSizeComponent can
+          // make use of it. ComponentsConfiguration is demonstrated in later examples.
 
           requestConstantHeight: true,
           // Defines that menu should try to take up constant height.
-          // However, it depends on the used ViewComponentBuilders how the size
+          // However, it depends on the used ComponentsConfiguration how the size
           // will react to this option.
-          //  ViewComponentBuilders are demonstrated in later examples.
+          //  ComponentsConfiguration is demonstrated in later examples.
         ),
         itemsList: colors,
         itemBuilder: this.itemBuilder,
         onItemSelected: this.onItemSelected,
-        showSelectedItemAsButton: true,
+        showSelectedItemAsTrigger: true,
         initiallySelectedItemIndex: 0,
         closeMenuInsteadOfPop: true,
         closeMenuOnEmptyMenuSpaceTap: false,

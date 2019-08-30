@@ -18,13 +18,12 @@ class ExampleApp extends StatelessWidget {
 
     return Container(
       child: SelectionMenu<FlatColor>(
-        // Animation Curves and Animations itself can be controlled by
-        // ViewComponentBuilders.animatedContainerBuilder. This will be demonstrated
-        // in later examples.
+        // Animations can be controlled by ComponentsConfiguration.animationComponent.
+        // This will be demonstrated in later examples.
         menuAnimationDurations: MenuAnimationDurations(
           forward: const Duration(seconds: 1),
           // Menu opening animation duration.
-          backward: const Duration(seconds: 1),
+          reverse: const Duration(seconds: 1),
           // Menu closing animation duration.
         ),
 
@@ -39,7 +38,7 @@ class ExampleApp extends StatelessWidget {
         itemsList: colors,
         itemBuilder: this.itemBuilder,
         onItemSelected: this.onItemSelected,
-        showSelectedItemAsButton: true,
+        showSelectedItemAsTrigger: true,
         initiallySelectedItemIndex: 0,
         closeMenuInsteadOfPop: true,
         closeMenuOnEmptyMenuSpaceTap: false,

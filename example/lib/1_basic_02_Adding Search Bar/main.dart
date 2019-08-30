@@ -16,8 +16,7 @@ class ExampleApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return SelectionMenu<FlatColor>(
       itemSearchMatcher: this.itemSearchMatcher,
-      // Defaults to null, meaning search is disabled, in which case search bar
-      // isn't shown.
+      // Defaults to null, meaning search is disabled.
       // ItemSearchMatcher takes a searchString and an Item (FontColor in this example)
       // Returns true if searchString can be used to describe Item, else false.
       // Defined below for the sake of brevity.
@@ -32,7 +31,7 @@ class ExampleApp extends StatelessWidget {
       itemsList: colors,
       itemBuilder: this.itemBuilder,
       onItemSelected: this.onItemSelected,
-      showSelectedItemAsButton: true,
+      showSelectedItemAsTrigger: true,
       initiallySelectedItemIndex: 0,
       closeMenuInsteadOfPop: true,
       closeMenuOnEmptyMenuSpaceTap: false,

@@ -1,7 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:selection_menu/selection_menu.dart';
-
-import 'view_component_builders.dart';
 
 /// Defines the size constraints of the Menu and behavior of Size in certain conditions.
 class MenuSizeConfiguration {
@@ -46,14 +43,14 @@ class MenuSizeConfiguration {
   /// Defines if the menu's minimum width should be forced to match the width of
   /// the button for the menu.
   ///
-  /// [ViewComponentBuilders.menuPositionAndSizeCalculator] has the ability to
+  /// [ComponentsConfiguration.menuPositionAndSizeComponent] has the ability to
   /// override this option's effects.
   final bool enforceMinWidthToMatchButton;
 
   /// Defines if the menu's maximum width should be forced to match the width of
   /// the button for the menu.
   ///
-  /// [ViewComponentBuilders.menuPositionAndSizeCalculator] has the ability to
+  /// [ComponentsConfiguration.menuPositionAndSizeComponent] has the ability to
   /// override this option's effects.
   final bool enforceMaxWidthToMatchButton;
 
@@ -61,14 +58,14 @@ class MenuSizeConfiguration {
   /// disregarding the available space and position.
   ///
   /// Behavior of this option depends on the implementation of
-  /// [ViewComponentBuilders.menuPositionAndSizeCalculator].
+  /// [ComponentsConfiguration.menuPositionAndSizeComponent].
   final bool requestConstantHeight;
 
   /// Defines if the menu should avoid Inset on the bottom, typically caused by
   /// the opened keyboard.
   ///
   /// Behavior of this option depends on the implementation of
-  /// [ViewComponentBuilders.menuPositionAndSizeCalculator].
+  /// [ComponentsConfiguration.menuPositionAndSizeComponent].
   final bool requestAvoidBottomInset;
 
   const MenuSizeConfiguration({
@@ -124,6 +121,22 @@ class MenuPositionAndSize {
             "Both positionOffset and constraints are required to place the menu in place");
 }
 
+/// Container for Button's Size and position.
+class TriggerPositionAndSize {
+  /// BoxConstraints for the menu.
+  Size size;
+
+  /// Offset of top-left corner Menu, where top-left corner of the **visible**
+  /// screen is the origin.
+  Offset position;
+
+  TriggerPositionAndSize({
+    @required this.size,
+    @required this.position,
+  }) : assert(size != null && position != null,
+            "Both position and size are required.");
+}
+
 /// Animation States the menu goes through during opening and closing.
 enum MenuAnimationState {
   OpeningStart,
@@ -154,11 +167,10 @@ class MenuAnimationDurations {
   final Duration forward;
 
   /// Duration of animation when menu is closing.
-  final Duration backward;
+  final Duration reverse;
 
-  const MenuAnimationDurations(
-      {@required this.forward, @required this.backward})
-      : assert(forward != null && backward != null,
-            """Both Durations are required. 
+  const MenuAnimationDurations({@required this.forward, @required this.reverse})
+      : assert(
+            forward != null && reverse != null, """Both Durations are required. 
             If there is no animation required then pass Duration.zero.""");
 }
