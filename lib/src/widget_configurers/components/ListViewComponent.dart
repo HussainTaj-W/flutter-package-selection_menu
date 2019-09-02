@@ -2,13 +2,15 @@ import 'package:flutter/widgets.dart';
 import 'package:selection_menu/selection_menu.dart';
 
 import 'common/ComponentAssertionMessages.dart';
+import 'common/ComponentData.dart';
 import 'common/WidgetBuildingComponent.dart';
 
 /// Carries the data that might be used in [ListViewComponent.builder].
-class ListViewComponentData {
+class ListViewComponentData implements ComponentData {
   /// [BuildContext] passed by [SelectionMenu] (internally by [ListViewMenu]).
   ///
   /// Must not be null.
+  @override
   final BuildContext context;
 
   /// Must not be null.
@@ -22,15 +24,27 @@ class ListViewComponentData {
   /// Must not be null.
   final int itemCount;
 
+  /// Must not be null.
+  final TickerProvider tickerProvider;
+
   ListViewComponentData({
     @required this.context,
     @required this.itemBuilder,
+    @required this.tickerProvider,
     @required this.itemCount,
-  }) : assert(context != null && itemBuilder != null && itemCount != null,
+    @required this.selectedItem,
+  }) : assert(
+            context != null &&
+                itemBuilder != null &&
+                itemCount != null &&
+                tickerProvider != null,
             ComponentAssertionMessages.nullAttributeInData);
+
+  @override
+  final dynamic selectedItem;
 }
 
-/// Defines a [Widget] builder that returns a [Widget] that acts as a scrollable
+/// Defines a Widget builder that returns a Widget that acts as a scrollable
 /// list populated by [ListViewComponentData.itemBuilder].
 ///
 /// **Example**
@@ -52,7 +66,7 @@ class ListViewComponentData {
 /// * [ListViewComponentData]
 /// * [ListViewBuilder]
 class ListViewComponent implements WidgetBuildingComponent {
-  /// A builder method to create the [Widget] that acts as a scrollable list,
+  /// A builder method to create the Widget that acts as a scrollable list,
   /// populated by [ListViewComponentData.itemBuilder].
   ///
   /// See also:
@@ -76,7 +90,7 @@ class ListViewComponent implements WidgetBuildingComponent {
   }
 }
 
-/// This typedef defines a method that returns a [Widget] that acts as a scrollable
+/// This typedef defines a method that returns a Widget that acts as a scrollable
 /// list. This list is populated by [ListViewComponentData.itemBuilder].
 ///
 /// Used by [ListViewComponent] as [ListViewComponent.builder].

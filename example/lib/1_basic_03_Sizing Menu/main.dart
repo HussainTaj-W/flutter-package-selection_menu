@@ -15,12 +15,12 @@ class ExampleApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Since we have SelectionMenu.showSelectedItemAsButton as true,
-    // The SelectionMenu.itemBuilder is used to create the button, which is
+    // The SelectionMenu.itemBuilder is used to create the button(trigger), which is
     // a Row that spans the screen width.
     // SelectionMenu has been placed in a Container with constraints to control
     // its width. However, this has its drawbacks, there can be an even better
-    // solution using ComponentsConfiguration.TriggerFromItemComponent.
-    // ComponentsConfiguration and Builders will be demonstrated in later examples.
+    // solution using ComponentsConfiguration.triggerFromItemComponent.
+    // ComponentsConfiguration and Components will be demonstrated in later examples.
     //
     // Note that SelectionMenu is just the button (trigger). The menu is an Overlay.
 
@@ -32,16 +32,18 @@ class ExampleApp extends StatelessWidget {
         menuSizeConfiguration: MenuSizeConfiguration(
           maxHeightFraction: 0.5,
           // Maximum Fraction of screen height that the menu should take.
-          // Defaults to 1 which means 100%.
+          // Defaults to null.
           //
           // maxWidthFraction, minWidthFraction, minHeightFraction are similar
-          // (min values default to 0 and max default to 1).
+          maxWidthFraction: 1.0,
 
-          minWidth: 300,
+          minWidth: 100,
           // Defaults to null. These are flutter's logical pixel values.
           //
           // maxWidth, minHeight, maxHeight are similar.
-          // These values take preference over the fraction based counterparts.
+          // These values take preference over the fraction based counterparts,
+          // when size is calculated.
+          minHeight: 200,
 
           requestAvoidBottomInset: true,
           // Avoid bottom inset often caused by keyboard opening up.
@@ -50,19 +52,20 @@ class ExampleApp extends StatelessWidget {
           // Behavior depends on the ComponentsConfiguration used. Which will be
           // demonstrated in later examples.
 
-          enforceMinWidthToMatchButton: true,
+          enforceMinWidthToMatchTrigger: true,
           // Defaults to false,
           // enforceMaxWidthToMatchButton is similar.
 
           width: 100,
           // Preferred Width of the menu in logical pixels.
           //
+          // This value is preferred over its counterpart widthFraction.
+          //
           // Note: The menu always tries to be as wide and as high as possible in
           // The DropdownComponentsConfiguration and DialogComponentsConfiguration.
-          //
-          // This value and MenuSizeConfiguration.height exist so that people who
-          // create their own ComponentsConfiguration.menuPositionAndSizeComponent can
-          // make use of it. ComponentsConfiguration is demonstrated in later examples.
+
+          widthFraction: 0.1,
+          // Preferred width in screen fraction.
 
           requestConstantHeight: true,
           // Defines that menu should try to take up constant height.
@@ -91,10 +94,10 @@ class ExampleApp extends StatelessWidget {
   }
 
   Widget itemBuilder(BuildContext context, FlatColor color) {
-    TextStyle textStyle = Theme.of(context).textTheme.body1;
+    TextStyle textStyle = Theme.of(context).textTheme.title;
 
     return Padding(
-      padding: EdgeInsets.all(5.0),
+      padding: EdgeInsets.all(10.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -102,14 +105,14 @@ class ExampleApp extends StatelessWidget {
           ClipOval(
             child: Container(
               color: Color(color.hex),
-              height: 20,
-              width: 20,
+              height: 30,
+              width: 30,
             ),
           ),
           Flexible(
             fit: FlexFit.tight,
             child: Padding(
-              padding: EdgeInsets.only(left: 3),
+              padding: EdgeInsets.only(left: 10.0),
               child: Text(
                 color.name,
                 style: textStyle,
@@ -143,8 +146,11 @@ void main() => runApp(
               .redAccent, // Used by the default Dialog Style of SelectionMenu
         ),
         home: Material(
-          child: Center(
-            child: ExampleApp(),
+          child: Container(
+            color: Colors.black26,
+            child: Center(
+              child: ExampleApp(),
+            ),
           ),
         ),
       ),

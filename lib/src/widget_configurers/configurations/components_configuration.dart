@@ -1,94 +1,92 @@
 import 'package:flutter/widgets.dart';
 import 'package:selection_menu/selection_menu.dart';
 import 'package:selection_menu/src/widget_configurers/components/components.dart';
-import 'package:selection_menu/src/widget_configurers/configurations/menu_configuration_classes.dart';
+import 'package:selection_menu/src/widget_configurers/menu_configuration_classes.dart';
 
 /// A base class that define the appearance of [SelectionMenu] and [ListViewMenu],
-/// where type parameter T is the same as the type parameter of [SelectionMenu]
+/// where type parameter T should be the same as the type parameter of [SelectionMenu]
 /// or [ListViewMenu].
+///
+/// It is simply a collection of [components] and configurations.
 ///
 /// A Component is a class with a builder method that returns a Widget,
 /// or Position and Size information, or simply a class that contains data related
 /// to layout.
 ///
+/// See the library [components] for how components are structured.
+///
 /// This class can be subclassed. The subclass would assign values to the instance
-/// variables.
-/// The subclasses can then be passed to [SelectionMenu.componentsConfiguration].
+/// variables of [ComponentsConfiguration].
+/// The subclasses can then be passed to [SelectionMenu.componentsConfiguration]
+/// or [ListViewMenu.componentsConfiguration].
 ///
 /// Two predefined subclasses are:
 /// * [DialogComponentsConfiguration] a dialog or popup style appearance.
 /// * [DropdownComponentsConfiguration] a dropdown style appearance.
 ///
-/// ## Terms to Know
-/// In the context of this library the following visual component are described as:
-///
-/// * SearchField: Any [Widget] that allows text editing.
-/// * SearchingIndicator: Any [Widget] that indicates that search is in progress.
-/// * SearchBar: Any [Widget] that combines the SearchField and SearchingIndicator.
-/// * ListView: Any [Widget] that incorporates a [ListView], the list of items.
-/// * Menu or MenuContainer: Any [Widget] that lays out and/or wraps SearchBar and ListView.
-/// * AnimatedContainer: Any [Widget] that provides implicit animation(s) for Menu.
-/// * Button: Any [Widget] that, when pressed, opens or closes the Menu.
+/// TODO: add image.
 class ComponentsConfiguration<T> {
-  /// Defines a builder that returns a [Widget] where a user can input text.
+  /// Defines a builder that returns a Widget where a user can input text.
   ///
-  /// See Also:
-  /// * [SearchFieldComponent].
-  /// * [SearchFieldBuilder].
+  /// See [SearchFieldComponent].
   final SearchFieldComponent searchFieldComponent;
 
-  /// Returns a [Widget] that wraps menu content (which are search field, searching indicator and
-  /// listView).
+  /// Returns a Widget that wraps [SearchBarComponent] and [ListViewMenu].
   ///
-  /// See [MenuContainerBuilder] for more details.
+  /// See [MenuComponent].
   final MenuComponent menuComponent;
 
-  /// Returns a [Widget] that acts as a button to open/close menu.
+  /// Returns a Widget that acts as a button(trigger) to open/close menu.
   ///
-  /// See [ButtonBuilder] for more details.
+  /// See [TriggerComponent].
   final TriggerComponent triggerComponent;
 
-  /// Returns a [Widget] that acts as a button to open/close menu, where the button
-  /// reflects the currently selected item.
+  /// Returns a Widget that acts as a trigger(like a button for example) to
+  /// open/close menu, where the trigger reflects the currently selected item.
   ///
-  /// See [ButtonFromItemBuilder] for more details.
+  /// See [TriggerFromItemComponent] for more details.
   final TriggerFromItemComponent<T> triggerFromItemComponent;
 
   /// Returns a [MenuSizeAndPosition] after performing some calculation.
   ///
-  /// See [MenuPositionAndSizeCalculator] for more details.
+  /// See [MenuPositionAndSizeComponent].
   final MenuPositionAndSizeComponent menuPositionAndSizeComponent;
 
-  /// Returns a [Widget] that acts as an Indicator for when search is in progress.
+  /// Returns a Widget that acts as an Indicator for when search is in progress.
   ///
-  /// See [SearchingIndicatorBuilder] for more details.
+  /// See [SearchingIndicatorComponent].
   final SearchingIndicatorComponent searchingIndicatorComponent;
 
-  /// Returns a [Widget] that supports implicit animations through itself
-  /// or through its descendants.
+  /// Returns a container Widget that supports animation.
   ///
-  /// See [MenuAnimatedContainerBuilder] for more details.
+  /// See [AnimationComponent].
   final AnimationComponent animationComponent;
 
-  /// Returns a [ListView] using a constructor that takes a [IndexedWidgetBuilder].
+  /// Returns a Widget which acts as a scrollable list.
   ///
-  /// See [ListViewBuilder] for more details.
+  /// See [ListViewComponent].
   final ListViewComponent listViewComponent;
 
-  /// Returns a [Widget] that wraps a search field and and searching indicator.
+  /// Returns a Widget that wraps [SearchingIndicatorComponent] and
+  /// [SearchFieldComponent].
   ///
-  /// See [SearchBarBuilder] for more details.
+  /// See [SearchBarComponent].
   final SearchBarComponent searchBarComponent;
 
-  /// Defines flex values for various view component_builders ([Widget]s).
+  /// Defines flex values for some components.
   ///
-  /// See [MenuFlexValues] for more details.
+  /// See [MenuFlexValues].
   final MenuFlexValues menuFlexValues;
 
-  /// Defines the size and behaviour of size in various conditions.
+  /// Defines the size and behaviour of menu in various conditions.
   ///
-  /// See [MenuSizeConfiguration] for more details.
+  /// Used by [SelectionMenu] to size its [ListViewMenu].
+  ///
+  /// See [MenuSizeConfiguration].
   final MenuSizeConfiguration menuSizeConfiguration;
+
+  List<ComponentLifeCycleMixin> _selectMenuComponents;
+  List<ComponentLifeCycleMixin> _listViewMenuComponents;
 
   ComponentsConfiguration({
     @required this.searchFieldComponent,
@@ -120,10 +118,12 @@ class ComponentsConfiguration<T> {
             and provide those sepecific builders in the constructor. 
             Furthermore, if you wish to pick several components 
             from different Builder Classes, you may use the copyWith method.
-            """);
+            """) {
+    _initLists();
+  }
 
-  /// Returns a [ComponentsConfiguration] constructed from the values of this, overwritten
-  /// by the non-null arguments passed to the method.
+  /// Returns a [ComponentsConfiguration] constructed from the values of this,
+  /// overwritten by the non-null arguments passed to the method.
   ComponentsConfiguration<T> copyWith({
     SearchFieldComponent searchFieldComponent,
     TriggerComponent triggerComponent,
@@ -157,62 +157,62 @@ class ComponentsConfiguration<T> {
   }
 
   void initSelectionMenuComponents() {
-    if (triggerComponent is ComponentLifeCycleMixin) {
-      (triggerComponent as ComponentLifeCycleMixin).init();
-    }
-    if (triggerFromItemComponent is ComponentLifeCycleMixin) {
-      (triggerFromItemComponent as ComponentLifeCycleMixin).init();
-    }
-    if (animationComponent is ComponentLifeCycleMixin) {
-      (animationComponent as ComponentLifeCycleMixin).init();
-    }
+    _selectMenuComponents.forEach((x) {
+      x.init();
+    });
   }
 
   void initListViewMenuComponents() {
-    if (searchFieldComponent is ComponentLifeCycleMixin) {
-      (searchFieldComponent as ComponentLifeCycleMixin).init();
-    }
-    if (menuComponent is ComponentLifeCycleMixin) {
-      (menuComponent as ComponentLifeCycleMixin).init();
-    }
-    if (searchingIndicatorComponent is ComponentLifeCycleMixin) {
-      (searchingIndicatorComponent as ComponentLifeCycleMixin).init();
-    }
-    if (listViewComponent is ComponentLifeCycleMixin) {
-      (listViewComponent as ComponentLifeCycleMixin).init();
-    }
-    if (searchBarComponent is ComponentLifeCycleMixin) {
-      (searchBarComponent as ComponentLifeCycleMixin).init();
-    }
+    _listViewMenuComponents.forEach((x) {
+      x.init();
+    });
   }
 
   void disposeSelectionMenuComponents() {
-    if (triggerComponent is ComponentLifeCycleMixin) {
-      (triggerComponent as ComponentLifeCycleMixin).dispose();
-    }
-    if (triggerFromItemComponent is ComponentLifeCycleMixin) {
-      (triggerFromItemComponent as ComponentLifeCycleMixin).dispose();
-    }
-    if (animationComponent is ComponentLifeCycleMixin) {
-      (animationComponent as ComponentLifeCycleMixin).dispose();
-    }
+    _selectMenuComponents.forEach((x) {
+      x.dispose();
+    });
   }
 
   void disposeListViewMenuComponents() {
+    _listViewMenuComponents.forEach((x) {
+      x.dispose();
+    });
+  }
+
+  void _initLists() {
+    _selectMenuComponents = [];
+    _listViewMenuComponents = [];
+
     if (searchFieldComponent is ComponentLifeCycleMixin) {
-      (searchFieldComponent as ComponentLifeCycleMixin).dispose();
+      _listViewMenuComponents
+          .add(searchFieldComponent as ComponentLifeCycleMixin);
     }
     if (menuComponent is ComponentLifeCycleMixin) {
-      (menuComponent as ComponentLifeCycleMixin).dispose();
+      _listViewMenuComponents.add(menuComponent as ComponentLifeCycleMixin);
     }
     if (searchingIndicatorComponent is ComponentLifeCycleMixin) {
-      (searchingIndicatorComponent as ComponentLifeCycleMixin).dispose();
+      _listViewMenuComponents
+          .add(searchingIndicatorComponent as ComponentLifeCycleMixin);
     }
     if (listViewComponent is ComponentLifeCycleMixin) {
-      (listViewComponent as ComponentLifeCycleMixin).dispose();
+      _listViewMenuComponents.add(listViewComponent as ComponentLifeCycleMixin);
     }
     if (searchBarComponent is ComponentLifeCycleMixin) {
-      (searchBarComponent as ComponentLifeCycleMixin).dispose();
+      _listViewMenuComponents
+          .add(searchBarComponent as ComponentLifeCycleMixin);
+    }
+
+    if (triggerComponent is ComponentLifeCycleMixin) {
+      _selectMenuComponents.add(triggerComponent as ComponentLifeCycleMixin);
+    }
+    if (triggerFromItemComponent != null &&
+        triggerFromItemComponent is ComponentLifeCycleMixin) {
+      _selectMenuComponents
+          .add(triggerFromItemComponent as ComponentLifeCycleMixin);
+    }
+    if (animationComponent is ComponentLifeCycleMixin) {
+      _selectMenuComponents.add(animationComponent as ComponentLifeCycleMixin);
     }
   }
 }

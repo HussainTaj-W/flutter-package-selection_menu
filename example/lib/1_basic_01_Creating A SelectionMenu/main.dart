@@ -10,8 +10,11 @@ void main() => runApp(
               .redAccent, // Used by the default Dialog Style of SelectionMenu
         ),
         home: Material(
-          child: Center(
-            child: ExampleApp(),
+          child: Container(
+            color: Colors.black26,
+            child: Center(
+              child: ExampleApp(),
+            ),
           ),
         ),
       ),
@@ -30,10 +33,10 @@ class ExampleApp extends StatelessWidget {
       itemBuilder: this.itemBuilder,
       // A callback to return a widget created from an Item (type FlatColor in this example.)
       // Since SelectionMenu.showSelectedItemAsButton is true (see below), this
-      // itemBuilder will be used to create the button as well as the items.
+      // itemBuilder will be used to create the button(trigger) as well as the items.
       //
-      // We will later learn a better alternative to create a button using
-      // , in the upcoming examples.
+      // We will later learn a better alternative to create a button(trigger) using
+      // ComponentsConfiguration, in the upcoming examples.
       //
       // Function defined below for the sake of brevity.
 
@@ -45,9 +48,9 @@ class ExampleApp extends StatelessWidget {
       // Defaults to false. When true, shows the selected Item as the button/trigger.
 
       initiallySelectedItemIndex: 0,
-      // Defaults to null, which is valid and means that a default button will be
-      // shown instead of an item. This default button can be customized by using
-      // ViewComponentBuilders.buttonBuilder as it will be demonstrated in
+      // Defaults to null, which is valid and means that a default trigger will be
+      // shown instead of an item. This default (trigger)button can be customized by using
+      // ComponentsConfiguration as it will be demonstrated in
       // later examples.
 
       closeMenuInsteadOfPop: true,
@@ -59,14 +62,18 @@ class ExampleApp extends StatelessWidget {
       closeMenuWhenTappedOutside: true,
       // Defaults to true, used only for demonstration purposes.
       // Defines if tapping outside the menu should close it.
+
+      closeMenuOnItemSelected: true,
+      // Defaults to true, used only for demonstration purposes.
+      // Defines if the menu should close if the user has selected an item.
     );
   }
 
   Widget itemBuilder(BuildContext context, FlatColor color) {
-    TextStyle textStyle = Theme.of(context).textTheme.body1;
+    TextStyle textStyle = Theme.of(context).textTheme.title;
 
     return Padding(
-      padding: EdgeInsets.all(5.0),
+      padding: EdgeInsets.all(10.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -74,14 +81,14 @@ class ExampleApp extends StatelessWidget {
           ClipOval(
             child: Container(
               color: Color(color.hex),
-              height: 20,
-              width: 20,
+              height: 30,
+              width: 30,
             ),
           ),
           Flexible(
             fit: FlexFit.tight,
             child: Padding(
-              padding: EdgeInsets.only(left: 3),
+              padding: EdgeInsets.only(left: 10.0),
               child: Text(
                 color.name,
                 style: textStyle,

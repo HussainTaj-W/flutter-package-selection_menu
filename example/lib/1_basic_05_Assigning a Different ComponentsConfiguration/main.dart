@@ -1,7 +1,7 @@
+import 'package:example/data/FlatColor.dart';
 import 'package:flutter/material.dart';
+import 'package:selection_menu/components_configurations.dart';
 import 'package:selection_menu/selection_menu.dart';
-
-import '../data/FlatColor.dart';
 
 // Reading previous Examples before this one is recommended.
 //
@@ -15,7 +15,6 @@ class ExampleApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
-
     return Container(
       child: SelectionMenu<FlatColor>(
         // ComponentsConfiguration is the core of the high customizability this
@@ -23,22 +22,20 @@ class ExampleApp extends StatelessWidget {
         //
         // The default ComponentsConfiguration is DialogComponentsConfiguration.
         // A second one, and the only other provided predefined so far, is
-        // DropdownComponentsConfiguration, which display a dropdown style menu.
+        // DropdownComponentsConfiguration, which displays a dropdown style menu.
         componentsConfiguration: DropdownComponentsConfiguration<FlatColor>(
           // ComponentsConfiguration take a MenuSizeConfiguration too.
           // If you are providing a ComponentsConfiguration and a MenuSizeConfiguration,
           // you must provide the size configuration inside the ComponentsConfiguration.
           menuSizeConfiguration: MenuSizeConfiguration(
-            maxHeightFraction: 0.5,
+            maxHeightFraction: 0.8,
+            minHeightFraction: 0.3,
+            maxWidthFraction: 0.8,
+            minWidthFraction: 0.3,
             requestAvoidBottomInset: true,
-            enforceMinWidthToMatchButton: true,
-            enforceMaxWidthToMatchButton: true,
+            enforceMinWidthToMatchTrigger: true,
+            requestConstantHeight: true,
           ),
-        ),
-
-        menuAnimationDurations: MenuAnimationDurations(
-          forward: const Duration(seconds: 1),
-          reverse: const Duration(seconds: 1),
         ),
 
         itemsList: colors,
@@ -59,10 +56,10 @@ class ExampleApp extends StatelessWidget {
   //region From Previous Example
 
   Widget itemBuilder(BuildContext context, FlatColor color) {
-    TextStyle textStyle = Theme.of(context).textTheme.body1;
+    TextStyle textStyle = Theme.of(context).textTheme.title;
 
     return Padding(
-      padding: EdgeInsets.all(5.0),
+      padding: EdgeInsets.all(10.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -70,14 +67,14 @@ class ExampleApp extends StatelessWidget {
           ClipOval(
             child: Container(
               color: Color(color.hex),
-              height: 20,
-              width: 20,
+              height: 30,
+              width: 30,
             ),
           ),
           Flexible(
             fit: FlexFit.tight,
             child: Padding(
-              padding: EdgeInsets.only(left: 3),
+              padding: EdgeInsets.only(left: 10.0),
               child: Text(
                 color.name,
                 style: textStyle,
@@ -104,7 +101,7 @@ class ExampleApp extends StatelessWidget {
     print(color.name);
   }
 
-  //endregion
+//endregion
 }
 
 //region From Previous Example
@@ -115,10 +112,13 @@ void main() => runApp(
               .redAccent, // Used by the default Dialog Style of SelectionMenu
         ),
         home: Material(
-          child: SafeArea(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: ExampleApp(),
+          child: Container(
+            color: Colors.black26,
+            child: SafeArea(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: ExampleApp(),
+              ),
             ),
           ),
         ),

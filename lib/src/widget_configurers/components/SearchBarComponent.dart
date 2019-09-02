@@ -1,16 +1,18 @@
 import 'package:flutter/widgets.dart';
 import 'package:selection_menu/selection_menu.dart';
 import 'package:selection_menu/src/widget/listview_menu.dart';
-import 'package:selection_menu/src/widget_configurers/configurations/menu_configuration_classes.dart';
+import 'package:selection_menu/src/widget_configurers/menu_configuration_classes.dart';
 
 import 'common/ComponentAssertionMessages.dart';
+import 'common/ComponentData.dart';
 import 'common/WidgetBuildingComponent.dart';
 
 /// Carries the data that might be used in [SearchBarComponent.builder].
-class SearchBarComponentData {
+class SearchBarComponentData implements ComponentData {
   /// [BuildContext] passed by [SelectionMenu] (internally by [ListViewMenu]).
   ///
   /// Must not be null.
+  @override
   final BuildContext context;
 
   /// The search field built by a [SearchBarComponent.builder].
@@ -40,22 +42,30 @@ class SearchBarComponentData {
   /// * [MenuFlexValues].
   final MenuFlexValues menuFlexValues;
 
+  /// Must not be null.
+  final TickerProvider tickerProvider;
+
   SearchBarComponentData({
     @required this.context,
     @required this.searchField,
     @required this.isSearching,
     @required this.menuFlexValues,
     @required this.searchingIndicator,
+    @required this.tickerProvider,
+    @required this.selectedItem,
   }) : assert(
             context != null &&
                 searchingIndicator != null &&
                 menuFlexValues != null &&
                 isSearching != null &&
-                searchField != null,
+                searchField != null &&
+                tickerProvider != null,
             ComponentAssertionMessages.nullAttributeInData);
+  @override
+  final dynamic selectedItem;
 }
 
-/// Defines a Search Bar [Widget] builder. A Search Bar is any Widget that
+/// Defines a Search Bar Widget builder. A Search Bar is any Widget that
 /// wraps two Widgets [SearchBarComponentData.searchField] and
 /// [SearchBarComponentData.searchingIndicator].
 ///
@@ -87,7 +97,7 @@ class SearchBarComponentData {
 /// * [SearchBarComponentData]
 /// * [SearchBarBuilder]
 class SearchBarComponent implements WidgetBuildingComponent {
-  /// A builder method to create the Search Bar [Widget].
+  /// A builder method to create the Search Bar Widget.
   ///
   /// See also:
   /// * [SearchBarBuilder].
@@ -110,7 +120,7 @@ class SearchBarComponent implements WidgetBuildingComponent {
   }
 }
 
-/// This typedef defines a method that returns a [Widget] that wraps
+/// This typedef defines a method that returns a Widget that wraps
 /// [SearchBarComponentData.searchField] and [SearchBarComponentData.searchingIndicator]
 /// in a Widget, defining their layout.
 ///

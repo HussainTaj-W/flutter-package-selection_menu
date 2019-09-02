@@ -2,13 +2,15 @@ import 'package:flutter/widgets.dart';
 import 'package:selection_menu/selection_menu.dart';
 
 import 'common/ComponentAssertionMessages.dart';
+import 'common/ComponentData.dart';
 import 'common/WidgetBuildingComponent.dart';
 
 /// Carries the data that might be used in [SearchFieldComponent.builder].
-class SearchFieldComponentData {
+class SearchFieldComponentData implements ComponentData {
   /// [BuildContext] passed by [SelectionMenu] (internally by [ListViewMenu]).
   ///
   /// Must not be null.
+  @override
   final BuildContext context;
 
   /// The controller is assigned a listener and every time there is a change,
@@ -20,14 +22,24 @@ class SearchFieldComponentData {
   /// Must not be null.
   final TextEditingController searchTextController;
 
+  /// Must not be null.
+  final TickerProvider tickerProvider;
+
   SearchFieldComponentData({
     @required this.context,
     @required this.searchTextController,
-  }) : assert(context != null && searchTextController != null,
+    @required this.tickerProvider,
+    @required this.selectedItem,
+  }) : assert(
+            context != null &&
+                searchTextController != null &&
+                tickerProvider != null,
             ComponentAssertionMessages.nullAttributeInData);
+  @override
+  final dynamic selectedItem;
 }
 
-/// Defines a Search Field [Widget] builder. A Search Field is any Widget that
+/// Defines a Search Field Widget builder. A Search Field is any Widget that
 /// allows to edit text.
 ///
 /// **Example**
@@ -49,8 +61,8 @@ class SearchFieldComponentData {
 /// * [SearchFieldComponentData]
 /// * [SearchFieldBuilder]
 class SearchFieldComponent implements WidgetBuildingComponent {
-  /// A builder method to create the Search Field [Widget]. A search field
-  /// is any [Widget] that allows editing text.
+  /// A builder method to create the Search Field Widget. A search field
+  /// is any Widget that allows editing text.
   ///
   /// See also:
   /// * [SearchFieldBuilder].
@@ -73,7 +85,7 @@ class SearchFieldComponent implements WidgetBuildingComponent {
   }
 }
 
-/// This typedef defines a method that returns a [Widget] where a user can enter
+/// This typedef defines a method that returns a Widget where a user can enter
 /// text.
 ///
 /// Used by [SearchFieldComponent] as [SearchFieldComponent.builder].

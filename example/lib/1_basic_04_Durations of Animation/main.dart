@@ -18,7 +18,7 @@ class ExampleApp extends StatelessWidget {
 
     return Container(
       child: SelectionMenu<FlatColor>(
-        // Animations can be controlled by ComponentsConfiguration.animationComponent.
+        // Animations can be created and controlled by ComponentsConfiguration.animationComponent.
         // This will be demonstrated in later examples.
         menuAnimationDurations: MenuAnimationDurations(
           forward: const Duration(seconds: 1),
@@ -29,9 +29,11 @@ class ExampleApp extends StatelessWidget {
 
         menuSizeConfiguration: MenuSizeConfiguration(
           maxHeightFraction: 0.5,
+          maxWidthFraction: 1.0,
           minWidth: 300,
+          minHeight: 200,
           requestAvoidBottomInset: true,
-          enforceMinWidthToMatchButton: true,
+          enforceMinWidthToMatchTrigger: true,
           width: 100,
           requestConstantHeight: true,
         ),
@@ -57,10 +59,10 @@ class ExampleApp extends StatelessWidget {
   }
 
   Widget itemBuilder(BuildContext context, FlatColor color) {
-    TextStyle textStyle = Theme.of(context).textTheme.body1;
+    TextStyle textStyle = Theme.of(context).textTheme.title;
 
     return Padding(
-      padding: EdgeInsets.all(5.0),
+      padding: EdgeInsets.all(10.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -68,14 +70,14 @@ class ExampleApp extends StatelessWidget {
           ClipOval(
             child: Container(
               color: Color(color.hex),
-              height: 20,
-              width: 20,
+              height: 30,
+              width: 30,
             ),
           ),
           Flexible(
             fit: FlexFit.tight,
             child: Padding(
-              padding: EdgeInsets.only(left: 3),
+              padding: EdgeInsets.only(left: 10.0),
               child: Text(
                 color.name,
                 style: textStyle,
@@ -109,8 +111,11 @@ void main() => runApp(
               .redAccent, // Used by the default Dialog Style of SelectionMenu
         ),
         home: Material(
-          child: Center(
-            child: ExampleApp(),
+          child: Container(
+            color: Colors.black26,
+            child: Center(
+              child: ExampleApp(),
+            ),
           ),
         ),
       ),

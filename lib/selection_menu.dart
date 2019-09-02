@@ -1,10 +1,9 @@
 /// A highly customizable Menu (a list of items) to select an item from.
 ///
-/// This library exports two Widget, [SelectionMenu] and [ListViewMenu].
-/// * [ListViewMenu] a Menu of items to select from, uses a List view.
-///   See [ListViewMenu] for more details.
-/// * [SelectionMenu] - opens and closes a menu by the press of a button/Widget.
-///   Internally uses [ListViewMenu]. See [SelectionMenu] for more details.
+/// This library exports two Widgets, [SelectionMenu] and [ListViewMenu].
+/// * [ListViewMenu] a list of items to select from.
+/// * [SelectionMenu] - opens and closes a [ListViewMenu] by the press of a
+///   button/Widget/trigger.
 ///
 /// TODO add links to images with terms.
 ///
@@ -25,12 +24,9 @@
 ///     return Text(item);
 ///   },
 ///   // Select the style of menu you wish to use.
-///   viewComponentBuilders: DialogViewComponentBuilders<String>();
+///   componentsConfiguration: DialogComponentConfiguration<String>();
 /// );
 /// ```
-///
-/// There are several options to discover.
-/// See [SelectionMenu] for details.
 ///
 /// TODo Explanations of terminology used throughout the library.
 /// todo A couple of complete code samples that walk through using the API.
@@ -39,10 +35,13 @@
 ///
 /// ## Customization
 ///
-/// There are various customization options. The most important class is the
-/// [ComponentsConfiguration]. This base class contains methods as instance variables
-/// that define the visual appearance of the menu list and button.
-/// SubClasses add definitions of these instance variables.
+/// Every part of [SelectionMenu] and [ListViewMenu] is a Component.
+/// These components are defined in the library [components].
+/// These are basically builders of Widgets.
+///
+/// All components are collected under a class [ComponentsConfiguration].
+/// It resides in the [configurations] library which also defines some predefined
+/// subclasses, or implementations of [ComponentsConfiguration].
 ///
 /// There are two predefined subclasses of [ComponentsConfiguration].
 /// * [DropdownComponentsConfiguration] defines a dropdown style appearance and behavior.
@@ -51,18 +50,20 @@
 /// [MenuSizeConfiguration] used as [ComponentsConfiguration.menuSizeConfiguration]
 /// defines the Size constraints of the Menu and behaviour in different conditions.
 ///
-/// See [ComponentsConfiguration] for details.
-///
 /// TODO add docs.
 /// TODO add github repo.
 /// TODO add examples.
+///
+/// See also:
+/// * [SelectionMenu].
+/// * [ListViewMenu].
+/// * [ComponentsConfiguration].
 
 library selection_menu;
 
+import './components_configurations.dart';
 import './src/widget/listview_menu.dart';
-import './src/widget/selection_menu.dart';
-import './src/widget_configurers/configurations/configurations.dart';
 
 export './src/widget/listview_menu.dart';
 export './src/widget/selection_menu.dart';
-export './src/widget_configurers/configurations/configurations.dart';
+export './src/widget_configurers/menu_configuration_classes.dart';

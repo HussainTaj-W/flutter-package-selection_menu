@@ -1,18 +1,21 @@
 import 'package:flutter/widgets.dart';
+import 'package:selection_menu/components_configurations.dart';
 import 'package:selection_menu/selection_menu.dart';
-import 'package:selection_menu/src/widget_configurers/configurations/menu_configuration_classes.dart';
+import 'package:selection_menu/src/widget_configurers/menu_configuration_classes.dart';
 
 import 'common/ComponentAssertionMessages.dart';
+import 'common/ComponentData.dart';
 import 'common/WidgetBuildingComponent.dart';
 
 /// Data that might be used in [AnimationComponent.builder].
-class AnimationComponentData {
+class AnimationComponentData implements ComponentData {
   /// [BuildContext] passed by [SelectionMenu].
   ///
   /// Must not be null.
+  @override
   final BuildContext context;
 
-  /// The [Widget] this component has to animate, typically it is the Menu.
+  /// The Widget this component has to animate, typically it is the Menu.
   ///
   /// Must not be null.
   final Widget child;
@@ -42,6 +45,7 @@ class AnimationComponentData {
     @required this.menuAnimationDurations,
     @required this.menuAnimationState,
     @required this.child,
+    @required this.selectedItem,
   }) : assert(
             context != null &&
                 constraints != null &&
@@ -50,9 +54,17 @@ class AnimationComponentData {
                 child != null &&
                 menuAnimationDurations != null,
             ComponentAssertionMessages.nullAttributeInData);
+
+  @override
+  final dynamic selectedItem;
 }
 
-/// Defines builder that returns a [Widget] that is capable of animation.
+/// Defines builder that returns a Widget acts as a container that is capable
+/// of animation.
+///
+/// Additionally, this Component is responsible for enforcing the menu
+/// constraints, pre-calculated constraints by [MenuPositionAndSizeComponent]
+/// are passed as [AnimationComponentData.constraints].
 ///
 /// Implicit animations work well. However, explicit animation might require
 /// this component to be extended so that more instance variables can be introduced.
@@ -105,7 +117,7 @@ class AnimationComponent implements WidgetBuildingComponent {
   }
 }
 
-/// This typedef defines a method that returns a [Widget] that is capable of
+/// This typedef defines a method that returns a Widget that is capable of
 /// animation.
 ///
 /// Used by [AnimationComponent] as [AnimationComponent.builder].

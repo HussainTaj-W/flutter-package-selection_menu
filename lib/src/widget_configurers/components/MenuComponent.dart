@@ -1,19 +1,21 @@
 import 'package:flutter/widgets.dart';
 import 'package:selection_menu/selection_menu.dart';
 import 'package:selection_menu/src/widget/listview_menu.dart';
-import 'package:selection_menu/src/widget_configurers/configurations/menu_configuration_classes.dart';
+import 'package:selection_menu/src/widget_configurers/menu_configuration_classes.dart';
 
 import 'common/ComponentAssertionMessages.dart';
+import 'common/ComponentData.dart';
 import 'common/WidgetBuildingComponent.dart';
 
 /// Carries the data that might be used in [MenuComponent.builder].
-class MenuComponentData {
+class MenuComponentData implements ComponentData {
   /// [BuildContext] passed by [SelectionMenu] (internally by [ListViewMenu]).
   ///
   /// Must not be null.
+  @override
   final BuildContext context;
 
-  /// The search bar [Widget] built by a [SearchBarComponent.builder].
+  /// The search bar Widget built by a [SearchBarComponent.builder].
   ///
   /// Must not be null.
   final Widget searchBar;
@@ -35,22 +37,31 @@ class MenuComponentData {
 
   final bool isSearchEnabled;
 
+  /// Must not be null.
+  final TickerProvider tickerProvider;
+
   MenuComponentData({
     @required this.context,
     @required this.searchBar,
     @required this.menuFlexValues,
     @required this.listView,
     @required this.isSearchEnabled,
+    @required this.tickerProvider,
+    @required this.selectedItem,
   }) : assert(
             context != null &&
                 listView != null &&
                 menuFlexValues != null &&
                 searchBar != null &&
-                isSearchEnabled != null,
+                isSearchEnabled != null &&
+                tickerProvider != null,
             ComponentAssertionMessages.nullAttributeInData);
+
+  @override
+  final dynamic selectedItem;
 }
 
-/// Defines a Menu [Widget] builder. A Menu is any Widget that
+/// Defines a Menu Widget builder. A Menu is any Widget that
 /// wraps two Widgets [MenuComponentData.searchBar] and
 /// [MenuComponentData.listView].
 ///
@@ -86,7 +97,7 @@ class MenuComponentData {
 /// * [MenuComponentData]
 /// * [MenuBuilder]
 class MenuComponent implements WidgetBuildingComponent {
-  /// A builder method to create the menu [Widget]. It combines the search bar
+  /// A builder method to create the menu Widget. It combines the search bar
   /// and list view.
   ///
   /// See also:
@@ -112,7 +123,7 @@ class MenuComponent implements WidgetBuildingComponent {
   }
 }
 
-/// This typedef defines a method that returns a [Widget] that wraps
+/// This typedef defines a method that returns a Widget that wraps
 /// [MenuComponentData.searchBar] and [MenuComponentData.listView]
 /// in a Widget, defining their layout.
 ///

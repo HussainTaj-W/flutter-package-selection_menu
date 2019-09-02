@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:selection_menu/components_configurations.dart';
 import 'package:selection_menu/selection_menu.dart';
 
 import '../data/FlatColor.dart';
@@ -32,6 +33,10 @@ class ExampleApp extends StatelessWidget {
           // Similarly, if listView and searchBar are both 1, they'll take the
           // same space, regardless of what searchField and searchingIndicator are.
           //
+          // A value of 0 means no flex. Hence the component doesn't have
+          // relative size. In the predefined ComponentsConfigurations
+          // Search Bar has a flex of 0.
+          //
           // Of course, this behavior depends on the ComponentsConfiguration.
           // However, it is true for the two predefined ComponentsConfigurations.
           menuFlexValues: MenuFlexValues(
@@ -40,12 +45,14 @@ class ExampleApp extends StatelessWidget {
             listView: 1,
             searchField: 1,
           ),
-
           menuSizeConfiguration: MenuSizeConfiguration(
-            maxHeightFraction: 0.5,
+            maxHeightFraction: 0.8,
+            minHeightFraction: 0.5,
+            minWidthFraction: 0.3,
+            maxWidthFraction: 0.8,
             requestAvoidBottomInset: true,
-            enforceMinWidthToMatchButton: true,
-            enforceMaxWidthToMatchButton: true,
+            enforceMinWidthToMatchTrigger: true,
+            enforceMaxWidthToMatchTrigger: true,
           ),
         ),
         menuAnimationDurations: MenuAnimationDurations(
@@ -70,10 +77,10 @@ class ExampleApp extends StatelessWidget {
   //region From Previous Example
 
   Widget itemBuilder(BuildContext context, FlatColor color) {
-    TextStyle textStyle = Theme.of(context).textTheme.body1;
+    TextStyle textStyle = Theme.of(context).textTheme.title;
 
     return Padding(
-      padding: EdgeInsets.all(5.0),
+      padding: EdgeInsets.all(10.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -81,14 +88,14 @@ class ExampleApp extends StatelessWidget {
           ClipOval(
             child: Container(
               color: Color(color.hex),
-              height: 20,
-              width: 20,
+              height: 30,
+              width: 30,
             ),
           ),
           Flexible(
             fit: FlexFit.tight,
             child: Padding(
-              padding: EdgeInsets.only(left: 3),
+              padding: EdgeInsets.only(left: 10.0),
               child: Text(
                 color.name,
                 style: textStyle,
@@ -126,10 +133,13 @@ void main() => runApp(
               .redAccent, // Used by the default Dialog Style of SelectionMenu
         ),
         home: Material(
-          child: SafeArea(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: ExampleApp(),
+          child: Container(
+            color: Colors.black26,
+            child: SafeArea(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: ExampleApp(),
+              ),
             ),
           ),
         ),

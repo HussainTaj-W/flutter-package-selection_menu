@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:selection_menu/components.dart';
+import 'package:selection_menu/components_configurations.dart';
 import 'package:selection_menu/selection_menu.dart';
+import 'package:selection_menu/src/widget_configurers/menu_configuration_classes.dart';
 
 import 'listview_menu.dart';
 
-/// Creates a Menu with selection options that opens/closes when you press a
-/// button/Widget.
+/// A Widget that creates a menu, that opens/closes by the press of a Trigger(Widget).
+///
+/// A typical Trigger is a button, however this is not a limitation.
+///
+/// A typical menu has a ListView with items to select from.
+///
 /// The type parameter T describes the type of data each Item of the menu list is.
+///
+/// Internally makes use of [ListViewMenu].
 ///
 /// There are various options to customize the appearance and behaviour of this
 /// Widget.
@@ -34,7 +41,7 @@ import 'listview_menu.dart';
 /// );
 /// ```
 ///
-/// **Using [ComponentsConfiguration]**
+/// ** How to use [ComponentsConfiguration]**
 ///
 /// ```dart
 /// SelectionMenu<String>(
@@ -51,42 +58,90 @@ import 'listview_menu.dart';
 /// );
 /// ```
 ///
+/// A series of examples/guides can be found here. // TODO: added link
+///
+/// See Also:
+/// * [ListViewMenu].
+/// * [ComponentsConfiguration].
 class SelectionMenu<T> extends StatefulWidget {
-  /// Returns a [Widget] that corresponds to an item from the [itemsList].
+  /// Returns a Widget that corresponds to an item from the [itemsList].
   ///
-  /// See [ItemBuilder] for more details
+  /// **Example**
+  /// *Assuming type parameter T is [String]*
+  ///
+  /// ```dart
+  /// Widget itemBuilder(BuildContext context, String item)
+  /// {
+  ///   return Text(item);
+  /// }
+  /// ```
+  ///
+  /// Must not be null.
+  ///
+  /// See [ItemBuilder].
   final ItemBuilder<T> itemBuilder;
+
+  ///
   final List<T> itemsList;
 
   /// Method that matches a search string with an item from the list [itemsList].
   /// Returns true for a successful match and false otherwise.
   ///
-  /// null is a valid value, it means search is disabled. In this case search bar
-  /// is not shown.
+  /// null is a valid value, it means search is disabled.
   ///
-  /// See [ItemSearchMatcher] for more details.
+  /// **Example**
+  /// *Assume type parameter T is [String]*
+  ///
+  /// ```dart
+  /// bool itemSearchMatcher(String searchString, String item)
+  /// {
+  ///   return item.contains(searchString);
+  /// }
+  /// ```
+  ///
+  /// See [ItemSearchMatcher].
   final ItemSearchMatcher<T> itemSearchMatcher;
 
   /// A callback for when an item from the list is selected.
+  ///
+  /// Must not be null.
+  ///
+  /// See [OnItemSelected].
   final OnItemSelected<T> onItemSelected;
 
   /// The item from [itemsList] that should be selected when the Widget is first created.
   /// null is a valid value, it is interpreted as no default selection.
+  ///
+  /// In such a case when [showSelectedItemAsTrigger] is true, and this option
+  /// is null, [componentsConfiguration.triggerComponent] is used.
+  ///
+  /// If [showSelectedItemAsTrigger] is true and this value is not null,
+  /// the Widget first tries to use [componentsConfiguration.triggerFromItemComponent],
+  /// if [TriggerFromItemComponent] is not provided, the [itemBuilder] is used to
+  /// created the trigger.
+  ///
+  /// See also:
+  /// * [TriggerFromItemComponent].
+  /// * [ComponentsConfiguration].
   final int initiallySelectedItemIndex;
 
-  /// If true, this Widget shows selected Item as the button.
+  /// If true, this Widget shows selected Item as the trigger.
   ///
-  /// If [initiallySelectedItemIndex] is null, then a default button is shown, which
+  /// If [initiallySelectedItemIndex] is null, then a default trigger is shown, which
   /// is build by [componentsConfiguration.triggerComponent].
   ///
-  /// else If [componentsConfiguration.triggerFromItemComponent] is not null, then
-  /// it is used to show the current selected Item.
+  /// If this value is not null and [componentsConfiguration.triggerFromItemComponent]
+  /// is not null, then it is used to show the current selected Item.
   ///
-  /// else [itemBuilder] is used.
+  /// Otherwise, [itemBuilder] is used.
+  ///
+  /// Defaults to false.
   final bool showSelectedItemAsTrigger;
 
-  /// If this Widget should close menu when user taps on space outside the
+  /// Defines if this Widget should close menu when user taps on space outside the
   /// visible container of the menu.
+  ///
+  /// Defaults to true.
   final bool closeMenuWhenTappedOutside;
 
   /// If this Widget should close menu if it is open, instead of popping when the
@@ -94,35 +149,63 @@ class SelectionMenu<T> extends StatefulWidget {
   ///
   /// If true and menu is open, only the menu is closed.
   /// If false, the menu is closed and the current context is also popped.
+  ///
+  /// Defaults to true.
   final bool closeMenuInsteadOfPop;
 
-  /// If the menu should be closed when the user taps on an empty area inside the
+  /// Defines if the menu should be closed when the user taps on an empty area inside the
   /// visible menu container.
+  ///
+  /// Defaults to false.
   final bool closeMenuOnEmptyMenuSpaceTap;
 
-  /// Describes the appearance of the menu.
+  /// Defines if menu should be closed after an item from it is selected.
   ///
-  /// See [ComponentsConfiguration] for details.
+  /// Defaults to true;
+  final bool closeMenuOnItemSelected;
+
+  /// Describes the appearance of [SelectionMenu].
   ///
   /// If this field is provided then [menuSizeConfiguration] must be null.
   /// Assign required size configuration to [componentsConfiguration.menuSizeConfiguration]
   /// instead.
+  ///
+  /// Defaults to [DialogComponentsConfiguration].
+  ///
+  /// See also:
+  /// * [ComponentsConfiguration].
+  /// * [DialogComponentsConfiguration].
   final ComponentsConfiguration<T> componentsConfiguration;
 
-  /// The delay before performing the search.
-  /// This delay allows to avoid performing search for every rapidly changing
-  /// search string.
+  /// This is the delay before the SelectionMenu actually starts searching.
+  /// Since search is called for every character change in the search field,
+  /// it acts as a buffering time and does not perform search for every
+  /// character update during this time.
+  ///
+  /// Defaults to const Duration(milliseconds: 500).
+  ///
+  /// See also:
+  /// * [SearchFieldComponent].
   final Duration searchLatency;
 
-  /// See [MenuAnimationDurations] for more details.
+  /// Durations of opening and closing animations of the menu.
+  ///
+  /// Defaults to:
+  /// ```dart
+  /// const MenuAnimationDurations(
+  ///        forward: Duration(milliseconds: 500),
+  ///        reverse: Duration(milliseconds: 500),
+  ///      );
+  /// ```
+  /// See [MenuAnimationDurations].
   final MenuAnimationDurations menuAnimationDurations;
 
   /// Size of the menu and its behaviors in various conditions.
   ///
-  /// See [MenuSizeConfiguration] for more details.
-  ///
   /// If [componentsConfiguration] is provided then this field must be null.
   /// Assign the value to [componentsConfiguration.menuSizeConfiguration] instead.
+  ///
+  /// See [MenuSizeConfiguration].
   final MenuSizeConfiguration menuSizeConfiguration;
 
   SelectionMenu({
@@ -136,11 +219,13 @@ class SelectionMenu<T> extends StatefulWidget {
     this.closeMenuWhenTappedOutside = true,
     this.closeMenuInsteadOfPop = true,
     this.closeMenuOnEmptyMenuSpaceTap = false,
+    this.closeMenuOnItemSelected = true,
     this.componentsConfiguration,
     this.searchLatency = const Duration(milliseconds: 500),
     this.menuAnimationDurations = const MenuAnimationDurations(
-        forward: Duration(milliseconds: 500),
-        reverse: Duration(milliseconds: 500)),
+      forward: Duration(milliseconds: 500),
+      reverse: Duration(milliseconds: 500),
+    ),
     this.menuSizeConfiguration,
   })  : assert(
             itemBuilder != null && itemsList != null && onItemSelected != null,
@@ -149,13 +234,14 @@ class SelectionMenu<T> extends StatefulWidget {
             initiallySelectedItemIndex == null ||
                 initiallySelectedItemIndex >= 0 &&
                     initiallySelectedItemIndex < itemsList.length,
-            "initiallySelectedItemIndex must be >= 0 and <= itemsList.length. null is a valid value."),
+            '''initiallySelectedItemIndex must be >= 0 and <= itemsList.length.
+            null is a valid value, it means search is disabled.'''),
         assert(menuSizeConfiguration == null || componentsConfiguration == null,
-            """menuSizeConfiguration already present in componentsConfiguration. 
+            '''menuSizeConfiguration already present in componentsConfiguration. 
   MenuSizeConfiguration can be assigned to the constructor of a ComponentsConfiguration.
-  If a ComponentsConfiguration is assigned to this Widget, 
-  then assign the MenuSizeConfiguration to this.componentsConfiguration.menuSizeConfiguration 
-  instead of directly to this widget."""),
+  If a ComponentsConfiguration is assigned to this Widget (SelectionMenu), 
+  then assign the MenuSizeConfiguration to SelectionMenu.componentsConfiguration.menuSizeConfiguration 
+  instead of SelectionMenu.menuSizeConfiguration.'''),
         super(key: key);
 
   @override
@@ -165,7 +251,9 @@ class SelectionMenu<T> extends StatefulWidget {
 class _SelectionMenuState<T> extends State<SelectionMenu<T>>
     with TickerProviderStateMixin {
   T _currentSelectedItem;
-  OverlayEntry _dropDownListOverlay;
+
+  /// The menu that is displayed as an overlay.
+  OverlayEntry _menuOverlay;
 
   ListViewMenu<T> _listViewMenu;
 
@@ -173,8 +261,10 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>>
 
   Orientation _orientation;
 
-  LayerLink _buttonAndMenuLayerLink = LayerLink();
+  /// To allow menu to follow the trigger.
+  LayerLink _triggerAndMenuLayerLink = LayerLink();
 
+  /// See [ComponentsConfiguration].
   ComponentsConfiguration<T> _componentsConfiguration;
 
   BoxConstraints _menuConstraints;
@@ -209,6 +299,7 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>>
       _componentsConfiguration =
           widget.componentsConfiguration ?? DialogComponentsConfiguration<T>();
     }
+    _componentsConfiguration.initSelectionMenuComponents();
 
     // Initialize ListViewMenu
     _listViewMenu = ListViewMenu<T>(
@@ -222,6 +313,7 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>>
     );
 
     // Initialize Current Selected Item
+    _currentSelectedItem = null;
     if (widget.initiallySelectedItemIndex != null) {
       _currentSelectedItem =
           widget.itemsList[widget.initiallySelectedItemIndex];
@@ -232,50 +324,53 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>>
 
     _triggerPositionAndSize =
         new TriggerPositionAndSize(size: Size(0, 0), position: Offset(0, 0));
-
-    _componentsConfiguration.initSelectionMenuComponents();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_dropDownListOverlay == null) {
-      _dropDownListOverlay = _buildOverlayEntry();
+    if (_menuOverlay == null) {
+      _menuOverlay = _buildMenuOverlayEntry();
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _menuConstraints = _calculateConstraintsFromSizeConfiguration(context);
         _calculateTriggerPositionAndSize();
-        _dropDownListOverlay.markNeedsBuild();
+        _menuConstraints = widget.menuSizeConfiguration.getConstraints(
+            _triggerPositionAndSize.size, MediaQuery.of(context).size);
+//        _menuConstraints = _calculateConstraintsFromSizeConfiguration(context);
+        _menuOverlay.markNeedsBuild();
       });
       _orientation = MediaQuery.of(context).orientation;
     }
 
     return CompositedTransformTarget(
-      link: _buttonAndMenuLayerLink,
-      child: Material(
-        child: WillPopScope(
-          onWillPop: _handleOnWillPop,
-          child: _buildButton(),
-        ),
+      link: _triggerAndMenuLayerLink,
+      child: WillPopScope(
+        onWillPop: _handleOnWillPop,
+        child: _buildTrigger(),
       ),
     );
   }
 
-  void _scheduleDimensionCalculationAndOverlayRebuild() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _calculateTriggerPositionAndSize();
-
-      if (_dropDownListOverlay != null) _dropDownListOverlay.markNeedsBuild();
-    });
-  }
-
+  /// Calculate the trigger's position and size on the screen.
+  ///
+  /// The position an [Offset] from the top-left of the **visible** screen.
   void _calculateTriggerPositionAndSize() {
     RenderBox box = context.findRenderObject();
     _triggerPositionAndSize.position = box.localToGlobal(Offset.zero);
     _triggerPositionAndSize.size = box.size;
   }
 
-  OverlayEntry _buildOverlayEntry() {
+  OverlayEntry _buildMenuOverlayEntry() {
     return OverlayEntry(builder: (BuildContext context) {
-      _handleOrientationChange(context);
+      if (_didOrientationChange(context)) {
+        _handleOrientationChange(context);
+
+        // Return an empty container because the orientation change has occurred.
+        // This has caused the trigger to change size and position which needs to
+        // be handled.
+        return Container(
+          height: 0,
+          width: 0,
+        );
+      }
 
       _calculateTriggerPositionAndSize();
 
@@ -299,19 +394,26 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>>
         constraints: _menuConstraints,
         menuSizeConfiguration: _componentsConfiguration.menuSizeConfiguration,
         triggerPositionAndSize: _triggerPositionAndSize,
+        selectedItem: _currentSelectedItem,
       ));
 
       Widget front = CompositedTransformFollower(
-        link: _buttonAndMenuLayerLink,
-        child: _componentsConfiguration.animationComponent
-            .build(AnimationComponentData(
-          context: context,
+        link: _triggerAndMenuLayerLink,
+        child: Container(
+          child: _componentsConfiguration.animationComponent
+              .build(AnimationComponentData(
+            context: context,
+            constraints: menuPositionAndSize.constraints,
+            child: _listViewMenu,
+            menuAnimationState: _menuAnimationState,
+            menuAnimationDurations: widget.menuAnimationDurations,
+            tickerProvider: this,
+            selectedItem: _currentSelectedItem,
+          )),
+          width: menuPositionAndSize?.size?.width,
+          height: menuPositionAndSize?.size?.height,
           constraints: menuPositionAndSize.constraints,
-          child: _listViewMenu,
-          menuAnimationState: _menuAnimationState,
-          menuAnimationDurations: widget.menuAnimationDurations,
-          tickerProvider: this,
-        )),
+        ),
         offset: menuPositionAndSize.positionOffset,
       );
 
@@ -325,49 +427,56 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>>
     });
   }
 
-  /// Returns null when there is no change in orientation.
-  /// Returns an empty Container when there is an orientation change and calculation
-  /// of constraints and size is scheduled.
+  /// Whenever orientation changes, Widgets are rebuilt.
+  /// Since the trigger was probably rebuilt, its size and position might've
+  /// changed as well.
+  /// We need to make appropriate calculations, which is handled by this method.
   void _handleOrientationChange(BuildContext context) {
-    Orientation orientation = MediaQuery.of(context).orientation;
-    if (orientation != _orientation) {
-      _orientation = orientation;
+    _orientation = MediaQuery.of(context).orientation;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _calculateTriggerPositionAndSize();
-      _menuConstraints = _calculateConstraintsFromSizeConfiguration(context);
-    }
+      _menuOverlay.markNeedsBuild();
+      _menuConstraints = widget.menuSizeConfiguration.getConstraints(
+          _triggerPositionAndSize.size, MediaQuery.of(context).size);
+//          _calculateConstraintsFromSizeConfiguration(context);
+    });
   }
 
-  /// OverlayEntry - the menu - is build every time there is [_menuAnimationState] change.
+  /// Returns true if orientation has changed since the last time the Widget was
+  /// built.
+  bool _didOrientationChange(BuildContext context) {
+    return MediaQuery.of(context).orientation != _orientation;
+  }
+
+  /// OverlayEntry - the menu - should build if there is appropriate
+  /// [_menuAnimationState] change.
+  ///
   /// This function handles the transition of states from
   /// [MenuAnimationState.OpeningStart] to [MenuAnimationState.Opened] and
   /// from [MenuAnimationState.ClosingStart] to [MenuAnimationState.Closed].
   ///
-  /// Uses [widget.menuAnimationDurations] to schedule when the state should change.
+  /// Uses [widget.menuAnimationDurations] to schedule when some states should change.
   ///
   /// [MenuAnimationState.OpeningStart] is initiated by [_showOverlayMenu()]
   /// [MenuAnimationState.ClosingStart] is initiated by [_closeOverlayMenu()]
   ///
-  /// See Also: [MenuAnimationState]
+  /// See also:
+  /// * [MenuAnimationState]
   void _handleAnimationState() {
     switch (_menuAnimationState) {
       case MenuAnimationState.OpeningStart:
         _menuAnimationState = MenuAnimationState.OpeningEnd;
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          _dropDownListOverlay.markNeedsBuild();
+          _menuOverlay.markNeedsBuild();
         });
         break;
       case MenuAnimationState.OpeningEnd:
         _menuAnimationState = MenuAnimationState.Opened;
-//        Future.delayed(widget.menuAnimationDurations.forward, () {}).then((_) {
-//          WidgetsBinding.instance.addPostFrameCallback((_) {
-//            _dropDownListOverlay.markNeedsBuild();
-//          });
-//        });
         break;
       case MenuAnimationState.ClosingStart:
         _menuAnimationState = MenuAnimationState.ClosingEnd;
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          _dropDownListOverlay.markNeedsBuild();
+          _menuOverlay.markNeedsBuild();
         });
         break;
       case MenuAnimationState.ClosingEnd:
@@ -382,32 +491,48 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>>
     }
   }
 
-  BoxConstraints _calculateConstraintsFromSizeConfiguration(
-      BuildContext context) {
-    MediaQueryData mqData = MediaQuery.of(context);
+//  /// Processes [widget.menuSizeConfiguration] and converts them to appropriate
+//  /// [BoxConstraints].
+//  ///
+//  /// These box constraints can be later modified by [MenuPositionAndSizeComponent].
+//  /// The BoxConstraints returned by [_componentsConfiguration.menuSizeConfiguration]
+//  /// are considered the actual constraints of the Menu.
+//  ///
+//  /// Ensuring that these constraints are honored are the responsibility of
+//  /// [_componentsConfiguration.animationComponent].
+//  ///
+//  /// See also:
+//  /// * [MenuSizeConfiguration].
+//  /// * [MenuPositionAndSizeComponent].
+//  /// * [AnimationComponent].
+//  BoxConstraints _calculateConstraintsFromSizeConfiguration(
+//      BuildContext context) {
+//    MediaQueryData mqData = MediaQuery.of(context);
+//
+//    MenuSizeConfiguration config =
+//        _componentsConfiguration.menuSizeConfiguration;
+//    double minWidth = (config.enforceMinWidthToMatchTrigger
+//        ? _triggerPositionAndSize.size.width
+//        : config.minWidth ?? config.minWidthFraction * mqData.size.width);
+//    double maxWidth = (config.enforceMaxWidthToMatchTrigger
+//        ? _triggerPositionAndSize.size.width
+//        : config.maxWidth ?? mqData.size.width * config.maxWidthFraction);
+//
+//    double maxHeight =
+//        config.maxHeight ?? mqData.size.height * config.maxHeightFraction;
+//    double minHeight =
+//        config.minHeight ?? config.minHeightFraction * mqData.size.height;
+//
+//    return BoxConstraints(
+//      minWidth: minWidth,
+//      maxWidth: maxWidth,
+//      minHeight: minHeight,
+//      maxHeight: maxHeight,
+//    ).normalize();
+//  }
 
-    MenuSizeConfiguration config =
-        _componentsConfiguration.menuSizeConfiguration;
-    double minWidth = (config.enforceMinWidthToMatchButton
-        ? _triggerPositionAndSize.size.width
-        : config.minWidth ?? config.minWidthFraction * mqData.size.width);
-    double maxWidth = (config.enforceMaxWidthToMatchButton
-        ? _triggerPositionAndSize.size.width
-        : config.maxWidth ?? mqData.size.width * config.maxWidthFraction);
-
-    double maxHeight =
-        config.maxHeight ?? mqData.size.height * config.maxHeightFraction;
-    double minHeight =
-        config.minHeight ?? config.minHeightFraction * mqData.size.height;
-
-    return BoxConstraints(
-      minWidth: minWidth,
-      maxWidth: maxWidth,
-      minHeight: minHeight,
-      maxHeight: maxHeight,
-    ).normalize();
-  }
-
+  /// Returns whether the context should pop.
+  /// Closes the menu if opened.
   Future<bool> _handleOnWillPop() async {
     if (_menuAnimationState == MenuAnimationState.Opened ||
         _menuAnimationState == MenuAnimationState.OpeningEnd ||
@@ -418,13 +543,16 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>>
     return true;
   }
 
+  /// If [_menuAnimationState] is [MenuAnimationState.Closed] only then:
+  /// Inserts the [_menuOverlay].
+  /// Sets [_menuAnimationState] to [MenuAnimationState.OpeningStart].
+  ///
+  /// See also:
+  /// * [MenuAnimationState].
   void _showOverlayMenu() {
     if (_menuAnimationState == MenuAnimationState.Closed) {
-      _calculateTriggerPositionAndSize();
-
-      Overlay.of(context).insert(_dropDownListOverlay);
-
-      _dropDownListOverlay.markNeedsBuild();
+      Overlay.of(context).insert(_menuOverlay);
+      _menuOverlay.markNeedsBuild();
 
       setState(() {
         _menuAnimationState = MenuAnimationState.OpeningStart;
@@ -432,19 +560,28 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>>
     }
   }
 
+  /// Sets [_menuAnimationState] to [MenuAnimationState.ClosingStart] if
+  /// [_menuAnimationState] is not one of the opening ones.
+  /// Sets [_menuAnimationState] to [MenuAnimationState.Closed] if
+  /// [_menuAnimationState] is [MenuAnimationState.ClosingEnd] and also removes
+  /// [_menuOverlay].
+  ///
+  /// See also;
+  /// * [MenuAnimationState].
   void _closeOverlayMenu() {
     if (_menuAnimationState == MenuAnimationState.Opened ||
         _menuAnimationState == MenuAnimationState.OpeningStart ||
         _menuAnimationState == MenuAnimationState.OpeningEnd) {
       _menuAnimationState = MenuAnimationState.ClosingStart;
-      _dropDownListOverlay.markNeedsBuild();
+      _menuOverlay.markNeedsBuild();
     } else if (_menuAnimationState == MenuAnimationState.ClosingEnd) {
-      _dropDownListOverlay.remove();
+      _menuOverlay.remove();
       _menuAnimationState = MenuAnimationState.Closed;
     }
   }
 
-  void _onButtonTap() {
+  /// Toggles the menu.
+  void _onTriggered() {
     if (_menuAnimationState == MenuAnimationState.Opened ||
         _menuAnimationState == MenuAnimationState.OpeningStart ||
         _menuAnimationState == MenuAnimationState.OpeningEnd)
@@ -453,24 +590,42 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>>
       _showOverlayMenu();
   }
 
-  Widget _buildButton() {
+  /// Builds the trigger component.
+  ///
+  /// If [widget.showSelectedItemAsTrigger] is true and [widget.initiallySelectedItemIndex]
+  /// is not null, then first tries to use [_componentsConfiguration.triggerFromItemComponent],
+  /// otherwise uses [widget.itemBuilder].
+  ///
+  /// If [widget.showSelectedItemAsTrigger] is false or [widget.initiallySelectedItemIndex]
+  /// is null then uses [_componentsConfiguration.triggerComponent].
+  ///
+  /// See also:
+  /// * [TriggerFromItemComponent].
+  /// * [TriggerComponent].
+  /// * [ComponentsConfiguration].
+  Widget _buildTrigger() {
     if (widget.showSelectedItemAsTrigger && _currentSelectedItem != null) {
       if (_componentsConfiguration.triggerFromItemComponent != null) {
-        return _componentsConfiguration.triggerFromItemComponent.build(
-            TriggerFromItemComponentData(
-                context: context,
-                toggleMenu: _onButtonTap,
-                item: _currentSelectedItem));
+        return _componentsConfiguration.triggerFromItemComponent
+            .build(TriggerFromItemComponentData(
+          context: context,
+          toggleMenu: _onTriggered,
+          item: _currentSelectedItem,
+          tickerProvider: this,
+          selectedItem: _currentSelectedItem,
+        ));
       }
       return GestureDetector(
-        onTap: _onButtonTap,
+        onTap: _onTriggered,
         child: widget.itemBuilder(context, _currentSelectedItem),
       );
     }
 
     return _componentsConfiguration.triggerComponent.build(TriggerComponentData(
       context: context,
-      toggleMenu: _onButtonTap,
+      toggleMenu: _onTriggered,
+      tickerProvider: this,
+      selectedItem: _currentSelectedItem,
     ));
   }
 
@@ -478,7 +633,9 @@ class _SelectionMenuState<T> extends State<SelectionMenu<T>>
     setState(() {
       _currentSelectedItem = item;
     });
-    _closeOverlayMenu();
+    if (widget.closeMenuOnItemSelected) {
+      _closeOverlayMenu();
+    }
     widget.onItemSelected(_currentSelectedItem);
   }
 

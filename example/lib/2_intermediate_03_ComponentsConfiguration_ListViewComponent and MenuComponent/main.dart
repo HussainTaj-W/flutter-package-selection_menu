@@ -1,6 +1,6 @@
 import 'package:example/data/FlatColor.dart';
 import 'package:flutter/material.dart';
-import 'package:selection_menu/components.dart';
+import 'package:selection_menu/components_configurations.dart';
 import 'package:selection_menu/selection_menu.dart';
 
 // Reading previous Examples before this one is recommended.
@@ -29,17 +29,11 @@ class ExampleApp extends StatelessWidget {
           //
           // Defined below for brevity.
 
-          menuSizeConfiguration: MenuSizeConfiguration(
-            maxWidth: 200,
-            maxHeight: 200,
-            minWidth: 200,
-            minHeight: 200,
-          ),
-
           triggerComponent: TriggerComponent(builder: _triggerBuilder),
           triggerFromItemComponent:
               TriggerFromItemComponent(builder: _triggerFromItemBuilder),
         ),
+        itemSearchMatcher: itemSearchMatcher,
         itemsList: colors,
         itemBuilder: this.itemBuilder,
         onItemSelected: this.onItemSelected,
@@ -49,29 +43,20 @@ class ExampleApp extends StatelessWidget {
   }
 
   static Widget _menuBuilder(MenuComponentData data) {
-    return Card(
-      elevation: 4,
-      clipBehavior: Clip.hardEdge,
-      child: Padding(
-        padding: const EdgeInsets.all(5.0),
-        child: Column(
-          children: <Widget>[
-            data.isSearchEnabled
-                ? Expanded(
-                    child: data.searchBar,
-                    flex: data.menuFlexValues.searchBar,
-                  )
-                : Container(),
-            Expanded(
-              child: data.listView,
-              flex: data.menuFlexValues.listView,
-            ),
-          ],
+    return Row(
+      children: <Widget>[
+        Flexible(
+          flex: data.menuFlexValues.searchBar,
+          child: RotatedBox(
+            quarterTurns: 3,
+            child: data.searchBar,
+          ),
         ),
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(100),
-      ),
+        Expanded(
+          child: data.listView,
+          flex: data.menuFlexValues.listView,
+        ),
+      ],
     );
   }
 
@@ -87,7 +72,7 @@ class ExampleApp extends StatelessWidget {
           color: Colors.black26,
         );
       },
-      padding: EdgeInsets.symmetric(vertical: 50.0),
+      padding: EdgeInsets.zero,
     );
   }
 
@@ -95,6 +80,7 @@ class ExampleApp extends StatelessWidget {
 
   static Widget _triggerBuilder(TriggerComponentData data) {
     return RaisedButton(
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       onPressed: data.toggleMenu,
       child: Text("Select Color"),
     );
@@ -102,6 +88,7 @@ class ExampleApp extends StatelessWidget {
 
   static Widget _triggerFromItemBuilder(TriggerFromItemComponentData data) {
     return RaisedButton(
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       onPressed: data.toggleMenu,
       color: Color(data.item.hex),
       child: Text(
@@ -170,8 +157,11 @@ void main() => runApp(
               .redAccent, // Used by the default Dialog Style of SelectionMenu
         ),
         home: Material(
-          child: Center(
-            child: ExampleApp(),
+          child: Container(
+            color: Colors.black26,
+            child: Center(
+              child: ExampleApp(),
+            ),
           ),
         ),
       ),

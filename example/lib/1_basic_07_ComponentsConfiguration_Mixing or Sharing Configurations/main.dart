@@ -1,6 +1,7 @@
 import 'package:example/data/FlatColor.dart';
 import 'package:flutter/material.dart';
-import 'package:selection_menu/components.dart';
+import 'package:flutter/widgets.dart';
+import 'package:selection_menu/components_configurations.dart';
 import 'package:selection_menu/selection_menu.dart';
 
 // Reading previous Examples before this one is recommended.
@@ -19,20 +20,15 @@ class ExampleApp extends StatelessWidget {
     return Container(
       child: SelectionMenu<FlatColor>(
         componentsConfiguration: DropdownComponentsConfiguration<FlatColor>(
-          // Override the default AnimationComponent
-          animationComponent: AnimationComponent(
-              builder: DialogComponentsConfiguration.animationBuilder),
-        ) // You can also chain ComponentsConfigurations with copyWith
+          // You can override default components by passing them in the
+          // constructor like this.
+          animationComponent: DialogAnimationComponent(),
+          menuSizeConfiguration:
+              DialogComponentsConfiguration.defaultMenuSizeConfiguration,
+        ) // or you can use the copyWith method
             .copyWith(
-              menuPositionAndSizeComponent: MenuPositionAndSizeComponent(
-                builder:
-                    DialogComponentsConfiguration.menuPositionAndSizeBuilder,
-              ),
-            ) // The below copyWith could be avoided. Shown just for demonstration purposes.
-            .copyWith(
-              menuSizeConfiguration:
-                  DialogComponentsConfiguration.defaultMenuSizeConfiguration,
-            ),
+                menuPositionAndSizeComponent:
+                    DialogMenuPositionAndSizeComponent()),
         itemsList: colors,
         itemBuilder: this.itemBuilder,
         onItemSelected: this.onItemSelected,
@@ -51,10 +47,10 @@ class ExampleApp extends StatelessWidget {
   //region From Previous Example
 
   Widget itemBuilder(BuildContext context, FlatColor color) {
-    TextStyle textStyle = Theme.of(context).textTheme.body1;
+    TextStyle textStyle = Theme.of(context).textTheme.title;
 
     return Padding(
-      padding: EdgeInsets.all(5.0),
+      padding: EdgeInsets.all(10.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -62,14 +58,14 @@ class ExampleApp extends StatelessWidget {
           ClipOval(
             child: Container(
               color: Color(color.hex),
-              height: 20,
-              width: 20,
+              height: 30,
+              width: 30,
             ),
           ),
           Flexible(
             fit: FlexFit.tight,
             child: Padding(
-              padding: EdgeInsets.only(left: 3),
+              padding: EdgeInsets.only(left: 10.0),
               child: Text(
                 color.name,
                 style: textStyle,
@@ -107,8 +103,11 @@ void main() => runApp(
               .redAccent, // Used by the default Dialog Style of SelectionMenu
         ),
         home: Material(
-          child: Center(
-            child: ExampleApp(),
+          child: Container(
+            color: Colors.black26,
+            child: Center(
+              child: ExampleApp(),
+            ),
           ),
         ),
       ),

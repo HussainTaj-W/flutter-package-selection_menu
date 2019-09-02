@@ -1,6 +1,6 @@
 import 'package:example/data/FlatColor.dart';
 import 'package:flutter/material.dart';
-import 'package:selection_menu/components.dart';
+import 'package:selection_menu/components_configurations.dart';
 import 'package:selection_menu/selection_menu.dart';
 
 // Reading previous Examples before this one is recommended.
@@ -51,16 +51,17 @@ class ExampleApp extends StatelessWidget {
 
   static Widget _searchBarBuilder(SearchBarComponentData data) {
     List<Widget> list = [];
-    list.add(Expanded(
+    list.add(Flexible(
       child: data.searchField,
       flex: data.menuFlexValues.searchField,
     ));
     if (data.isSearching)
-      list.add(Expanded(
+      list.add(Flexible(
         child: data.searchingIndicator,
         flex: data.menuFlexValues.searchingIndicator,
       ));
-    return Row(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: list,
@@ -69,13 +70,7 @@ class ExampleApp extends StatelessWidget {
 
   static Widget _searchingIndicatorBuilder(
       SearchingIndicatorComponentData data) {
-    return Padding(
-      padding: const EdgeInsets.all(5.0),
-      child: AspectRatio(
-        aspectRatio: 1,
-        child: CircularProgressIndicator(),
-      ),
-    );
+    return Text("Searching...");
   }
 
   static Widget _searchFieldBuilder(SearchFieldComponentData data) {
@@ -86,8 +81,8 @@ class ExampleApp extends StatelessWidget {
       // This controller is created and managed by SelectionMenu Widget.
 
       decoration: InputDecoration(
-        hintText: "Search Color...",
-      ),
+          hintText: "Search Color...",
+          border: OutlineInputBorder(borderSide: BorderSide(width: 2))),
     );
   }
 
@@ -95,6 +90,7 @@ class ExampleApp extends StatelessWidget {
 
   static Widget _triggerBuilder(TriggerComponentData data) {
     return RaisedButton(
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       onPressed: data.toggleMenu,
       color: Colors.white,
       child: Text("Select Color"),
@@ -103,6 +99,7 @@ class ExampleApp extends StatelessWidget {
 
   static Widget _triggerFromItemBuilder(TriggerFromItemComponentData data) {
     return RaisedButton(
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       onPressed: data.toggleMenu,
       color: Color(data.item.hex),
       child: Text(
@@ -115,10 +112,10 @@ class ExampleApp extends StatelessWidget {
   }
 
   Widget itemBuilder(BuildContext context, FlatColor color) {
-    TextStyle textStyle = Theme.of(context).textTheme.body1;
+    TextStyle textStyle = Theme.of(context).textTheme.title;
 
     return Padding(
-      padding: EdgeInsets.all(5.0),
+      padding: EdgeInsets.all(10.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -126,14 +123,14 @@ class ExampleApp extends StatelessWidget {
           ClipOval(
             child: Container(
               color: Color(color.hex),
-              height: 20,
-              width: 20,
+              height: 30,
+              width: 30,
             ),
           ),
           Flexible(
             fit: FlexFit.tight,
             child: Padding(
-              padding: EdgeInsets.only(left: 3),
+              padding: EdgeInsets.only(left: 10.0),
               child: Text(
                 color.name,
                 style: textStyle,
@@ -171,8 +168,11 @@ void main() => runApp(
               .redAccent, // Used by the default Dialog Style of SelectionMenu
         ),
         home: Material(
-          child: Center(
-            child: ExampleApp(),
+          child: Container(
+            color: Colors.black26,
+            child: Center(
+              child: ExampleApp(),
+            ),
           ),
         ),
       ),

@@ -1,6 +1,6 @@
 import 'package:example/data/FlatColor.dart';
 import 'package:flutter/material.dart';
-import 'package:selection_menu/components.dart';
+import 'package:selection_menu/components_configurations.dart';
 import 'package:selection_menu/selection_menu.dart';
 
 // Reading previous Examples before this one is recommended.
@@ -17,10 +17,15 @@ class ExampleApp extends StatelessWidget {
     return Container(
       child: SelectionMenu<FlatColor>(
         componentsConfiguration:
-            // Since almost all Components are required for the Widget to function
-            // We use a predefined ComponentsConfiguration. The specific components
-            // we assign will be used along with the default versions of any component
-            // that is not assigned (is null).
+            // The type of this parameter is ComponentsConfiguration, however
+            // since almost all Components are required for the Widget to function
+            // We use a predefined subclass of ComponentsConfiguration. The
+            // specific components we assign will be used along with the default
+            // versions of any component that is not assigned.
+            //
+            // In this example we create Builders and assign them to the Components.
+            // An alternative, which is useful in some cases, is extending the
+            // Component classes, which is explained in example 2_intermediate_04.
 
             DialogComponentsConfiguration<FlatColor>(
           triggerComponent: TriggerComponent(builder: _triggerBuilder),
@@ -31,7 +36,6 @@ class ExampleApp extends StatelessWidget {
           // when the Widget is built for the first time.
           //
           // Defined below for the sake of brevity.
-          //
 
           triggerFromItemComponent: TriggerFromItemComponent<FlatColor>(
               builder: _triggerFromItemBuilder),
@@ -53,6 +57,7 @@ class ExampleApp extends StatelessWidget {
 
   static Widget _triggerBuilder(TriggerComponentData data) {
     return RaisedButton(
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       onPressed: data.toggleMenu,
       color: Colors.white,
       child: Text("Select Color"),
@@ -61,6 +66,7 @@ class ExampleApp extends StatelessWidget {
 
   static Widget _triggerFromItemBuilder(TriggerFromItemComponentData data) {
     return RaisedButton(
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       onPressed: data.toggleMenu,
       color: Color(data.item.hex),
       child: Text(
@@ -75,10 +81,10 @@ class ExampleApp extends StatelessWidget {
   //region From Previous Example
 
   Widget itemBuilder(BuildContext context, FlatColor color) {
-    TextStyle textStyle = Theme.of(context).textTheme.body1;
+    TextStyle textStyle = Theme.of(context).textTheme.title;
 
     return Padding(
-      padding: EdgeInsets.all(5.0),
+      padding: EdgeInsets.all(10.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -86,14 +92,14 @@ class ExampleApp extends StatelessWidget {
           ClipOval(
             child: Container(
               color: Color(color.hex),
-              height: 20,
-              width: 20,
+              height: 30,
+              width: 30,
             ),
           ),
           Flexible(
             fit: FlexFit.tight,
             child: Padding(
-              padding: EdgeInsets.only(left: 3),
+              padding: EdgeInsets.only(left: 10.0),
               child: Text(
                 color.name,
                 style: textStyle,
@@ -131,8 +137,11 @@ void main() => runApp(
               .redAccent, // Used by the default Dialog Style of SelectionMenu
         ),
         home: Material(
-          child: Center(
-            child: ExampleApp(),
+          child: Container(
+            color: Colors.black26,
+            child: Center(
+              child: ExampleApp(),
+            ),
           ),
         ),
       ),

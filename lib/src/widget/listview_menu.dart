@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:selection_menu/components.dart';
+import 'package:selection_menu/components_configurations.dart';
 import 'package:selection_menu/selection_menu.dart';
 
-/// Returns a [Widget] that corresponds to the data [item] of type T.
+/// Returns a Widget that corresponds to the data [item] of type T.
 typedef Widget ItemBuilder<T>(BuildContext context, T item);
 
 /// Returns true if [item] of type T can be described using [searchString],
@@ -16,35 +16,84 @@ typedef void OnItemSelected<T>(T item);
 /// A callback for when Empty space in the menu is pressed.
 typedef void OnMenuEmptySpaceTap();
 
-/// Creates a Menu Widget, that has a list and optionally a search bar.
-/// Type parameter T describes the type of Items in the List [ListViewMenu.itemsList].
+/// A Menu [Widget], that has a list of items and optionally a search bar.
+/// Type parameter T describes the type of Items in the List
+/// [ListViewMenu.itemsList].
 ///
-/// It uses [ComponentsConfiguration] to build various component_builders.
+/// It uses [ComponentsConfiguration] from the _components_configurations_
+/// library to build various [Widget]s used in the menu.
+///
+/// This Widget is used by [SelectionMenu].
+///
+/// See also:
+/// * [ComponentsConfiguration].
+/// * [SelectionMenu].
 class ListViewMenu<T> extends StatefulWidget {
-  /// Method/Callback that converts data of type T into a [Widget].
+  /// Method/Callback that converts data of type T into a Widget.
+  ///
+  /// **Example**
+  /// *Assuming type parameter T is [String]*
+  ///
+  /// ```dart
+  /// Widget itemBuilder(BuildContext context, String item)
+  /// {
+  ///   return Text(item);
+  /// }
+  /// ```
+  ///
+  /// See also:
+  /// * [ItemBuilder].
   final ItemBuilder<T> itemBuilder;
 
   /// [List]<T> of [itemsList] to show in the menu.
   final List<T> itemsList;
 
   /// Method that matches a search string with an item from the list [itemsList].
+  /// Returns true for a successful match and false otherwise.
   ///
-  /// See [ItemSearchMatcher] for more details.
+  /// null is a valid value, it means search is disabled.
+  ///
+  /// **Example**
+  /// *Assume type parameter T is [String]*
+  ///
+  /// ```dart
+  /// bool itemSearchMatcher(String searchString, String item)
+  /// {
+  ///   return item.contains(searchString);
+  /// }
+  /// ```
+  ///
+  /// See [ItemSearchMatcher].
   final ItemSearchMatcher<T> itemSearchMatcher;
 
   /// A callback for when an item from the list is selected.
+  ///
+  /// Must not be null.
+  ///
+  /// See [OnItemSelected].
   final OnItemSelected<T> onItemSelected;
 
-  /// The [ComponentsConfiguration] that will be used to create various component_builders
-  /// of this Widget.
+  /// Describes the appearance of [ListViewMenu].
+  ///
+  /// Defaults to [DialogComponentsConfiguration].
+  ///
+  /// See also:
+  /// * [ComponentsConfiguration].
+  /// * [DialogComponentsConfiguration].
   final ComponentsConfiguration<T> componentsConfiguration;
 
   /// A callback for when empty space in the menu is tapped.
   final OnMenuEmptySpaceTap onMenuEmptySpaceTap;
 
-  /// The delay before performing the search.
-  /// This delay allows to avoid performing search for every rapidly changing
-  /// search string.
+  /// This is the delay before the SelectionMenu actually starts searching.
+  /// Since search is called for every character change in the search field,
+  /// it acts as a buffering time and does not perform search for every
+  /// character update during this time.
+  ///
+  /// Defaults to const Duration(milliseconds: 500).
+  ///
+  /// See also:
+  /// * [SearchFieldComponent].
   final Duration searchLatency;
 
   const ListViewMenu({
@@ -76,9 +125,16 @@ class _ListViewMenuState<T> extends State<ListViewMenu<T>>
   bool _isSearching;
   String _searchString;
 
+  /// The controller used to detect changes in [SearchFieldComponent].
+  ///
+  /// See also:
+  /// * [SearchFieldComponent].
+  /// * [ComponentsConfiguration].
   TextEditingController _searchTextController = TextEditingController();
 
   ComponentsConfiguration _componentsConfiguration;
+
+  T _currentSelectedItem;
 
   @override
   void initState() {
@@ -94,6 +150,8 @@ class _ListViewMenuState<T> extends State<ListViewMenu<T>>
     _searchTextController.addListener(_onSearchStringChange);
 
     _componentsConfiguration.initListViewMenuComponents();
+
+    _currentSelectedItem = null;
   }
 
   @override
@@ -102,6 +160,8 @@ class _ListViewMenuState<T> extends State<ListViewMenu<T>>
         .build(SearchFieldComponentData(
       context: context,
       searchTextController: _searchTextController,
+      tickerProvider: this,
+      selectedItem: _currentSelectedItem,
     ));
 
     final Widget searchingIndicator = _componentsConfiguration
@@ -110,6 +170,7 @@ class _ListViewMenuState<T> extends State<ListViewMenu<T>>
       context: context,
       isSearching: _isSearching,
       tickerProvider: this,
+      selectedItem: _currentSelectedItem,
     ));
 
     final Widget searchBar = _componentsConfiguration.searchBarComponent
@@ -119,6 +180,8 @@ class _ListViewMenuState<T> extends State<ListViewMenu<T>>
       isSearching: _isSearching,
       searchingIndicator: searchingIndicator,
       searchField: searchField,
+      tickerProvider: this,
+      selectedItem: _currentSelectedItem,
     ));
 
     return _buildListViewMenu(searchBar);
@@ -127,7 +190,7 @@ class _ListViewMenuState<T> extends State<ListViewMenu<T>>
   Widget _buildListViewMenu(final Widget searchBar) {
     Widget listView = GestureDetector(
       onTap: widget.onMenuEmptySpaceTap,
-      child: _buildCurrentListListView(),
+      child: _buildCurrentListMenu(),
     );
 
     return _componentsConfiguration.menuComponent.build(MenuComponentData(
@@ -136,11 +199,13 @@ class _ListViewMenuState<T> extends State<ListViewMenu<T>>
       listView: listView,
       searchBar: searchBar,
       isSearchEnabled: widget.itemSearchMatcher != null,
+      tickerProvider: this,
+      selectedItem: _currentSelectedItem,
     ));
   }
 
-  /// Builds a [Widget] that contains a [ListView] from the [_currentItemsList].
-  Widget _buildCurrentListListView() {
+  /// Builds a Widget that contains a a scrollable list from the [_currentItemsList].
+  Widget _buildCurrentListMenu() {
     return _componentsConfiguration.listViewComponent
         .build(ListViewComponentData(
       context: context,
@@ -151,12 +216,15 @@ class _ListViewMenuState<T> extends State<ListViewMenu<T>>
         );
       },
       itemCount: _currentItemsList.length,
+      tickerProvider: this,
+      selectedItem: _currentSelectedItem,
     ));
   }
 
   /// Returns a [Future]<[List]<T>> after searching the list [widget.itemsList]
   /// for [_searchString] asynchronously using [widget.itemSearchMatcher].
   Future<List<T>> _searchList(String searchString) async {
+    assert(widget.itemSearchMatcher != null, "No search macther provided.");
     return _searchString.trim().isNotEmpty
         ? widget.itemsList
             .where((item) => widget.itemSearchMatcher(searchString, item))
@@ -164,7 +232,7 @@ class _ListViewMenuState<T> extends State<ListViewMenu<T>>
         : widget.itemsList;
   }
 
-  /// Callback that is called everything the search field with [_searchTextController]
+  /// Callback that is called every time the search field with [_searchTextController]
   /// changes.
   void _onSearchStringChange() async {
     _searchString = _searchTextController.text;
@@ -193,7 +261,10 @@ class _ListViewMenuState<T> extends State<ListViewMenu<T>>
   }
 
   void _onListItemTap(int itemIndex) {
-    widget.onItemSelected(_currentItemsList[itemIndex]);
+    setState(() {
+      _currentSelectedItem = _currentItemsList[itemIndex];
+    });
+    widget.onItemSelected(_currentSelectedItem);
   }
 
   @override

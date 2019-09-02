@@ -2,16 +2,18 @@ import 'package:flutter/widgets.dart';
 import 'package:selection_menu/selection_menu.dart';
 
 import 'common/ComponentAssertionMessages.dart';
+import 'common/ComponentData.dart';
 import 'common/WidgetBuildingComponent.dart';
 import 'components.dart';
 
 /// Carries the data that might be used in [TriggerFromItemComponent.builder].
 ///
 /// <T> type parameter is the type of data stored as [TriggerFromItemComponentData.item].
-class TriggerFromItemComponentData<T> {
+class TriggerFromItemComponentData<T> implements ComponentData {
   /// [BuildContext] passed by [SelectionMenu].
   ///
   /// Must not be null.
+  @override
   final BuildContext context;
 
   /// A callback that should be called when the trigger is triggered.
@@ -23,13 +25,26 @@ class TriggerFromItemComponentData<T> {
   /// Must not be null.
   final T item;
 
-  TriggerFromItemComponentData(
-      {@required this.context, @required this.toggleMenu, @required this.item})
-      : assert(context != null && toggleMenu != null && item != null,
+  /// Must not be null.
+  final TickerProvider tickerProvider;
+
+  TriggerFromItemComponentData({
+    @required this.context,
+    @required this.toggleMenu,
+    @required this.item,
+    @required this.tickerProvider,
+    @required this.selectedItem,
+  }) : assert(
+            context != null &&
+                toggleMenu != null &&
+                item != null &&
+                tickerProvider != null,
             ComponentAssertionMessages.nullAttributeInData);
+  @override
+  final dynamic selectedItem;
 }
 
-/// Defines a [Widget] that acts like a button. Additionally, the button reflects
+/// Defines a Widget that acts like a button. Additionally, the button reflects
 /// the content provided as [TriggerFromItemComponentData.item].
 ///
 /// **Example**
@@ -52,7 +67,7 @@ class TriggerFromItemComponentData<T> {
 /// * [TriggerFromItemComponentData]
 /// * [TriggerFromItemBuilder]
 class TriggerFromItemComponent<T> implements WidgetBuildingComponent {
-  /// A builder method to create a [Widget] that acts as a trigger. Additionally,
+  /// A builder method to create a Widget that acts as a trigger. Additionally,
   /// reflects the content of [TriggerFromItemComponentData.item].
   ///
   /// See also:
@@ -76,7 +91,7 @@ class TriggerFromItemComponent<T> implements WidgetBuildingComponent {
   }
 }
 
-/// This typedef defines a method that returns a [Widget] that acts as a trigger
+/// This typedef defines a method that returns a Widget that acts as a trigger
 /// for the menu to open/close, additionally, the content of the button reflects
 /// a [TriggerFromItemComponentData.item] as defined by the function body.
 ///

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:selection_menu/components.dart';
+import 'package:selection_menu/components_configurations.dart';
 import 'package:selection_menu/selection_menu.dart';
 
 import '../data/FlatColor.dart';
@@ -14,8 +14,8 @@ import '../data/FlatColor.dart';
 //
 // main function has been moved to the end.
 
-class CustomSearchingIndicatorComponent extends SearchingIndicatorComponent
-    // A required mixin if you want to hook into the Menu's life cycle
+class CustomSearchingIndicatorComponent
+    extends SearchingIndicatorComponent // A required mixin if you want to hook into the Menu's life cycle
     with
         ComponentLifeCycleMixin {
   AnimationController _animationController;
@@ -25,11 +25,12 @@ class CustomSearchingIndicatorComponent extends SearchingIndicatorComponent
   }
 
   Widget _builder(SearchingIndicatorComponentData data) {
-    if (_animationController == null) {
-      _animationController = AnimationController(
-          vsync: data.tickerProvider, duration: Duration(seconds: 1));
-      _animationController.repeat();
-    }
+    _animationController ??= AnimationController(
+      vsync: data.tickerProvider,
+      duration: Duration(seconds: 1),
+    );
+    _animationController.repeat();
+
     return RotationTransition(
       turns: Tween(begin: 0.0, end: 1.0).animate(_animationController),
       child: AspectRatio(
@@ -63,9 +64,6 @@ class ExampleApp extends StatelessWidget {
           //
           // Defined above for the sake of brevity.
 
-          searchFieldComponent:
-              SearchFieldComponent(builder: _searchFieldBuilder),
-          searchBarComponent: SearchBarComponent(builder: _searchBarBuilder),
           triggerComponent: TriggerComponent(builder: _triggerBuilder),
           triggerFromItemComponent:
               TriggerFromItemComponent(builder: _triggerFromItemBuilder),
@@ -85,39 +83,9 @@ class ExampleApp extends StatelessWidget {
 
   //region From Previous Example
 
-  static Widget _searchBarBuilder(SearchBarComponentData data) {
-    List<Widget> list = [];
-    list.add(Expanded(
-      child: data.searchField,
-      flex: data.menuFlexValues.searchField,
-    ));
-    if (data.isSearching)
-      list.add(Expanded(
-        child: data.searchingIndicator,
-        flex: data.menuFlexValues.searchingIndicator,
-      ));
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: list,
-    );
-  }
-
-  static Widget _searchFieldBuilder(SearchFieldComponentData data) {
-    return TextField(
-      controller: data.searchTextController,
-      // Assigning controller this way is necessary. The controller listens to
-      // changes in the field and fires search process accordingly.
-      // This controller is created and managed by SelectionMenu Widget.
-
-      decoration: InputDecoration(
-        hintText: "Search Color...",
-      ),
-    );
-  }
-
   static Widget _triggerBuilder(TriggerComponentData data) {
     return RaisedButton(
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       onPressed: data.toggleMenu,
       color: Colors.white,
       child: Text("Select Color"),
@@ -126,6 +94,7 @@ class ExampleApp extends StatelessWidget {
 
   static Widget _triggerFromItemBuilder(TriggerFromItemComponentData data) {
     return RaisedButton(
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       onPressed: data.toggleMenu,
       color: Color(data.item.hex),
       child: Text(
@@ -138,10 +107,10 @@ class ExampleApp extends StatelessWidget {
   }
 
   Widget itemBuilder(BuildContext context, FlatColor color) {
-    TextStyle textStyle = Theme.of(context).textTheme.body1;
+    TextStyle textStyle = Theme.of(context).textTheme.title;
 
     return Padding(
-      padding: EdgeInsets.all(5.0),
+      padding: EdgeInsets.all(10.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -149,14 +118,14 @@ class ExampleApp extends StatelessWidget {
           ClipOval(
             child: Container(
               color: Color(color.hex),
-              height: 20,
-              width: 20,
+              height: 30,
+              width: 30,
             ),
           ),
           Flexible(
             fit: FlexFit.tight,
             child: Padding(
-              padding: EdgeInsets.only(left: 3),
+              padding: EdgeInsets.only(left: 10.0),
               child: Text(
                 color.name,
                 style: textStyle,
@@ -194,8 +163,11 @@ void main() => runApp(
               .redAccent, // Used by the default Dialog Style of SelectionMenu
         ),
         home: Material(
-          child: Center(
-            child: ExampleApp(),
+          child: Container(
+            color: Colors.black26,
+            child: Center(
+              child: ExampleApp(),
+            ),
           ),
         ),
       ),

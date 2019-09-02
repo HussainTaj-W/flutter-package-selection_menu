@@ -1,14 +1,16 @@
 import 'package:flutter/widgets.dart';
 import 'package:selection_menu/selection_menu.dart';
-import 'package:selection_menu/src/widget_configurers/configurations/menu_configuration_classes.dart';
+import 'package:selection_menu/src/widget_configurers/menu_configuration_classes.dart';
 
 import 'common/ComponentAssertionMessages.dart';
+import 'common/ComponentData.dart';
 
 /// Carries the data that might be used in [MenuPositionAndSizeComponent.builder].
-class MenuPositionAndSizeComponentData {
+class MenuPositionAndSizeComponentData implements ComponentData {
   /// [BuildContext] passed by [SelectionMenu].
   ///
   /// Must not be null.
+  @override
   final BuildContext context;
 
   /// [BoxConstraints] constructed by processing [menuSizeConfiguration].
@@ -40,12 +42,15 @@ class MenuPositionAndSizeComponentData {
     @required this.constraints,
     @required this.menuSizeConfiguration,
     @required this.triggerPositionAndSize,
+    @required this.selectedItem,
   }) : assert(
             context != null &&
                 constraints != null &&
                 menuSizeConfiguration != null &&
                 triggerPositionAndSize != null,
             ComponentAssertionMessages.nullAttributeInData);
+  @override
+  final dynamic selectedItem;
 }
 
 /// Defines a [MenuPositionAndSize] builder for the menu.

@@ -1,6 +1,6 @@
 import 'package:example/data/FlatColor.dart';
 import 'package:flutter/material.dart';
-import 'package:selection_menu/components.dart';
+import 'package:selection_menu/components_configurations.dart';
 import 'package:selection_menu/selection_menu.dart';
 
 // Reading previous Examples before this one is recommended.
@@ -17,12 +17,11 @@ class MyAnimationComponent extends AnimationComponent
     with ComponentLifeCycleMixin // To get hooks to the Menu's lifecycle
 {
   AnimationController _animationController;
+  Animation<double> _animation;
 
   MyAnimationComponent() {
     super.builder = _builder;
   }
-
-  Animation<double> _animation;
 
   Widget _builder(AnimationComponentData data) {
     if (_animationController == null) {
@@ -116,7 +115,6 @@ class ExampleApp extends StatelessWidget {
           menuPositionAndSizeComponent: MenuPositionAndSizeComponent(
               builder: _menuSizeAndPositionBuilder),
           listViewComponent: MyListViewComponent(),
-          menuComponent: MenuComponent(builder: _menuBuilder),
           menuSizeConfiguration: MenuSizeConfiguration(
             maxWidth: 200,
             maxHeight: 300,
@@ -156,12 +154,6 @@ class ExampleApp extends StatelessWidget {
       // fix the Size of the menu, hence new BoxConstraints are tight to the
       // biggest Size possible.
       positionOffset: Offset(offsetX, offsetY),
-    );
-  }
-
-  Widget _menuBuilder(MenuComponentData data) {
-    return Container(
-      child: data.listView,
     );
   }
 
@@ -209,43 +201,6 @@ class ExampleApp extends StatelessWidget {
 
   //region From Previous Example
 
-  Widget _searchBarBuilder(SearchBarComponentData data) {
-    List<Widget> list = [];
-    list.add(Expanded(
-      child: data.searchField,
-      flex: data.menuFlexValues.searchField,
-    ));
-    if (data.isSearching)
-      list.add(Expanded(
-        child: data.searchingIndicator,
-        flex: data.menuFlexValues.searchingIndicator,
-      ));
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: list,
-    );
-  }
-
-  Widget _searchingIndicatorBuilder(SearchingIndicatorComponentData data) {
-    return Padding(
-      padding: const EdgeInsets.all(5.0),
-      child: AspectRatio(
-        aspectRatio: 1,
-        child: CircularProgressIndicator(),
-      ),
-    );
-  }
-
-  Widget _searchFieldBuilder(SearchFieldComponentData data) {
-    return TextField(
-      controller: data.searchTextController,
-      decoration: InputDecoration(
-        hintText: "Search Color...",
-      ),
-    );
-  }
-
   Widget _triggerBuilder(TriggerComponentData data) {
     return RaisedButton(
       onPressed: data.toggleMenu,
@@ -271,8 +226,31 @@ class MyListViewComponent extends ListViewComponent {
   }
 
   final ScrollController _scrollController = ScrollController();
+  int _currentIndex = 0;
+
+  void _scrollUp() {
+    if (_currentIndex > 0) {
+      _scrollController.animateTo(
+        (--_currentIndex) * _itemSize.height,
+        duration: Duration(milliseconds: 500),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
+  void _scrollDown() {
+    if ((_currentIndex + 1) * _itemSize.height <=
+        _scrollController.position.maxScrollExtent) {
+      _scrollController.animateTo(
+        (++_currentIndex) * _itemSize.height,
+        duration: Duration(milliseconds: 500),
+        curve: Curves.easeOut,
+      );
+    }
+  }
 
   Widget _builder(ListViewComponentData data) {
+    _currentIndex = 0;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -282,14 +260,7 @@ class MyListViewComponent extends ListViewComponent {
           height: 30,
           width: 30,
           child: RaisedButton(
-            onPressed: () {
-              _scrollController.animateTo(
-                ((_scrollController.offset / _itemSize.height).floor() - 1) *
-                    _itemSize.height,
-                duration: Duration(seconds: 1),
-                curve: Curves.easeOut,
-              );
-            },
+            onPressed: _scrollUp,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             padding: EdgeInsets.zero,
@@ -321,14 +292,7 @@ class MyListViewComponent extends ListViewComponent {
           child: RaisedButton(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            onPressed: () {
-              _scrollController.animateTo(
-                ((_scrollController.offset / _itemSize.height).floor() + 1) *
-                    _itemSize.height,
-                duration: Duration(milliseconds: 500),
-                curve: Curves.easeOut,
-              );
-            },
+            onPressed: _scrollDown,
             padding: EdgeInsets.zero,
             child: Icon(
               Icons.keyboard_arrow_down,
@@ -348,8 +312,11 @@ void main() => runApp(
               .redAccent, // Used by the default Dialog Style of SelectionMenu
         ),
         home: Material(
-          child: Center(
-            child: ExampleApp(),
+          child: Container(
+            color: Colors.black26,
+            child: Center(
+              child: ExampleApp(),
+            ),
           ),
         ),
       ),

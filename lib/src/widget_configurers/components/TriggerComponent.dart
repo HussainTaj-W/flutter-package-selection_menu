@@ -2,13 +2,15 @@ import 'package:flutter/widgets.dart';
 import 'package:selection_menu/selection_menu.dart';
 
 import 'common/ComponentAssertionMessages.dart';
+import 'common/ComponentData.dart';
 import 'common/WidgetBuildingComponent.dart';
 
 /// Carries the data that might be used in [TriggerComponent.builder].
-class TriggerComponentData {
+class TriggerComponentData implements ComponentData {
   /// [BuildContext] passed by [SelectionMenu].
   ///
   /// Must not be null.
+  @override
   final BuildContext context;
 
   /// A callback that should be called when the trigger is triggered.
@@ -17,14 +19,21 @@ class TriggerComponentData {
   /// Must not be null.
   final ToggleMenu toggleMenu;
 
+  /// Must not be null.
+  final TickerProvider tickerProvider;
+
   TriggerComponentData({
     @required this.context,
     @required this.toggleMenu,
-  }) : assert(context != null && toggleMenu != null,
+    @required this.tickerProvider,
+    @required this.selectedItem,
+  }) : assert(context != null && toggleMenu != null && tickerProvider != null,
             ComponentAssertionMessages.nullAttributeInData);
+  @override
+  final dynamic selectedItem;
 }
 
-/// Defines builder that returns a [Widget] that acts as a trigger.
+/// Defines builder that returns a Widget that acts as a trigger.
 ///
 /// **Example**
 ///
@@ -46,7 +55,7 @@ class TriggerComponentData {
 /// * [TriggerComponentData]
 /// * [TriggerBuilder]
 class TriggerComponent implements WidgetBuildingComponent {
-  /// A builder method to create the trigger [Widget].
+  /// A builder method to create the trigger Widget.
   ///
   /// See also:
   /// * [TriggerBuilder].
@@ -69,7 +78,7 @@ class TriggerComponent implements WidgetBuildingComponent {
   }
 }
 
-/// This typedef defines a method that returns a [Widget] that acts as the trigger
+/// This typedef defines a method that returns a Widget that acts as the trigger
 /// for the menu to open/close.
 ///
 /// Used by [TriggerComponent] as [TriggerComponent.builder].

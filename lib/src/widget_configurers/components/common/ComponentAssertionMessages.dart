@@ -1,3 +1,4 @@
+/// This class provides common assertion messages for the [components] library.
 class ComponentAssertionMessages {
   static String nullAttributeInData =
       '''An attribute in component's data was missing. 
