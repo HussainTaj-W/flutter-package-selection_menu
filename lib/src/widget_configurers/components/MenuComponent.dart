@@ -91,6 +91,8 @@ class MenuComponentData implements ComponentData {
 /// );
 /// ```
 ///
+/// <img src="https://i.imgur.com/QL67eib.jpg" width="658.5" height="384"/>
+///
 /// See [ComponentsConfiguration] for more details.
 ///
 /// See Also:

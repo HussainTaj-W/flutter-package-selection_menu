@@ -3,9 +3,7 @@ import 'package:selection_menu/selection_menu.dart';
 import 'package:selection_menu/src/widget_configurers/components/components.dart';
 import 'package:selection_menu/src/widget_configurers/menu_configuration_classes.dart';
 
-/// A base class that define the appearance of [SelectionMenu] and [ListViewMenu],
-/// where type parameter T should be the same as the type parameter of [SelectionMenu]
-/// or [ListViewMenu].
+/// A base class that define the appearance of [SelectionMenu] and [ListViewMenu].
 ///
 /// It is simply a collection of [components] and configurations.
 ///
@@ -13,7 +11,7 @@ import 'package:selection_menu/src/widget_configurers/menu_configuration_classes
 /// or Position and Size information, or simply a class that contains data related
 /// to layout.
 ///
-/// See the library [components] for how components are structured.
+/// <img src="https://i.imgur.com/QL67eib.jpg" width="658.5" height="384"/>
 ///
 /// This class can be subclassed. The subclass would assign values to the instance
 /// variables of [ComponentsConfiguration].
@@ -24,7 +22,8 @@ import 'package:selection_menu/src/widget_configurers/menu_configuration_classes
 /// * [DialogComponentsConfiguration] a dialog or popup style appearance.
 /// * [DropdownComponentsConfiguration] a dropdown style appearance.
 ///
-/// TODO: add image.
+/// **Related examples can be found
+/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).**
 class ComponentsConfiguration<T> {
   /// Defines a builder that returns a Widget where a user can input text.
   ///
@@ -119,14 +118,12 @@ class ComponentsConfiguration<T> {
                 menuSizeConfiguration != null &&
                 menuAnimationDurations != null &&
                 menuAnimationCurves != null,
-            """
-            All components and configurations are required. (except one 'triggerFromItemComponent'). 
-            If you wish to customize only a few components, 
-            pick a ComponentsConfiguration class like DefaultComponentsConfiguration 
-            and provide those sepecific builders in the constructor. 
-            Furthermore, if you wish to pick several components 
-            from different Builder Classes, you may use the copyWith method.
-            """) {
+            "All components and configurations are required. (except one 'triggerFromItemComponent').\n"
+            "If you wish to customize only a few components,\n"
+            "pick a ComponentsConfiguration class like DefaultComponentsConfiguration\n"
+            "and provide those sepecific builders in the constructor.\n"
+            "Furthermore, if you wish to pick several components\n"
+            "from different Builder Classes, you may use the copyWith method.\n") {
     _initLists();
   }
 
@@ -169,24 +166,28 @@ class ComponentsConfiguration<T> {
     );
   }
 
+  /// Initialize Components used by [SelectionMenu].
   void initSelectionMenuComponents() {
     _selectMenuComponents.forEach((x) {
       x.init();
     });
   }
 
+  /// Initialize Components used by [ListViewMenu].
   void initListViewMenuComponents() {
     _listViewMenuComponents.forEach((x) {
       x.init();
     });
   }
 
+  /// Dispose Components used by [SelectionMenu].
   void disposeSelectionMenuComponents() {
     _selectMenuComponents.forEach((x) {
       x.dispose();
     });
   }
 
+  /// Dispose Components used by [ListViewMenu].
   void disposeListViewMenuComponents() {
     _listViewMenuComponents.forEach((x) {
       x.dispose();

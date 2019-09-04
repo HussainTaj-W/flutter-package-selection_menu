@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:selection_menu/components_configurations.dart';
 import 'package:selection_menu/selection_menu.dart';
 
 import 'common/ComponentAssertionMessages.dart';
@@ -28,6 +29,9 @@ class TriggerFromItemComponentData<T> implements ComponentData {
   /// Must not be null.
   final TickerProvider tickerProvider;
 
+  /// Current state of the Menu.
+  ///
+  /// See [MenuState].
   final MenuState menuState;
 
   TriggerFromItemComponentData({
@@ -64,6 +68,8 @@ class TriggerFromItemComponentData<T> implements ComponentData {
 ///   }
 /// );
 /// ```
+///
+///  <img src="https://i.imgur.com/QL67eib.jpg" width="658.5" height="384"/>
 ///
 /// See [ComponentsConfiguration] for more details.
 ///

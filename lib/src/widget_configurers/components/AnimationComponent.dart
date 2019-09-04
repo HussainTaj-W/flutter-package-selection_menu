@@ -39,10 +39,10 @@ class AnimationComponentData implements ComponentData {
 
   final MenuAnimationCurves menuAnimationCurves;
 
-  final AnimationStateChanged opened;
-  final AnimationStateChanged closed;
-  final AnimationStateWillChangeAfter willOpenAfter;
-  final AnimationStateWillChangeAfter willCloseAfter;
+  final MenuStateChanged opened;
+  final MenuStateChanged closed;
+  final MenuStateWillChangeAfter willOpenAfter;
+  final MenuStateWillChangeAfter willCloseAfter;
 
   @override
   final dynamic selectedItem;
@@ -101,6 +101,10 @@ class AnimationComponentData implements ComponentData {
 /// );
 /// ```
 ///
+/// A series of detailed examples are available [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).
+///
+/// <img src="https://i.imgur.com/QL67eib.jpg" width="658.5" height="384"/>
+///
 /// See [ComponentsConfiguration] for more details.
 ///
 /// See Also:
@@ -133,7 +137,7 @@ class AnimationComponent implements WidgetBuildingComponent {
   }
 }
 
-/// This typedef defines a method that returns a Widget that is capable of
+/// Defines a method that returns a Widget that is capable of
 /// animation.
 ///
 /// Used by [AnimationComponent] as [AnimationComponent.builder].
@@ -153,10 +157,17 @@ class AnimationComponent implements WidgetBuildingComponent {
 /// ```
 ///
 /// See Also:
-/// * [AnimationComponent]
-/// * [AnimationComponentData]
-
+/// * [AnimationComponent].
+/// * [AnimationComponentData].
+/// * [MenuState].
 typedef Widget AnimationBuilder(AnimationComponentData data);
 
-typedef void AnimationStateChanged();
-typedef void AnimationStateWillChangeAfter(Duration time);
+/// A callback that informs about Menu state change.
+///
+/// It is used by [AnimationComponent] to communicate with [SelectionMenu].
+typedef void MenuStateChanged();
+
+/// A callback that informs about Menu state change that will occur after [time].
+///
+/// It is used by [AnimationComponent] to communicate with [SelectionMenu].
+typedef void MenuStateWillChangeAfter(Duration time);

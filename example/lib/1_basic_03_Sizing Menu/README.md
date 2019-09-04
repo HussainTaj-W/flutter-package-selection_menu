@@ -5,6 +5,7 @@
 
 ```dart
 import 'package:selection_menu/selection_menu.dart';
+import 'package:selection_menu/components_configurations.dart';
 
 SelectionMenu<FlatColor>(
     menuSizeConfiguration: MenuSizeConfiguration(

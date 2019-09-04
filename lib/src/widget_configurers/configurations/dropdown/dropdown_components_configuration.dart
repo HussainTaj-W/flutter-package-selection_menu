@@ -1,13 +1,18 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:selection_menu/components_configurations.dart';
 import 'package:selection_menu/selection_menu.dart';
 import 'package:selection_menu/src/widget_configurers/components/components.dart';
 
 import '../components_configuration.dart';
 
 /// Defines the appearance of [SelectionMenu] as a typical dropdown menu.
-/// The type parameter T is the same as the type parameter for [SelectionMenu].
+///
+/// ![How the style looks](https://i.imgur.com/X0clpJD.gif)
+///
+/// A series of examples/guides can be found
+/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).
 ///
 /// See [ComponentsConfiguration].
 class DropdownComponentsConfiguration<T> extends ComponentsConfiguration<T> {
@@ -386,7 +391,10 @@ class DropdownMenuPositionAndSizeComponent
                       mqData.viewPadding.top))
           .normalize();
       // if overflows below, this means minHeight was larger than maxHeight
-      if (buttonPosition.dy - mqData.viewPadding.top + yOffset + constraints.maxHeight >
+      if (buttonPosition.dy -
+              mqData.viewPadding.top +
+              yOffset +
+              constraints.maxHeight >
           heightAvailable) {
         // offset so that the bottom of menu matches with the bottom of the view
         yOffset = -buttonPosition.dy +
@@ -395,7 +403,7 @@ class DropdownMenuPositionAndSizeComponent
             constraints.maxHeight;
         // if overflows from above, offset it down to the top of view
         if (yOffset + buttonPosition.dy < mqData.viewPadding.top)
-          yOffset = - buttonPosition.dy + mqData.viewPadding.top;
+          yOffset = -buttonPosition.dy + mqData.viewPadding.top;
       }
     } else {
       // is on the lower half of available space

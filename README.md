@@ -1,14 +1,36 @@
 # selection_menu
 
-A new Flutter package.
+A highly customizable selection/select menu to choose an item from a list.
+
+[Select Menu in different styles](https://i.imgur.com/a5FfkD6.gif)
 
 ## Getting Started
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
+This package has two libraries:
+* selection_menu: provides the widgets.
+* components_configurations: provides customization options.
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+### Basic Usage
+
+```dart
+import 'package:selection_menu/selection_menu.dart';
+
+SelectionMenu<String>(
+    itemsList: <String>['A','B','C'],
+    onItemSelected: (String selectedItem)
+    {
+    print(selectedItem);
+    },
+    itemBuilder: (BuildContext context, String item, OnItemTapped onItemTapped)
+    {
+       return Material(
+         InkWell(
+           onTap: onItemTapped,
+           child: Text(item),
+         ),
+       ); 
+    },
+);
+ ```
+ 
+ 

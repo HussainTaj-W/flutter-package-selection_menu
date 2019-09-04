@@ -30,7 +30,11 @@
 /// );
 /// ```
 ///
-/// ![Image of Components](https://i.imgur.com/QL67eib.jpg)
+/// A series of examples/guides can be found
+/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).
+///
+/// <img src="https://i.imgur.com/QL67eib.jpg" width="658.5" height="384"/>
+
 library components;
 
 //

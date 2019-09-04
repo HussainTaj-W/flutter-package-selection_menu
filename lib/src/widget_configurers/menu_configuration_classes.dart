@@ -1,10 +1,14 @@
 import 'package:flutter/widgets.dart';
 import 'package:selection_menu/components_configurations.dart';
+import 'package:selection_menu/selection_menu.dart';
 
 /// Defines the size constraints of the Menu and behavior of Size in certain conditions.
 ///
 /// Constraints must be provided, these can be in the form of screen fractions,
 /// logical pixels or mixed.
+///
+/// See related example
+/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).
 class MenuSizeConfiguration {
   /// Maximum fraction (0.0 - 1.0 inclusive) of screen width the menu should take.
   final double maxWidthFraction;
@@ -118,8 +122,8 @@ class MenuSizeConfiguration {
                 (maxHeightFraction == null ||
                     minHeightFraction == null ||
                     maxHeightFraction >= minHeightFraction),
-            """Max Width and Max Height should be lesser or equal to Min Width and Min Height respectively.
-                AKA, the contrainsts should be normalized."""),
+            "Max Width and Max Height should be lesser or equal to Min Width and Min Height respectively.\n"
+            "AKA, the contrainsts should be normalized.\n"),
         assert(minWidth == null || maxWidth == null || minWidth <= maxWidth,
             """minWidth should be less than or equal to maxWidth."""),
         assert(minHeight == null || maxHeight == null || minHeight <= maxHeight,
@@ -164,6 +168,8 @@ class MenuSizeConfiguration {
 }
 
 /// Container for Menu's constraints and, position and size.
+///
+/// See [MenuPositionAndSizeComponent].
 class MenuPositionAndSize {
   /// Size of menu is defined by BoxConstraints.
   final BoxConstraints constraints;
@@ -198,7 +204,21 @@ class TriggerPositionAndSize {
             "Both position and size are required.");
 }
 
-/// Animation States the menu goes through during opening and closing.
+/// States the menu goes through during opening and closing.
+///
+/// These States are managed by [SelectionMenu].
+///
+/// When the menu is triggered, the menu enters [MenuState.OpeningStart].
+/// Immediately after that it enters [MenuState.OpeningEnd].
+/// After the animation completes [AnimationComponent] notifies [SelectionMenu]
+/// using a callback, and menu enters the state of [MenuState.Opened].
+///
+/// The closing process is similar.
+///
+/// See related example
+/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).
+///
+/// ![Menu State Change gif](https://i.imgur.com/g5CEs5l.gif)
 enum MenuState {
   OpeningStart,
   OpeningEnd,
@@ -209,6 +229,15 @@ enum MenuState {
 }
 
 /// A collection of flex attributes of Flexible/Expanded Widgets used in menu layout.
+///
+/// [SearchBarComponent] combines [SearchFieldComponent] and [SearchingIndicatorComponent];
+/// it can, but might not always, use [searchField] and [searchingIndicator] values.
+///
+/// [MenuComponent] combines [SearchBarComponent] and [ListViewComponent];
+/// it can, but might nit always, use [searchBar] and [listView] values.
+///
+/// See related example
+/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).
 ///
 /// See:
 /// * [SearchBarComponent].
@@ -227,6 +256,10 @@ class MenuFlexValues {
   });
 }
 
+/// Durations of the animations of the menu inside [SelectionMenu].
+///
+/// See related example
+/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).
 class MenuAnimationDurations {
   /// Duration of animation when menu is opening.
   final Duration forward;
@@ -240,6 +273,7 @@ class MenuAnimationDurations {
             If there is no animation required then pass Duration.zero.""");
 }
 
+/// Curves used by the animations of menu in [SelectionMenu].
 class MenuAnimationCurves {
   final Curve forward;
   final Curve reverse;

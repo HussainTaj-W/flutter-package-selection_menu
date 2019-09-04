@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:selection_menu/components_configurations.dart';
 import 'package:selection_menu/selection_menu.dart';
 
 import 'common/ComponentAssertionMessages.dart';
@@ -54,7 +55,9 @@ class TriggerComponentData implements ComponentData {
 ///     );
 ///   }
 /// );
-/// ```
+///```
+///
+///  <img src="https://i.imgur.com/QL67eib.jpg" width="658.5" height="384"/>
 ///
 /// See [ComponentsConfiguration] for more details.
 ///

@@ -5,32 +5,35 @@
 ///   button/Widget/trigger.
 /// * [ListViewMenu] a list of items to select from.
 ///
-/// TODO Gif to Select menu.
+/// ![Select Menu in different styles](https://i.imgur.com/a5FfkD6.gif)
 ///
-/// # Basic Usage
+/// ## Basic Usage
 ///
 /// ```dart
+/// import 'package:selection_menu/selection_menu.dart';
+///
 /// SelectionMenu<String>(
 ///   itemsList: <String>['A','B','C'],
 ///   onItemSelected: (String selectedItem)
 ///   {
 ///     print(selectedItem);
 ///   },
-///   itemBuilder: (BuildContext context, String item)
+///   itemBuilder: (BuildContext context, String item, OnItemTapped onItemTapped)
 ///   {
-///     return Text(item);
+///     return Material(
+///       InkWell(
+///         onTap: onItemTapped,
+///         child: Text(item),
+///       ),
+///     );
 ///   },
-///   // Select the style of menu you wish to use.
-///   componentsConfiguration: DialogComponentConfiguration<String>();
 /// );
 /// ```
 ///
-/// TODo Explanations of terminology used throughout the library.
-/// todo A couple of complete code samples that walk through using the API.
-/// todo Links to the most important or most commonly used classes and functions.
-/// todo Links to external references on the domain the library is concerned with.
+/// **A series of detailed examples are available
+/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).**
 ///
-/// # Customization
+/// ## Customization
 ///
 /// Customization is possible through the use of Component classes.
 /// Every part of [SelectionMenu] and [ListViewMenu] is a Component.
@@ -43,33 +46,49 @@
 /// There are two predefined subclasses of [ComponentsConfiguration].
 /// * [DropdownComponentsConfiguration] defines a dropdown style appearance and behavior.
 /// * [DialogComponentsConfiguration] (default) defines a popup dialog style appearance and behavior.
+/// The third style in the above image is part of the example series.
+///
+/// **Example**
+///
+///
+/// ```dart
+/// import 'package:selection_menu/selection_menu.dart';
+///
+/// // IMPORT this package to get access to configuration classes.
+/// import 'package:selection_menu/components_configurations.dart';
+///
+/// SelectionMenu<String>(
+///   itemsList: <String>['A','B','C'],
+///   onItemSelected: (String selectedItem)
+///   {
+///     print(selectedItem);
+///   },
+///   itemBuilder: (BuildContext context, String item, OnItemTapped onItemTapped)
+///   {
+///     return Material(
+///       InkWell(
+///         onTap: onItemTapped,
+///         child: Text(item),
+///       ),
+///     );
+///   },
+///   componentsConfigurations: DropdownComponentsConfigurations<String>(),
+/// );
+/// ```
 ///
 /// See the [components_configurations] library for more details.
 ///
-/// [MenuSizeConfiguration] used as [ComponentsConfiguration.menuSizeConfiguration]
-/// defines the Size constraints of the Menu and behaviour in different conditions.
+/// ## Examples
 ///
-/// TODO add docs.
-/// TODO add github repo.
-/// TODO add examples.
+/// A series of detailed examples are available
+/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).
+///
+/// [Github Repo](https://github.com/HussainTaj-W/flutter-package-selection_menu).
 ///
 /// See also:
 /// * [SelectionMenu].
 /// * [ListViewMenu].
 /// * [ComponentsConfiguration].
-///
-/// # Examples
-///
-/// A series of detailed examples are available [here][examples link].
-///
-/// [Github Repo][repo link].
-///
-/// [examples link]: https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example
-///
-/// [components image link]: https://i.imgur.com/QL67eib.jpg =658x384
-///
-/// [repo link]: https://github.com/HussainTaj-W/flutter-package-selection_menu
-/// {@category Configurations}
 library selection_menu;
 
 import './components_configurations.dart';
@@ -77,4 +96,3 @@ import './src/widget/listview_menu.dart';
 
 export './src/widget/listview_menu.dart';
 export './src/widget/selection_menu.dart';
-export './src/widget_configurers/menu_configuration_classes.dart';

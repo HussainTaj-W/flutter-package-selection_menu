@@ -77,7 +77,7 @@ class MyAnimationComponent extends AnimationComponent
         _lastState = data.menuState;
         break;
       case MenuState.Opened:
-        // Widget is not built for this state.
+        // The Widget is built for this state.
         break;
       case MenuState.ClosingStart:
         // Just like to OpeningStart.

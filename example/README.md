@@ -1,15 +1,12 @@
 # Examples
 
-This package provides examples for the [selection_menu](../) flutter 
-package.
+**There is a series of detailed examples available [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example/lib)**.
 
-There is a series of detailed examples available [here](./lib/).
-
-You can also visit the API docs for [selection_menu](../) 
+You can also visit the API docs for [selection_menu](https://github.com/HussainTaj-W/flutter-package-selection_menu../) 
 [here](TODO ADD)
 <!-- TODO-->
 
-These examples only focus on explaining code related to [selection_menu](../). 
+These examples only focus on explaining code related to [selection_menu](https://github.com/HussainTaj-W/flutter-package-selection_menu). 
 Flutter Widgets and their usage will not be explained here.
 
 ## Flutter Resources

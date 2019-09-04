@@ -26,6 +26,7 @@ typedef void OnItemSelected<T>(T item);
 typedef void OnMenuEmptySpaceTap();
 
 /// A Menu [Widget], that has a list of items and optionally a search bar.
+///
 /// Type parameter T describes the type of Items in the List
 /// [ListViewMenu.itemsList].
 ///
@@ -44,10 +45,15 @@ class ListViewMenu<T> extends StatefulWidget {
   /// *Assuming type parameter T is [String]*
   ///
   /// ```dart
-  /// Widget itemBuilder(BuildContext context, String item)
+  /// Widget itemBuilder(BuildContext context, String item, OnItemTapped onItemTapped)
   /// {
-  ///   return Text(item);
-  /// }
+  ///   return Material(
+  ///     InkWell(
+  ///       onTap: onItemTapped,
+  ///       child: Text(item),
+  ///     ),
+  ///   );
+  /// },
   /// ```
   ///
   /// Must not be null.
@@ -56,7 +62,7 @@ class ListViewMenu<T> extends StatefulWidget {
   /// * [ItemBuilder].
   final ItemBuilder<T> itemBuilder;
 
-  /// [List]<T> of [itemsList] to show in the menu.
+  /// The items to show in the menu.
   ///
   /// Must not be null.
   final List<T> itemsList;

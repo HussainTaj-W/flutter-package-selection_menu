@@ -10,6 +10,8 @@ import 'listview_menu.dart';
 ///
 /// The type parameter T describes the type of data each Item of the menu is.
 ///
+/// ![Different SelectMenu Styles](https://i.imgur.com/a5FfkD6.gif).
+///
 /// A typical Trigger is a button, however this is not a limitation.
 /// A typical menu has a ListView with items to select from.
 ///
@@ -25,18 +27,29 @@ import 'listview_menu.dart';
 /// * [DialogComponentsConfiguration] a popup dialog style appearance.
 /// * [DropdownComponentsConfiguration] a classic dropdown style appearance.
 ///
+/// The third style in the above image is part of an example which can be
+/// found [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).
+///
 /// ## Basic Usage
 ///
+///
 /// ```dart
+/// import 'package:selection_menu/selection_menu.dart';
+///
 /// SelectionMenu<String>(
 ///   itemsList: ['A','B','C'],
 ///   onItemSelected: (String selectedItem)
 ///   {
 ///     print(selectedItem);
 ///   },
-///   itemBuilder: (BuildContext context, String item)
+///   itemBuilder: (BuildContext context, String item, OnItemTapped onItemTapped)
 ///   {
-///     return Text(item);
+///     return Material(
+///       InkWell(
+///         onTap: onItemTapped,
+///         child: Text(item),
+///       ),
+///     );
 ///   },
 /// );
 /// ```
@@ -44,22 +57,31 @@ import 'listview_menu.dart';
 /// ### How to use [ComponentsConfiguration].
 ///
 /// ```dart
+/// import 'package:selection_menu/selection_menu.dart';
+/// // IMPORT this package to get access to configuration classes.
+/// import 'package:selection_menu/components_configurations.dart';
+///
 /// SelectionMenu<String>(
 ///   itemsList: ['A','B','C'],
 ///   onItemSelected: (String selectedItem)
 ///   {
 ///     print(selectedItem);
 ///   },
-///   itemBuilder: (BuildContext context, String item)
+///   itemBuilder: (BuildContext context, String item, OnItemTapped onItemTapped)
 ///   {
-///     return Text(item);
+///     return Material(
+///       InkWell(
+///         onTap: onItemTapped,
+///         child: Text(item),
+///       ),
+///     );
 ///   },
 ///   componentsConfiguration: DropdownComponentsConfiguration<String>(),
 /// );
 /// ```
 ///
-/// A series of examples/guides can be found here.
-/// ()[];
+/// **A series of examples/guides can be found
+/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).**
 ///
 /// See Also:
 /// * [ListViewMenu].
@@ -71,9 +93,14 @@ class SelectionMenu<T> extends StatefulWidget {
   /// *Assuming type parameter T is [String]*
   ///
   /// ```dart
-  /// Widget itemBuilder(BuildContext context, String item)
+  /// Widget itemBuilder(BuildContext context, String item, OnItemTapped onItemTapped)
   /// {
-  ///   return Text(item);
+  ///   return Material(
+  ///     InkWell(
+  ///       onTap: onItemTapped,
+  ///       child: Text(item),
+  ///     ),
+  ///   );
   /// }
   /// ```
   ///
@@ -82,10 +109,10 @@ class SelectionMenu<T> extends StatefulWidget {
   /// See [ItemBuilder].
   final ItemBuilder<T> itemBuilder;
 
-  ///
   final List<T> itemsList;
 
   /// Method that matches a search string with an item from the list [itemsList].
+  ///
   /// Returns true for a successful match and false otherwise.
   ///
   /// null is a valid value, it means search is disabled.
@@ -110,7 +137,9 @@ class SelectionMenu<T> extends StatefulWidget {
   /// See [OnItemSelected].
   final OnItemSelected<T> onItemSelected;
 
-  /// The item from [itemsList] that should be selected when the Widget is first created.
+  /// The item from [itemsList] that should be selected when the Widget is first
+  /// created.
+  ///
   /// null is a valid value, it is interpreted as no default selection.
   ///
   /// In such a case when [showSelectedItemAsTrigger] is true, and this option
@@ -129,7 +158,7 @@ class SelectionMenu<T> extends StatefulWidget {
   /// If true, this Widget shows selected Item as the trigger.
   ///
   /// If [initiallySelectedItemIndex] is null, then a default trigger is shown, which
-  /// is build by [componentsConfiguration.triggerComponent].
+  /// is built by [componentsConfiguration.triggerComponent].
   ///
   /// If this value is not null and [componentsConfiguration.triggerFromItemComponent]
   /// is not null, then it is used to show the current selected Item.
@@ -225,14 +254,15 @@ class SelectionMenu<T> extends StatefulWidget {
             initiallySelectedItemIndex == null ||
                 initiallySelectedItemIndex >= 0 &&
                     initiallySelectedItemIndex < itemsList.length,
-            '''initiallySelectedItemIndex must be >= 0 and <= itemsList.length.
-            null is a valid value, it means search is disabled.'''),
-        assert(menuSizeConfiguration == null || componentsConfiguration == null,
-            '''menuSizeConfiguration already present in componentsConfiguration. 
-  MenuSizeConfiguration can be assigned to the constructor of a ComponentsConfiguration.
-  If a ComponentsConfiguration is assigned to this Widget (SelectionMenu), 
-  then assign the MenuSizeConfiguration to SelectionMenu.componentsConfiguration.menuSizeConfiguration 
-  instead of SelectionMenu.menuSizeConfiguration.'''),
+            "initiallySelectedItemIndex must be >= 0 and <= itemsList.length.\n"
+            "null is a valid value, it means search is disabled.\n"),
+        assert(
+            menuSizeConfiguration == null || componentsConfiguration == null,
+            "menuSizeConfiguration already present in componentsConfiguration.\n"
+            "MenuSizeConfiguration can be assigned to the constructor of a ComponentsConfiguration.\n"
+            "If a ComponentsConfiguration is assigned to this Widget (SelectionMenu),\n"
+            "then assign the MenuSizeConfiguration to SelectionMenu.componentsConfiguration.menuSizeConfiguration \n"
+            "instead of SelectionMenu.menuSizeConfiguration.\n"),
         super(key: key);
 
   @override

@@ -6,7 +6,11 @@ import 'package:selection_menu/src/widget_configurers/menu_configuration_classes
 import '../components_configuration.dart';
 
 /// Defines the appearance of [SelectionMenu] as a popup dialog menu.
-/// The type parameter T should be the same as the type parameter for [SelectionMenu].
+///
+/// ![How the style looks](https://i.imgur.com/XNFhN7Q.gif)
+///
+/// A series of examples/guides can be found
+/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).
 ///
 /// See [ComponentsConfiguration].
 class DialogComponentsConfiguration<T> extends ComponentsConfiguration<T> {

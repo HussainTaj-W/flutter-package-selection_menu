@@ -18,9 +18,12 @@
 /// * [DialogComponentsConfiguration] a dialog or popup style appearance.
 /// * [DropdownComponentsConfiguration] a dropdown style appearance.
 ///
+/// A series of examples/guides can be found
+/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).
+///
 /// # Components
 ///
-/// <img src="https://i.imgur.com/QL67eib.jpg" />
+/// <img src="https://i.imgur.com/QL67eib.jpg" width="658.5" height="384"/>
 ///
 /// Components are classes that can be used to configure [ComponentsConfiguration].
 ///
@@ -76,17 +79,9 @@
 /// dispose method, you can use [ComponentLifeCycleMixin].
 ///
 /// # Examples
-/// A series of detailed examples are available [here][examples link].
+/// A series of detailed examples are available [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).
 ///
-/// [Github Repo][repo link].
-///
-/// [examples link]: https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example
-///
-/// [components image link]: https://i.imgur.com/QL67eib.jpg =658x384
-///
-/// [repo link]: https://github.com/HussainTaj-W/flutter-package-selection_menu
-
-/// {@category Components}
+/// [Github Repo](https://github.com/HussainTaj-W/flutter-package-selection_menu).
 library components_configurations;
 
 //
@@ -97,3 +92,4 @@ import './src/widget_configurers/configurations/configurations.dart';
 
 export './src/widget_configurers/components/components.dart';
 export './src/widget_configurers/configurations/configurations.dart';
+export './src/widget_configurers/menu_configuration_classes.dart';
