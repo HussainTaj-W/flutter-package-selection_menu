@@ -3,7 +3,7 @@
 
 <!-- TODO add reference to docs -->
 
-![Components Image](../../data/selection_menu%20anatomy%20components.jpg)
+![Components Image](../data/selection_menu%20anatomy%20components.jpg)
 
 ## Code Highlights
 

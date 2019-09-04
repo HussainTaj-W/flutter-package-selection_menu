@@ -11,8 +11,8 @@ import 'package:selection_menu/components_configurations.dart';
 
 SelectionMenu<FlatColor>(
     componentsConfiguration: DropdownComponentsConfiguration<FlatColor>(
-      // Overriding default behavior.
-      // This will be demonstrated in later examples.
+      // Overriding specific default behavior will be demonstrated in 
+      // later examples.
     ),
     // Other properties...
   );
