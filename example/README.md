@@ -1,16 +1,21 @@
-# example
+# Examples
 
-A new Flutter application.
+This package provides examples for the [selection_menu](../) flutter 
+package.
 
-## Getting Started
+There is a series of detailed examples available [here](./lib/).
 
-This project is a starting point for a Flutter application.
+You can also visit the API docs for [selection_menu](../) 
+[here](TODO ADD)
+<!-- TODO-->
 
-A few resources to get you started if this is your first Flutter project:
+These examples only focus on explaining code related to [selection_menu](../). 
+Flutter Widgets and their usage will not be explained here.
+
+## Flutter Resources
 
 - [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
 - [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- [Flutter online documentation](https://flutter.dev/docs), which offers 
+  tutorials, samples, guidance on mobile development, and a full API 
+  reference.

@@ -2,30 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:selection_menu/components_configurations.dart';
 import 'package:selection_menu/selection_menu.dart';
 
+/// A callback [ListViewMenu] uses to get initially Selected item from
+/// [SelectionMenu].
 typedef T GetSelectedItem<T>();
 
+/// A callback for when an item in the list/menu is tapped.
 typedef void OnItemTapped();
 
 /// Returns a Widget that corresponds to the data [item] of type T.
+///
+/// The Widget must call [onItemTapped] otherwise it will not be selected.
 typedef Widget ItemBuilder<T>(
     BuildContext context, T item, OnItemTapped onItemTapped);
 
 /// Returns true if [item] of type T can be described using [searchString],
-/// hence, should be included in search results.
-/// Returns false otherwise.
+/// false otherwise.
 typedef bool ItemSearchMatcher<T>(String searchString, T item);
 
 /// A callback for when an item has been selected from the list in menu.
 typedef void OnItemSelected<T>(T item);
 
-/// A callback for when Empty space in the menu is pressed.
+/// A callback for when Empty space in the menu is tapped.
 typedef void OnMenuEmptySpaceTap();
 
 /// A Menu [Widget], that has a list of items and optionally a search bar.
 /// Type parameter T describes the type of Items in the List
 /// [ListViewMenu.itemsList].
 ///
-/// It uses [ComponentsConfiguration] from the _components_configurations_
+/// It uses [ComponentsConfiguration] from the *components_configurations*
 /// library to build various [Widget]s used in the menu.
 ///
 /// This Widget is used by [SelectionMenu].
@@ -46,11 +50,15 @@ class ListViewMenu<T> extends StatefulWidget {
   /// }
   /// ```
   ///
+  /// Must not be null.
+  ///
   /// See also:
   /// * [ItemBuilder].
   final ItemBuilder<T> itemBuilder;
 
   /// [List]<T> of [itemsList] to show in the menu.
+  ///
+  /// Must not be null.
   final List<T> itemsList;
 
   /// Method that matches a search string with an item from the list [itemsList].
@@ -85,12 +93,14 @@ class ListViewMenu<T> extends StatefulWidget {
   /// See also:
   /// * [ComponentsConfiguration].
   /// * [DialogComponentsConfiguration].
+  /// * [DropdownComponentsConfiguration].
   final ComponentsConfiguration<T> componentsConfiguration;
 
   /// A callback for when empty space in the menu is tapped.
   final OnMenuEmptySpaceTap onMenuEmptySpaceTap;
 
   /// This is the delay before the SelectionMenu actually starts searching.
+  ///
   /// Since search is called for every character change in the search field,
   /// it acts as a buffering time and does not perform search for every
   /// character update during this time.
@@ -101,6 +111,7 @@ class ListViewMenu<T> extends StatefulWidget {
   /// * [SearchFieldComponent].
   final Duration searchLatency;
 
+  /// If not null, uses this callback to set the initial selected value.
   final GetSelectedItem<T> getSelectedItem;
 
   const ListViewMenu({

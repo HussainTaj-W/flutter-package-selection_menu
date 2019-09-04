@@ -6,13 +6,12 @@ import 'package:selection_menu/src/widget_configurers/menu_configuration_classes
 
 import 'listview_menu.dart';
 
-/// A Widget that opens/closes a menu when triggered.
+/// A Widget that opens/closes a menu for selecting an item when triggered.
 ///
-/// The type parameter T describes the type of data each Item of the menu list is.
+/// The type parameter T describes the type of data each Item of the menu is.
 ///
 /// A typical Trigger is a button, however this is not a limitation.
 /// A typical menu has a ListView with items to select from.
-///
 ///
 /// Internally makes use of [ListViewMenu].
 ///
@@ -59,7 +58,8 @@ import 'listview_menu.dart';
 /// );
 /// ```
 ///
-/// A series of examples/guides can be found here. // TODO: added link
+/// A series of examples/guides can be found here.
+/// ()[];
 ///
 /// See Also:
 /// * [ListViewMenu].
