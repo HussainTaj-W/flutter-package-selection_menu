@@ -1,3 +1,7 @@
+example/ios/
+example/android/
+doc/
+
 # Miscellaneous
 *.class
 *.log
