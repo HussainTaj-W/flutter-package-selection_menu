@@ -25,7 +25,7 @@ class DialogComponentsConfiguration<T> extends ComponentsConfiguration<T> {
     MenuFlexValues menuFlexValues,
     MenuSizeConfiguration menuSizeConfiguration,
     MenuAnimationDurations menuAnimationDurations,
-    MenuAnimationCurves menuAnimationCurves,
+    MenuAnimationCurves menuAnimationCurvfes,
   }) : super(
           searchFieldComponent:
               searchFieldComponent ?? DialogSearchFieldComponent(),

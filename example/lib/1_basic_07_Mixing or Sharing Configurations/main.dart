@@ -20,8 +20,11 @@ class ExampleApp extends StatelessWidget {
     return Container(
       child: SelectionMenu<FlatColor>(
         componentsConfiguration: DropdownComponentsConfiguration<FlatColor>(
-          // You can override predefined components by passing them in the
+          // You can override predefined components by passing new ones in the
           // constructor like this.
+          //
+          // DialogAnimationComponent comes with DialogComponentsConfiguration
+          // all components are available for you to replace.
           animationComponent: DialogAnimationComponent(),
           menuSizeConfiguration:
               DialogComponentsConfiguration.defaultMenuSizeConfiguration,

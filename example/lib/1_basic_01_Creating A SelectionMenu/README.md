@@ -1,8 +1,6 @@
 # Creating A SelectionMenu
 *Example: 1_basic_01*
 
-How to create a basic SelecionMenu Widget.
-
 ## Code Highlights
 
 ```dart
