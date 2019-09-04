@@ -17,17 +17,24 @@ class TriggerComponentData implements ComponentData {
   /// Opens/Closes the menu associated with [SelectionMenu].
   ///
   /// Must not be null.
-  final ToggleMenu toggleMenu;
+  final TriggerMenu triggerMenu;
 
   /// Must not be null.
   final TickerProvider tickerProvider;
 
+  final MenuState menuState;
+
   TriggerComponentData({
     @required this.context,
-    @required this.toggleMenu,
+    @required this.triggerMenu,
     @required this.tickerProvider,
     @required this.selectedItem,
-  }) : assert(context != null && toggleMenu != null && tickerProvider != null,
+    @required this.menuState,
+  }) : assert(
+            context != null &&
+                triggerMenu != null &&
+                tickerProvider != null &&
+                menuState != null,
             ComponentAssertionMessages.nullAttributeInData);
   @override
   final dynamic selectedItem;
@@ -103,4 +110,4 @@ class TriggerComponent implements WidgetBuildingComponent {
 typedef Widget TriggerBuilder(TriggerComponentData data);
 
 /// Callback to Open/Close the menu.
-typedef void ToggleMenu();
+typedef void TriggerMenu();

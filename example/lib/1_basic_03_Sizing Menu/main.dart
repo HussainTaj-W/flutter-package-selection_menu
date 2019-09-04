@@ -66,6 +66,8 @@ class ExampleApp extends StatelessWidget {
 
           widthFraction: 0.1,
           // Preferred width in screen fraction.
+          //
+          // Similar to width.
 
           requestConstantHeight: true,
           // Defines that menu should try to take up constant height.
@@ -93,40 +95,47 @@ class ExampleApp extends StatelessWidget {
     return color.name.toLowerCase().contains(searchString.trim().toLowerCase());
   }
 
-  Widget itemBuilder(BuildContext context, FlatColor color) {
+  Widget itemBuilder(
+      BuildContext context, FlatColor color, OnItemTapped onItemTapped) {
     TextStyle textStyle = Theme.of(context).textTheme.title;
 
-    return Padding(
-      padding: EdgeInsets.all(10.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          ClipOval(
-            child: Container(
-              color: Color(color.hex),
-              height: 30,
-              width: 30,
-            ),
-          ),
-          Flexible(
-            fit: FlexFit.tight,
-            child: Padding(
-              padding: EdgeInsets.only(left: 10.0),
-              child: Text(
-                color.name,
-                style: textStyle,
+    return Material(
+      color: Colors.white,
+      child: InkWell(
+        onTap: onItemTapped,
+        child: Padding(
+          padding: EdgeInsets.all(10.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              ClipOval(
+                child: Container(
+                  color: Color(color.hex),
+                  height: 30,
+                  width: 30,
+                ),
               ),
-            ),
+              Flexible(
+                fit: FlexFit.tight,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 10.0),
+                  child: Text(
+                    color.name,
+                    style: textStyle,
+                  ),
+                ),
+              ),
+              Text(
+                ('#' + color.hex.toRadixString(16)).toUpperCase(),
+                style: textStyle.copyWith(
+                  color: Colors.grey.shade600,
+                  fontSize: textStyle.fontSize * 0.75,
+                ),
+              ),
+            ],
           ),
-          Text(
-            ('#' + color.hex.toRadixString(16)).toUpperCase(),
-            style: textStyle.copyWith(
-              color: Colors.grey.shade600,
-              fontSize: textStyle.fontSize * 0.75,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -142,12 +151,14 @@ class ExampleApp extends StatelessWidget {
 void main() => runApp(
       MaterialApp(
         theme: ThemeData.light().copyWith(
-          accentColor: Colors
-              .redAccent, // Used by the default Dialog Style of SelectionMenu
-        ),
+            accentColor: Colors
+                .redAccent, // Used by the default Dialog Style of SelectionMenu
+            cardTheme: ThemeData.light().cardTheme.copyWith(
+                  elevation: 5,
+                )),
         home: Material(
           child: Container(
-            color: Colors.black26,
+            color: Color(0xff95a5a6),
             child: Center(
               child: ExampleApp(),
             ),

@@ -24,6 +24,8 @@ class DialogComponentsConfiguration<T> extends ComponentsConfiguration<T> {
     //
     MenuFlexValues menuFlexValues,
     MenuSizeConfiguration menuSizeConfiguration,
+    MenuAnimationDurations menuAnimationDurations,
+    MenuAnimationCurves menuAnimationCurves,
   }) : super(
           searchFieldComponent:
               searchFieldComponent ?? DialogSearchFieldComponent(),
@@ -50,6 +52,12 @@ class DialogComponentsConfiguration<T> extends ComponentsConfiguration<T> {
           //
           menuSizeConfiguration:
               menuSizeConfiguration ?? defaultMenuSizeConfiguration,
+          //
+          menuAnimationDurations:
+              menuAnimationDurations ?? defaultMenuAnimationDurations,
+          //
+          menuAnimationCurves:
+              menuAnimationCurves ?? defaultMenuAnimationCurves,
         );
 
   static MenuFlexValues defaultMenuFlexValues = MenuFlexValues(
@@ -65,6 +73,18 @@ class DialogComponentsConfiguration<T> extends ComponentsConfiguration<T> {
     maxHeightFraction: 0.8,
     minHeightFraction: 0.5,
     minWidthFraction: 0.5,
+  );
+
+  static MenuAnimationDurations defaultMenuAnimationDurations =
+      const MenuAnimationDurations(
+    forward: const Duration(milliseconds: 500),
+    reverse: const Duration(milliseconds: 500),
+  );
+
+  static MenuAnimationCurves defaultMenuAnimationCurves =
+      const MenuAnimationCurves(
+    forward: Curves.elasticOut,
+    reverse: Curves.elasticOut,
   );
 }
 
@@ -212,45 +232,104 @@ class DialogMenuComponent extends MenuComponent {
 }
 
 /// A [AnimationComponent] used by [DialogComponentsConfiguration].
-class DialogAnimationComponent extends AnimationComponent {
+class DialogAnimationComponent extends AnimationComponent
+    with ComponentLifeCycleMixin {
   DialogAnimationComponent() {
     super.builder = _builder;
   }
 
+  AnimationController _animationController;
+  Animation _animation;
+  MenuState _state;
+
   Widget _builder(AnimationComponentData data) {
-    Matrix4 fromTween = Matrix4.translationValues(
-        data.constraints.maxWidth / 2, data.constraints.maxHeight / 2, 0.0)
-      ..scale(0.1);
+    if (_animationController == null) {
+      _animationController = AnimationController(
+        vsync: data.tickerProvider,
+        duration: data.menuAnimationDurations.forward,
+        reverseDuration: data.menuAnimationDurations.reverse,
+      );
 
-    Matrix4 toTween = Matrix4.translationValues(0, 0, 0)..scale(1.0);
+      _animationController.addStatusListener((status) {
+        switch (status) {
+          case AnimationStatus.forward:
+            _state = MenuState.Opened;
+            break;
+          case AnimationStatus.reverse:
+            _state = MenuState.Closed;
+            break;
+          case AnimationStatus.dismissed:
+            continue completed;
 
-    return Container(
-      child: AnimatedContainer(
-        color: Colors.transparent,
-        curve: data.menuAnimationState == MenuAnimationState.OpeningStart ||
-                data.menuAnimationState == MenuAnimationState.ClosingEnd
-            ? Curves.elasticIn
-            : Curves.elasticOut,
-        transform: data.menuAnimationState == MenuAnimationState.OpeningStart ||
-                data.menuAnimationState == MenuAnimationState.ClosingEnd
-            ? fromTween
-            : toTween,
-        duration: data.menuAnimationState == MenuAnimationState.OpeningEnd
-            ? data.menuAnimationDurations.forward
-            : data.menuAnimationDurations.reverse,
-        child: Material(
-          color: Colors.transparent,
-          child: Card(
-            elevation: 3,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: data.child,
-            ),
+          completed:
+          case AnimationStatus.completed:
+            if (_state == MenuState.Opened)
+              data.opened();
+            else
+              data.closed();
+            break;
+        }
+      });
+      _animation = CurvedAnimation(
+        parent: _animationController,
+        curve: data.menuAnimationCurves.forward,
+        reverseCurve: data.menuAnimationCurves.reverse,
+      );
+    }
+    if (data.menuState == MenuState.OpeningEnd) {
+      _animationController.forward();
+    }
+
+    if (data.menuState == MenuState.ClosingEnd) {
+      Duration duration = Duration(
+          microseconds: (data.menuAnimationDurations.reverse.inMicroseconds *
+                  _animation.value)
+              .round());
+      if (duration < const Duration(milliseconds: 10)) {
+        data.closed();
+      } else {
+        _animationController.reverseDuration = duration;
+        _animationController.reverse();
+      }
+    }
+
+    Widget toAnimate = Material(
+      color: Colors.transparent,
+      child: Card(
+        margin: EdgeInsets.zero,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeOut,
+          constraints: data.constraints,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: data.child,
           ),
         ),
       ),
-      constraints: data.constraints,
     );
+
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (BuildContext context, Widget toAnimate) {
+        return Transform.scale(
+          scale: _animation.value,
+          child: toAnimate,
+        );
+      },
+      child: toAnimate,
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController?.dispose();
+    _animationController = null;
+  }
+
+  @override
+  void init() {
+    _animationController = null;
   }
 }
 
@@ -264,6 +343,11 @@ class DialogMenuPositionAndSizeComponent extends MenuPositionAndSizeComponent {
     MediaQueryData mqData = MediaQuery.of(data.context);
 
     BoxConstraints constraints = data.constraints;
+    if (data.menuSizeConfiguration.requestConstantHeight) {
+      constraints = BoxConstraints.tight(
+          data.menuSizeConfiguration.getPreferredSize(mqData.size) ??
+              data.constraints.biggest);
+    }
 
     // Available Height for the menu to be shown in.
     double height = 0;
@@ -314,7 +398,7 @@ class DialogTriggerComponent extends TriggerComponent {
   Widget _builder(TriggerComponentData data) {
     return RaisedButton(
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      onPressed: data.toggleMenu,
+      onPressed: data.triggerMenu,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[

@@ -6,12 +6,14 @@ import '../data/FlatColor.dart';
 void main() => runApp(
       MaterialApp(
         theme: ThemeData.light().copyWith(
-          accentColor: Colors
-              .redAccent, // Used by the default Dialog Style of SelectionMenu
-        ),
+            accentColor: Colors
+                .redAccent, // Used by the default Dialog Style of SelectionMenu
+            cardTheme: ThemeData.light().cardTheme.copyWith(
+                  elevation: 5,
+                )),
         home: Material(
           child: Container(
-            color: Colors.black26,
+            color: Color(0xff95a5a6),
             child: Center(
               child: ExampleApp(),
             ),
@@ -32,12 +34,14 @@ class ExampleApp extends StatelessWidget {
 
       itemBuilder: this.itemBuilder,
       // A callback to return a widget created from an Item (type FlatColor in this example.)
+      //
       // Since SelectionMenu.showSelectedItemAsButton is true (see below), this
       // itemBuilder will be used to create the button(trigger) as well as the items.
       //
       // We will later learn a better alternative to create a button(trigger) using
       // ComponentsConfiguration, in the upcoming examples.
       //
+      // Note: you must handle taps, and upon tap call the onItemTapped callback.
       // Function defined below for the sake of brevity.
 
       onItemSelected: this.onItemSelected,
@@ -66,43 +70,55 @@ class ExampleApp extends StatelessWidget {
       closeMenuOnItemSelected: true,
       // Defaults to true, used only for demonstration purposes.
       // Defines if the menu should close if the user has selected an item.
+
+      allowMenuToCloseBeforeOpenCompletes: true,
+      // Defaults to true, used only for demonstration purposes.
+      // Defines if the menu should be able to close before the opening animation
+      // completes.
     );
   }
 
-  Widget itemBuilder(BuildContext context, FlatColor color) {
+  Widget itemBuilder(
+      BuildContext context, FlatColor color, OnItemTapped onItemTapped) {
     TextStyle textStyle = Theme.of(context).textTheme.title;
 
-    return Padding(
-      padding: EdgeInsets.all(10.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          ClipOval(
-            child: Container(
-              color: Color(color.hex),
-              height: 30,
-              width: 30,
-            ),
-          ),
-          Flexible(
-            fit: FlexFit.tight,
-            child: Padding(
-              padding: EdgeInsets.only(left: 10.0),
-              child: Text(
-                color.name,
-                style: textStyle,
+    return Material(
+      color: Colors.white,
+      child: InkWell(
+        onTap: onItemTapped,
+        child: Padding(
+          padding: EdgeInsets.all(10.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              ClipOval(
+                child: Container(
+                  color: Color(color.hex),
+                  height: 30,
+                  width: 30,
+                ),
               ),
-            ),
+              Flexible(
+                fit: FlexFit.tight,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 10.0),
+                  child: Text(
+                    color.name,
+                    style: textStyle,
+                  ),
+                ),
+              ),
+              Text(
+                ('#' + color.hex.toRadixString(16)).toUpperCase(),
+                style: textStyle.copyWith(
+                  color: Colors.grey.shade600,
+                  fontSize: textStyle.fontSize * 0.75,
+                ),
+              ),
+            ],
           ),
-          Text(
-            ('#' + color.hex.toRadixString(16)).toUpperCase(),
-            style: textStyle.copyWith(
-              color: Colors.grey.shade600,
-              fontSize: textStyle.fontSize * 0.75,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

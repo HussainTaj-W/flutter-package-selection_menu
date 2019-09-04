@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:selection_menu/selection_menu.dart';
 import 'package:selection_menu/src/widget_configurers/components/components.dart';
-import 'package:selection_menu/src/widget_configurers/menu_configuration_classes.dart';
 
 import '../components_configuration.dart';
 
@@ -26,6 +25,8 @@ class DropdownComponentsConfiguration<T> extends ComponentsConfiguration<T> {
     //
     MenuFlexValues menuFlexValues,
     MenuSizeConfiguration menuSizeConfiguration,
+    MenuAnimationDurations menuAnimationDurations,
+    MenuAnimationCurves menuAnimationCurves,
   }) : super(
           searchFieldComponent:
               searchFieldComponent ?? DropdownSearchFieldComponent(),
@@ -54,6 +55,12 @@ class DropdownComponentsConfiguration<T> extends ComponentsConfiguration<T> {
           //
           menuSizeConfiguration:
               menuSizeConfiguration ?? defaultMenuSizeConfiguration,
+          //
+          menuAnimationDurations:
+              menuAnimationDurations ?? defaultMenuAnimationDurations,
+          //
+          menuAnimationCurves:
+              menuAnimationCurves ?? defaultMenuAnimationCurves,
         );
 
   static MenuFlexValues defaultMenuFlexValues = MenuFlexValues(
@@ -68,7 +75,19 @@ class DropdownComponentsConfiguration<T> extends ComponentsConfiguration<T> {
     minHeightFraction: 0.3,
     minWidthFraction: 0.3,
     maxHeightFraction: 0.8,
-    maxWidthFraction: 0.5,
+    maxWidthFraction: 0.7,
+  );
+
+  static MenuAnimationDurations defaultMenuAnimationDurations =
+      const MenuAnimationDurations(
+    forward: const Duration(milliseconds: 500),
+    reverse: const Duration(milliseconds: 500),
+  );
+
+  static MenuAnimationCurves defaultMenuAnimationCurves =
+      const MenuAnimationCurves(
+    forward: Curves.easeOut,
+    reverse: Curves.easeOut,
   );
 }
 
@@ -77,49 +96,80 @@ class DropdownAnimationComponent extends AnimationComponent
     with ComponentLifeCycleMixin {
   AnimationController _animationController;
   Animation<double> _animation;
+  MenuState _state;
 
   DropdownAnimationComponent() {
     super.builder = _builder;
   }
 
   Widget _builder(AnimationComponentData data) {
-    _animationController ??= AnimationController(
-      vsync: data.tickerProvider,
-      duration: data.menuAnimationDurations.forward,
-      reverseDuration: data.menuAnimationDurations.reverse,
-    );
-    _animation ??= CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOut,
-    );
+    if (_animationController == null) {
+      _animationController = AnimationController(
+        vsync: data.tickerProvider,
+        duration: data.menuAnimationDurations.forward,
+        reverseDuration: data.menuAnimationDurations.reverse,
+      );
 
-    if (data.menuAnimationState == MenuAnimationState.OpeningEnd)
+      _animationController.addStatusListener((status) {
+        switch (status) {
+          case AnimationStatus.forward:
+            _state = MenuState.Opened;
+            break;
+          case AnimationStatus.reverse:
+            _state = MenuState.Closed;
+            break;
+          case AnimationStatus.dismissed:
+            continue completed;
+
+          completed:
+          case AnimationStatus.completed:
+            if (_state == MenuState.Opened)
+              data.opened();
+            else
+              data.closed();
+            break;
+        }
+      });
+      _animation = CurvedAnimation(
+        parent: _animationController,
+        curve: data.menuAnimationCurves.forward,
+        reverseCurve: data.menuAnimationCurves.reverse,
+      );
+    }
+    if (data.menuState == MenuState.OpeningEnd) {
       _animationController.forward();
+    }
 
-    if (data.menuAnimationState == MenuAnimationState.ClosingEnd)
-      _animationController.reverse();
+    if (data.menuState == MenuState.ClosingEnd) {
+      Duration duration = Duration(
+          microseconds: (data.menuAnimationDurations.reverse.inMicroseconds *
+                  _animation.value)
+              .round());
+      if (duration < const Duration(milliseconds: 10)) {
+        data.closed();
+      } else {
+        _animationController.reverseDuration = duration;
+        _animationController.reverse();
+      }
+    }
 
-    return Container(
-      margin: EdgeInsets.only(right: 1, bottom: 1),
-      decoration: BoxDecoration(
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-              color: Colors.black.withAlpha(150),
-              blurRadius: 3,
-              offset: Offset(0, 2))
-        ],
-        color: Theme.of(data.context).cardTheme.color ?? Colors.white,
-      ),
-      padding: EdgeInsets.all(8.0),
-      child: SizeTransition(
-        axisAlignment: -1.0,
-        sizeFactor: _animation,
-        child: Container(
-          child: data.child,
-          constraints: data.constraints,
+    return Material(
+      color: Colors.transparent,
+      child: Card(
+        margin: EdgeInsets.only(top: 2),
+        shape: ContinuousRectangleBorder(),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeOut,
+          padding: EdgeInsets.all(8.0),
+          child: SizeTransition(
+            axisAlignment: -1.0,
+            sizeFactor: _animation,
+            child: data.child,
+          ),
+          constraints: BoxConstraints.loose(data.constraints.biggest),
         ),
       ),
-      constraints: BoxConstraints.loose(data.constraints.biggest),
     );
   }
 
@@ -280,70 +330,96 @@ class DropdownMenuPositionAndSizeComponent
   MenuPositionAndSize _builder(MenuPositionAndSizeComponentData data) {
     MediaQueryData mqData = MediaQuery.of(data.context);
 
-    final Offset buttonGlobalPosition = data.triggerPositionAndSize.position;
+    final Offset buttonPosition = data.triggerPositionAndSize.position;
     final Size buttonSize = data.triggerPositionAndSize.size;
     BoxConstraints constraints = data.constraints;
 
-    double midScreenY = 0;
-    if (data.menuSizeConfiguration.requestAvoidBottomInset) {
-      // Middle of screen excluding the Insets (The area taken by keyboard).
-      midScreenY = (mqData.size.height - mqData.viewInsets.bottom) / 2;
-    } else {
-      // Middle of the screen.
-      midScreenY = mqData.size.height / 2;
+    // Height of visible screen area.
+    double heightAvailable = constraints.maxHeight;
+
+    // If constant height is requested.
+    if (data.menuSizeConfiguration.requestConstantHeight) {
+      Size size = data.menuSizeConfiguration.getPreferredSize(mqData.size);
+      constraints = BoxConstraints.tight(size ?? constraints.biggest);
     }
+    if (data.menuSizeConfiguration.requestAvoidBottomInset) {
+      heightAvailable = mqData.size.height -
+          mqData.viewPadding.top -
+          mqData.viewInsets.bottom;
+    } else {
+      heightAvailable = mqData.size.height - mqData.viewPadding.top;
+    }
+
     // An offset that aligns button and menu to vertical center.
     double xOffset = -(constraints.maxWidth - buttonSize.width) / 2;
+
+    // If offset makes the menu go out of screen bounds from left side.
+    if (buttonPosition.dx + xOffset < 0) {
+      xOffset = -buttonPosition.dx;
+    } // If offset makes the menu go out of screen bounds from right side.
+    else if (buttonPosition.dx + buttonSize.width - xOffset >
+        mqData.size.width) {
+      xOffset = -mqData.size.width +
+          (buttonPosition.dx + constraints.maxWidth - xOffset);
+    }
+
+    constraints = constraints
+        .copyWith(maxHeight: min(constraints.maxHeight, heightAvailable))
+        .normalize();
+
     // An offset that pushes the menu down, so the button is visible.
     double yOffset = buttonSize.height;
 
-    // If constant height is not requested.
-    if (!data.menuSizeConfiguration.requestConstantHeight) {
-      // If button is in the lower half of the screen.
-      if (buttonGlobalPosition.dy + buttonSize.height / 2 > midScreenY) {
-        constraints = constraints
-            .copyWith(
-              maxHeight: min(constraints.maxHeight,
-                  buttonGlobalPosition.dy - mqData.viewPadding.top),
-            )
-            .normalize();
-      } else // the button is in the upper half of the screen.
-      {
-        constraints = constraints
-            .copyWith(
+    double midScreenY = heightAvailable / 2;
+
+    // Is on upper half of available space
+    if (buttonPosition.dy - mqData.viewPadding.top + buttonSize.height / 2 <
+        midScreenY) {
+      // How much size can the menu take below the trigger
+      constraints = constraints
+          .copyWith(
               maxHeight: min(
                   constraints.maxHeight,
-                  mqData.size.height -
-                      buttonGlobalPosition.dy -
-                      buttonSize.height),
-            )
-            .normalize();
+                  heightAvailable -
+                      buttonSize.height -
+                      buttonPosition.dy +
+                      mqData.viewPadding.top))
+          .normalize();
+      // if overflows below, this means minHeight was larger than maxHeight
+      if (buttonPosition.dy - mqData.viewPadding.top + yOffset + constraints.maxHeight >
+          heightAvailable) {
+        // offset so that the bottom of menu matches with the bottom of the view
+        yOffset = -buttonPosition.dy +
+            heightAvailable +
+            mqData.viewPadding.top -
+            constraints.maxHeight;
+        // if overflows from above, offset it down to the top of view
+        if (yOffset + buttonPosition.dy < mqData.viewPadding.top)
+          yOffset = - buttonPosition.dy + mqData.viewPadding.top;
       }
-    }
-    // if button is in the lower half of the screen.
-    if (buttonGlobalPosition.dy + buttonSize.height / 2 > midScreenY) {
-      // the offset should place the menu above the button.
-      yOffset = -constraints.maxHeight;
-    }
+    } else {
+      // is on the lower half of available space
+      // How much space can it take above the trigger
+      constraints = constraints
+          .copyWith(
+              maxHeight: min(constraints.maxHeight,
+                  buttonPosition.dy - mqData.viewPadding.top))
+          .normalize();
 
-    // If offset makes the menu go out of screen bounds from left side.
-    if (buttonGlobalPosition.dx + xOffset < 0) {
-      xOffset = -buttonGlobalPosition.dx;
-    } // If offset makes the menu go out of screen bounds from right side.
-    else if (buttonGlobalPosition.dx + buttonSize.width - xOffset >
-        mqData.size.width) {
-      xOffset += mqData.size.width -
-          (buttonGlobalPosition.dx + constraints.maxWidth + xOffset);
-    }
-
-    // If offset makes the menu go out of screen bounds from above.
-    if (buttonGlobalPosition.dy + yOffset < 0) {
-      yOffset = -buttonGlobalPosition.dy + mqData.viewPadding.top;
-    } // If offset makes the menu go out of screen bounds from below.
-    else if (buttonGlobalPosition.dy + yOffset + constraints.maxHeight >
-        mqData.size.height) {
-      yOffset += mqData.size.height -
-          (buttonGlobalPosition.dy + constraints.maxHeight + yOffset);
+      // button is below view
+      if (buttonPosition.dy - mqData.viewPadding.top > heightAvailable) {
+        // Offset menu so that the menu bottom matches the view bottom
+        yOffset = -buttonPosition.dy +
+            mqData.viewPadding.top +
+            heightAvailable -
+            constraints.maxHeight;
+      } else {
+        // Offset menu so that the menu bottom matches the trigger top edge
+        yOffset = -constraints.maxHeight;
+      }
+      if (buttonPosition.dy + yOffset < mqData.viewPadding.top) {
+        yOffset = -buttonPosition.dy + mqData.viewPadding.top;
+      }
     }
 
     return MenuPositionAndSize(
@@ -362,12 +438,12 @@ class DropdownTriggerComponent extends TriggerComponent {
   Widget _builder(TriggerComponentData data) {
     return RaisedButton(
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      onPressed: data.toggleMenu,
+      onPressed: data.triggerMenu,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Text("Choose "),
-          Icon(Icons.arrow_drop_down),
+          const Text("Choose "),
+          const Icon(Icons.arrow_drop_down),
         ],
       ),
     );

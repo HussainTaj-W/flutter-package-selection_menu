@@ -17,27 +17,15 @@ class ExampleApp extends StatelessWidget {
     Size screenSize = MediaQuery.of(context).size;
     return Container(
       child: SelectionMenu<FlatColor>(
-        // ComponentsConfiguration is the core of the high customizability this
-        // Widget provides.
-        //
-        // The default ComponentsConfiguration is DialogComponentsConfiguration.
-        // A second one, and the only other provided predefined so far, is
-        // DropdownComponentsConfiguration, which displays a dropdown style menu.
+        allowMenuToCloseBeforeOpenCompletes: false,
         componentsConfiguration: DropdownComponentsConfiguration<FlatColor>(
-          // ComponentsConfiguration take a MenuSizeConfiguration too.
-          // If you are providing a ComponentsConfiguration and a MenuSizeConfiguration,
-          // you must provide the size configuration inside the ComponentsConfiguration.
           menuSizeConfiguration: MenuSizeConfiguration(
             maxHeightFraction: 0.8,
-            minHeightFraction: 0.3,
+            minHeightFraction: 0.0,
             maxWidthFraction: 0.8,
             minWidthFraction: 0.3,
-            requestAvoidBottomInset: true,
-            enforceMinWidthToMatchTrigger: true,
-            requestConstantHeight: true,
           ),
         ),
-
         itemsList: colors,
         itemBuilder: this.itemBuilder,
         onItemSelected: this.onItemSelected,
@@ -55,40 +43,47 @@ class ExampleApp extends StatelessWidget {
 
   //region From Previous Example
 
-  Widget itemBuilder(BuildContext context, FlatColor color) {
+  Widget itemBuilder(
+      BuildContext context, FlatColor color, OnItemTapped onItemTapped) {
     TextStyle textStyle = Theme.of(context).textTheme.title;
 
-    return Padding(
-      padding: EdgeInsets.all(10.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          ClipOval(
-            child: Container(
-              color: Color(color.hex),
-              height: 30,
-              width: 30,
-            ),
-          ),
-          Flexible(
-            fit: FlexFit.tight,
-            child: Padding(
-              padding: EdgeInsets.only(left: 10.0),
-              child: Text(
-                color.name,
-                style: textStyle,
+    return Material(
+      color: Colors.white,
+      child: InkWell(
+        onTap: onItemTapped,
+        child: Padding(
+          padding: EdgeInsets.all(10.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              ClipOval(
+                child: Container(
+                  color: Color(color.hex),
+                  height: 30,
+                  width: 30,
+                ),
               ),
-            ),
+              Flexible(
+                fit: FlexFit.tight,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 10.0),
+                  child: Text(
+                    color.name,
+                    style: textStyle,
+                  ),
+                ),
+              ),
+              Text(
+                ('#' + color.hex.toRadixString(16)).toUpperCase(),
+                style: textStyle.copyWith(
+                  color: Colors.grey.shade600,
+                  fontSize: textStyle.fontSize * 0.75,
+                ),
+              ),
+            ],
           ),
-          Text(
-            ('#' + color.hex.toRadixString(16)).toUpperCase(),
-            style: textStyle.copyWith(
-              color: Colors.grey.shade600,
-              fontSize: textStyle.fontSize * 0.75,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -108,12 +103,14 @@ class ExampleApp extends StatelessWidget {
 void main() => runApp(
       MaterialApp(
         theme: ThemeData.light().copyWith(
-          accentColor: Colors
-              .redAccent, // Used by the default Dialog Style of SelectionMenu
-        ),
+            accentColor: Colors
+                .redAccent, // Used by the default Dialog Style of SelectionMenu
+            cardTheme: ThemeData.light().cardTheme.copyWith(
+                  elevation: 5,
+                )),
         home: Material(
           child: Container(
-            color: Colors.black26,
+            color: Color(0xff95a5a6),
             child: SafeArea(
               child: Align(
                 alignment: Alignment.topCenter,

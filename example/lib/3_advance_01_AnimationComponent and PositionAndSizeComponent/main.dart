@@ -11,8 +11,6 @@ import 'package:selection_menu/selection_menu.dart';
 //
 // main function has been moved to the end.
 
-final Size _itemSize = const Size(200, 200);
-
 class MyAnimationComponent extends AnimationComponent
     with ComponentLifeCycleMixin // To get hooks to the Menu's lifecycle
 {
@@ -22,7 +20,7 @@ class MyAnimationComponent extends AnimationComponent
   MyAnimationComponent() {
     super.builder = _builder;
   }
-
+  MenuState _lastState;
   Widget _builder(AnimationComponentData data) {
     if (_animationController == null) {
       _animationController = AnimationController(
@@ -34,10 +32,26 @@ class MyAnimationComponent extends AnimationComponent
         parent: _animationController,
         curve: Curves.elasticOut,
       );
+
+      // Add a listener to know when animation stops.
+      // Since you need to explicit report to the widget that the animation
+      // state has changed.
+      _animation.addStatusListener((status) {
+        if (status == AnimationStatus.dismissed ||
+            status == AnimationStatus.completed) {
+          if (_lastState == MenuState.OpeningEnd) {
+            // To tell the widget that menu has opened
+            data.opened();
+          } else {
+            // to tell the widget that the menu has closed.
+            data.closed();
+          }
+        }
+      });
     }
 
-    switch (data.menuAnimationState) {
-      case MenuAnimationState.OpeningStart:
+    switch (data.menuState) {
+      case MenuState.OpeningStart:
         // Widget is first built for this state.
         //
         // When using Implicit Animations, define widgets with starting
@@ -47,27 +61,35 @@ class MyAnimationComponent extends AnimationComponent
         // AnimatedContainer(color: Colors.transparent,);
 
         break;
-      case MenuAnimationState.OpeningEnd:
+      case MenuState.OpeningEnd:
         // Widget is built for this state Immediately after OpeningStart state.
         //
         // When using Implicit Animation, define widgets with ending configurations
         // at this point.
+        // Since implicit animations don't typically have status listeners,
+        // you may use data.willOpenAfter(Duration);
         //
         // like :
         // AnimatedContainer(color: Colors.black,);
+        //
+        // For explicit animations start animation like so:
         _animationController.forward();
+        _lastState = data.menuState;
         break;
-      case MenuAnimationState.Opened:
+      case MenuState.Opened:
         // Widget is not built for this state.
         break;
-      case MenuAnimationState.ClosingStart:
+      case MenuState.ClosingStart:
         // Just like to OpeningStart.
         break;
-      case MenuAnimationState.ClosingEnd:
+      case MenuState.ClosingEnd:
         // Just like OpeningEnd.
+        //
+        // you can use data.willCloseAfter(Duration); for implicit animations.
         _animationController.reverse();
+        _lastState = data.menuState;
         break;
-      case MenuAnimationState.Closed:
+      case MenuState.Closed:
         // Widget is not built for this state.
         break;
     }
@@ -105,6 +127,8 @@ class MyAnimationComponent extends AnimationComponent
 }
 
 class ExampleApp extends StatelessWidget {
+  final double itemSize = 200;
+  final double navButtonSize = 40;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -114,24 +138,24 @@ class ExampleApp extends StatelessWidget {
           animationComponent: MyAnimationComponent(),
           menuPositionAndSizeComponent: MenuPositionAndSizeComponent(
               builder: _menuSizeAndPositionBuilder),
-          listViewComponent: MyListViewComponent(),
+          listViewComponent: MyListViewComponent(
+              itemSize: itemSize, navigationButtonSize: navButtonSize),
           menuSizeConfiguration: MenuSizeConfiguration(
-            maxWidth: 200,
-            maxHeight: 300,
-            minWidth: 200,
-            minHeight: 300,
+            maxWidthFraction: 1.0,
+            maxHeightFraction: 1.0,
+            minHeightFraction: 0.1,
+            minWidthFraction: 0.1,
           ),
           triggerComponent: TriggerComponent(builder: _triggerBuilder),
           triggerFromItemComponent: TriggerFromItemComponent<FlatColor>(
               builder: _triggerFromItemBuilder),
+          menuAnimationDurations: MenuAnimationDurations(
+              forward: Duration(seconds: 2), reverse: Duration(seconds: 1)),
         ),
-        menuAnimationDurations: MenuAnimationDurations(
-            forward: Duration(seconds: 2), reverse: Duration(seconds: 1)),
         itemsList: colors,
         itemBuilder: this.itemBuilder,
         onItemSelected: this.onItemSelected,
         showSelectedItemAsTrigger: true,
-        initiallySelectedItemIndex: 0,
       ),
     );
   }
@@ -159,13 +183,13 @@ class ExampleApp extends StatelessWidget {
 
   Widget _triggerFromItemBuilder(TriggerFromItemComponentData<FlatColor> data) {
     return SizedBox(
-      height: 40,
-      width: 40,
+      height: navButtonSize,
+      width: navButtonSize,
       child: RaisedButton(
-        onPressed: data.toggleMenu,
+        onPressed: data.triggerMenu,
         color: Color(data.item.hex),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(navButtonSize / 2),
         ),
         child: Icon(
           Icons.keyboard_arrow_down,
@@ -176,22 +200,32 @@ class ExampleApp extends StatelessWidget {
     );
   }
 
-  Widget itemBuilder(BuildContext context, FlatColor color) {
+  Widget itemBuilder(
+      BuildContext context, FlatColor color, OnItemTapped onItemTapped) {
     TextStyle textStyle = Theme.of(context).textTheme.title;
 
     return Container(
-      constraints: BoxConstraints.tight(_itemSize),
+      constraints: BoxConstraints.tight(Size(itemSize, itemSize)),
       child: Stack(
         overflow: Overflow.clip,
         alignment: Alignment.center,
         children: <Widget>[
-          Container(
+          Material(
             color: Color(color.hex),
+            child: InkWell(
+              onTap: onItemTapped,
+            ),
           ),
-          Text(
-            color.name,
-            style: textStyle.copyWith(
-              color: Colors.white,
+          GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () {
+              onItemTapped();
+            },
+            child: Text(
+              color.name,
+              style: textStyle.copyWith(
+                color: Colors.white,
+              ),
             ),
           ),
         ],
@@ -202,10 +236,19 @@ class ExampleApp extends StatelessWidget {
   //region From Previous Example
 
   Widget _triggerBuilder(TriggerComponentData data) {
-    return RaisedButton(
-      onPressed: data.toggleMenu,
-      color: Colors.white,
-      child: Text("Select Color"),
+    return SizedBox(
+      height: navButtonSize,
+      width: navButtonSize,
+      child: RaisedButton(
+        onPressed: data.triggerMenu,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(navButtonSize / 2),
+        ),
+        child: Icon(
+          Icons.keyboard_arrow_down,
+        ),
+        padding: EdgeInsets.zero,
+      ),
     );
   }
 
@@ -221,17 +264,25 @@ class ExampleApp extends StatelessWidget {
 }
 
 class MyListViewComponent extends ListViewComponent {
-  MyListViewComponent() {
-    super.builder = _builder;
-  }
-
+  final double itemSize;
+  final double navigationButtonSize;
   final ScrollController _scrollController = ScrollController();
   int _currentIndex = 0;
+
+  MyListViewComponent({
+    @required this.itemSize,
+    @required this.navigationButtonSize,
+  }) : assert(itemSize != null, "Size should be provided.") {
+    super.builder = _builder;
+    _scrollController.addListener(() {
+      _currentIndex = (_scrollController.offset / itemSize).round();
+    });
+  }
 
   void _scrollUp() {
     if (_currentIndex > 0) {
       _scrollController.animateTo(
-        (--_currentIndex) * _itemSize.height,
+        (--_currentIndex) * itemSize,
         duration: Duration(milliseconds: 500),
         curve: Curves.easeOut,
       );
@@ -239,10 +290,10 @@ class MyListViewComponent extends ListViewComponent {
   }
 
   void _scrollDown() {
-    if ((_currentIndex + 1) * _itemSize.height <=
+    if ((_currentIndex + 1) * itemSize <=
         _scrollController.position.maxScrollExtent) {
       _scrollController.animateTo(
-        (++_currentIndex) * _itemSize.height,
+        (++_currentIndex) * itemSize,
         duration: Duration(milliseconds: 500),
         curve: Curves.easeOut,
       );
@@ -257,26 +308,29 @@ class MyListViewComponent extends ListViewComponent {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         SizedBox(
-          height: 30,
-          width: 30,
+          height: navigationButtonSize,
+          width: navigationButtonSize,
           child: RaisedButton(
             onPressed: _scrollUp,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(navigationButtonSize / 2)),
             padding: EdgeInsets.zero,
             child: Icon(
               Icons.keyboard_arrow_up,
             ),
           ),
         ),
-        Spacer(),
-        Container(
-          constraints: BoxConstraints.tight(_itemSize),
+        SizedBox(
+          height: navigationButtonSize,
+        ),
+        SizedBox(
+          width: itemSize,
+          height: itemSize,
           child: Card(
             clipBehavior: Clip.hardEdge,
             elevation: 4,
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(_itemSize.height / 2)),
+                borderRadius: BorderRadius.circular(itemSize / 2)),
             child: ListView.builder(
               controller: _scrollController,
               itemBuilder: data.itemBuilder,
@@ -285,13 +339,15 @@ class MyListViewComponent extends ListViewComponent {
             ),
           ),
         ),
-        Spacer(),
         SizedBox(
-          height: 30,
-          width: 30,
+          height: navigationButtonSize,
+        ),
+        SizedBox(
+          height: navigationButtonSize,
+          width: navigationButtonSize,
           child: RaisedButton(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(navigationButtonSize / 2)),
             onPressed: _scrollDown,
             padding: EdgeInsets.zero,
             child: Icon(

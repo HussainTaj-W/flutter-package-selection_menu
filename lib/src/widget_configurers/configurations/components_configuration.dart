@@ -85,6 +85,10 @@ class ComponentsConfiguration<T> {
   /// See [MenuSizeConfiguration].
   final MenuSizeConfiguration menuSizeConfiguration;
 
+  final MenuAnimationDurations menuAnimationDurations;
+
+  final MenuAnimationCurves menuAnimationCurves;
+
   List<ComponentLifeCycleMixin> _selectMenuComponents;
   List<ComponentLifeCycleMixin> _listViewMenuComponents;
 
@@ -100,6 +104,8 @@ class ComponentsConfiguration<T> {
     @required this.searchBarComponent,
     @required this.menuFlexValues,
     @required this.menuSizeConfiguration,
+    @required this.menuAnimationDurations,
+    @required this.menuAnimationCurves,
   }) : assert(
             searchFieldComponent != null &&
                 menuComponent != null &&
@@ -110,7 +116,9 @@ class ComponentsConfiguration<T> {
                 listViewComponent != null &&
                 searchBarComponent != null &&
                 menuFlexValues != null &&
-                menuSizeConfiguration != null,
+                menuSizeConfiguration != null &&
+                menuAnimationDurations != null &&
+                menuAnimationCurves != null,
             """
             All components and configurations are required. (except one 'triggerFromItemComponent'). 
             If you wish to customize only a few components, 
@@ -136,6 +144,8 @@ class ComponentsConfiguration<T> {
     SearchBarComponent searchBarComponent,
     MenuFlexValues menuFlexValues,
     MenuSizeConfiguration menuSizeConfiguration,
+    MenuAnimationDurations menuAnimationDurations,
+    MenuAnimationCurves menuAnimationCurves,
   }) {
     return ComponentsConfiguration<T>(
       triggerComponent: triggerComponent ?? this.triggerComponent,
@@ -153,6 +163,9 @@ class ComponentsConfiguration<T> {
       menuFlexValues: menuFlexValues ?? this.menuFlexValues,
       menuSizeConfiguration:
           menuSizeConfiguration ?? this.menuSizeConfiguration,
+      menuAnimationDurations:
+          menuAnimationDurations ?? this.menuAnimationDurations,
+      menuAnimationCurves: menuAnimationCurves ?? this.menuAnimationCurves,
     );
   }
 

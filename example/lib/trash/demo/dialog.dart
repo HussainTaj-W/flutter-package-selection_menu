@@ -1,43 +1,45 @@
+import 'package:example/data/FlatColor.dart';
 import 'package:flutter/material.dart';
+import 'package:selection_menu/components_configurations.dart';
 import 'package:selection_menu/selection_menu.dart';
-
-import '../data/FlatColor.dart';
-
-// Reading previous Examples before this one is recommended.
-//
-// Code from previous example will have their comments removed and moved to the
-// end of the file to allow meaningful code to stay up top. Please do not consider
-// this example as an optimal way to place your code.
-//
-// main function has been moved to the end.
 
 class ExampleApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SelectionMenu<FlatColor>(
-      itemSearchMatcher: this.itemSearchMatcher,
-      // Defaults to null, meaning search is disabled.
-      // ItemSearchMatcher takes a searchString and an Item (FontColor in this example)
-      // Returns true if searchString can be used to describe Item, else false.
-      // Defined below for the sake of brevity.
-
-      searchLatency: Duration(seconds: 1),
-      // Defaults to const Duration(milliseconds: 500).
-      // This is the delay before the SelectionMenu actually starts searching.
-      // Since search is called for every character change in the search field,
-      // it acts as a buffering time and does not perform search for every
-      // character update during this time.
-
+      componentsConfiguration: DialogComponentsConfiguration<FlatColor>(
+        triggerFromItemComponent: TriggerFromItemComponent<FlatColor>(
+            builder: _triggerFromItemBuilder),
+      ),
+      itemSearchMatcher: itemSearchMatcher,
       itemsList: colors,
       itemBuilder: this.itemBuilder,
       onItemSelected: this.onItemSelected,
       showSelectedItemAsTrigger: true,
-      initiallySelectedItemIndex: 0,
     );
   }
 
-  bool itemSearchMatcher(String searchString, FlatColor color) {
-    return color.name.toLowerCase().contains(searchString.trim().toLowerCase());
+  static Widget _triggerBuilder(TriggerComponentData data) {
+    return RaisedButton(
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      onPressed: data.triggerMenu,
+      color: Colors.white,
+      child: Text("Select Color"),
+    );
+  }
+
+  static Widget _triggerFromItemBuilder(TriggerFromItemComponentData data) {
+    return RaisedButton(
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      onPressed: data.triggerMenu,
+      color: Color(data.item.hex),
+      child: Text(
+        data.item.name,
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+    );
   }
 
   //region From Previous Example
@@ -87,11 +89,15 @@ class ExampleApp extends StatelessWidget {
     );
   }
 
+  bool itemSearchMatcher(String searchString, FlatColor color) {
+    return color.name.toLowerCase().contains(searchString.trim().toLowerCase());
+  }
+
   void onItemSelected(FlatColor color) {
     print(color.name);
   }
 
-  //endregion
+//endregion
 }
 
 //region From Previous Example
@@ -105,11 +111,25 @@ void main() => runApp(
                 )),
         home: Material(
           child: Container(
-            color: Color(0xff95a5a6),
-            child: Center(
-              child: ExampleApp(),
-            ),
-          ),
+              padding: EdgeInsets.only(top: 70),
+              color: Color(0xff95a5a6),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 500,
+                    ),
+                    SizedBox(
+                      child: ExampleApp(),
+                      width: 300,
+                    ),
+                    SizedBox(
+                      height: 500,
+                    ),
+                  ],
+                ),
+              )),
         ),
       ),
     );

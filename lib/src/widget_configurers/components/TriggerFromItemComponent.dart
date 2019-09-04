@@ -20,7 +20,7 @@ class TriggerFromItemComponentData<T> implements ComponentData {
   /// Opens/Closes the menu associated with [SelectionMenu].
   ///
   /// Must not be null.
-  final ToggleMenu toggleMenu;
+  final TriggerMenu triggerMenu;
 
   /// Must not be null.
   final T item;
@@ -28,17 +28,21 @@ class TriggerFromItemComponentData<T> implements ComponentData {
   /// Must not be null.
   final TickerProvider tickerProvider;
 
+  final MenuState menuState;
+
   TriggerFromItemComponentData({
     @required this.context,
-    @required this.toggleMenu,
+    @required this.triggerMenu,
     @required this.item,
     @required this.tickerProvider,
     @required this.selectedItem,
+    @required this.menuState,
   }) : assert(
             context != null &&
-                toggleMenu != null &&
+                triggerMenu != null &&
                 item != null &&
-                tickerProvider != null,
+                tickerProvider != null &&
+                menuState != null,
             ComponentAssertionMessages.nullAttributeInData);
   @override
   final dynamic selectedItem;

@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:selection_menu/components_configurations.dart';
 import 'package:selection_menu/selection_menu.dart';
 
+typedef T GetSelectedItem<T>();
+
+typedef void OnItemTapped();
+
 /// Returns a Widget that corresponds to the data [item] of type T.
-typedef Widget ItemBuilder<T>(BuildContext context, T item);
+typedef Widget ItemBuilder<T>(
+    BuildContext context, T item, OnItemTapped onItemTapped);
 
 /// Returns true if [item] of type T can be described using [searchString],
 /// hence, should be included in search results.
@@ -96,11 +101,14 @@ class ListViewMenu<T> extends StatefulWidget {
   /// * [SearchFieldComponent].
   final Duration searchLatency;
 
+  final GetSelectedItem<T> getSelectedItem;
+
   const ListViewMenu({
     Key key,
     @required this.itemBuilder,
     @required this.itemsList,
     @required this.onItemSelected,
+    this.getSelectedItem,
     this.itemSearchMatcher,
     this.onMenuEmptySpaceTap,
     this.componentsConfiguration,
@@ -151,7 +159,10 @@ class _ListViewMenuState<T> extends State<ListViewMenu<T>>
 
     _componentsConfiguration.initListViewMenuComponents();
 
-    _currentSelectedItem = null;
+    if (widget.getSelectedItem != null)
+      _currentSelectedItem = widget.getSelectedItem();
+    else
+      _currentSelectedItem = null;
   }
 
   @override
@@ -210,10 +221,9 @@ class _ListViewMenuState<T> extends State<ListViewMenu<T>>
         .build(ListViewComponentData(
       context: context,
       itemBuilder: (BuildContext context, int index) {
-        return GestureDetector(
-          onTap: () => _onListItemTap(index),
-          child: widget.itemBuilder(context, _currentItemsList[index]),
-        );
+        return widget.itemBuilder(context, _currentItemsList[index], () {
+          _onListItemTap(index);
+        });
       },
       itemCount: _currentItemsList.length,
       tickerProvider: this,

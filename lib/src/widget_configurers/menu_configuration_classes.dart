@@ -199,7 +199,7 @@ class TriggerPositionAndSize {
 }
 
 /// Animation States the menu goes through during opening and closing.
-enum MenuAnimationState {
+enum MenuState {
   OpeningStart,
   OpeningEnd,
   Opened,
@@ -238,4 +238,13 @@ class MenuAnimationDurations {
       : assert(
             forward != null && reverse != null, """Both Durations are required. 
             If there is no animation required then pass Duration.zero.""");
+}
+
+class MenuAnimationCurves {
+  final Curve forward;
+  final Curve reverse;
+
+  const MenuAnimationCurves({@required this.forward, @required this.reverse})
+      : assert(forward != null && reverse != null, """Both Curves are required. 
+            If there is no Curve required then pass Curves.linear.""");
 }

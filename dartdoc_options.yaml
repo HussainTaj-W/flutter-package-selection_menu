@@ -1,3 +1,2 @@
 dartdoc:
-  include: ["selection_menu"]
-
+  include: ["selection_menu","components_configurations"]

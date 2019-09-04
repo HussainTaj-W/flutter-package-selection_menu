@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:selection_menu/components_configurations.dart';
 import 'package:selection_menu/selection_menu.dart';
-import 'package:selection_menu/src/widget_configurers/menu_configuration_classes.dart';
 
 import 'common/ComponentAssertionMessages.dart';
 import 'common/ComponentData.dart';
@@ -22,8 +21,8 @@ class AnimationComponentData implements ComponentData {
 
   /// Must not be null.
   ///
-  /// See [MenuAnimationState].
-  final MenuAnimationState menuAnimationState;
+  /// See [MenuState].
+  final MenuState menuState;
 
   /// Constraints of the menu.
   ///
@@ -38,25 +37,42 @@ class AnimationComponentData implements ComponentData {
   /// Must not be null.
   final TickerProvider tickerProvider;
 
+  final MenuAnimationCurves menuAnimationCurves;
+
+  final AnimationStateChanged opened;
+  final AnimationStateChanged closed;
+  final AnimationStateWillChangeAfter willOpenAfter;
+  final AnimationStateWillChangeAfter willCloseAfter;
+
+  @override
+  final dynamic selectedItem;
+
   AnimationComponentData({
     @required this.context,
     @required this.constraints,
     @required this.tickerProvider,
     @required this.menuAnimationDurations,
-    @required this.menuAnimationState,
+    @required this.menuState,
     @required this.child,
     @required this.selectedItem,
+    @required this.opened,
+    @required this.closed,
+    @required this.willOpenAfter,
+    @required this.willCloseAfter,
+    @required this.menuAnimationCurves,
   }) : assert(
             context != null &&
                 constraints != null &&
                 tickerProvider != null &&
-                menuAnimationState != null &&
+                menuState != null &&
                 child != null &&
-                menuAnimationDurations != null,
+                menuAnimationDurations != null &&
+                willOpenAfter != null &&
+                willCloseAfter != null &&
+                closed != null &&
+                opened != null &&
+                menuAnimationCurves != null,
             ComponentAssertionMessages.nullAttributeInData);
-
-  @override
-  final dynamic selectedItem;
 }
 
 /// Defines builder that returns a Widget acts as a container that is capable
@@ -78,7 +94,7 @@ class AnimationComponentData implements ComponentData {
 ///   builder: (AnimationComponentData data)
 ///   {
 ///     return Opacity(
-///       opacity: data.menuAnimationState == MenuAnimationState.OpeningEnd ? 1.0 : 0.0,
+///       opacity: data.menuState == MenuAnimationState.OpeningEnd ? 1.0 : 0.0,
 ///       child: data.child,
 ///     );
 ///   }
@@ -93,8 +109,8 @@ class AnimationComponentData implements ComponentData {
 class AnimationComponent implements WidgetBuildingComponent {
   /// A builder method to create the animating Widget.
   ///
-  /// This builder is called for every [AnimationComponentData.menuAnimationState]
-  /// except [MenuAnimationState.Closed].
+  /// This builder is called for every [AnimationComponentData.menuState]
+  /// except [MenuState.Closed].
   ///
   /// See also:
   /// * [AnimationBuilder].
@@ -129,7 +145,7 @@ class AnimationComponent implements WidgetBuildingComponent {
 ///   builder: (AnimationComponentData data)
 ///   {
 ///     return Opacity(
-///       opacity: data.menuAnimationState == MenuAnimationState.OpeningEnd ? 1.0 : 0.0,
+///       opacity: data.menuState == MenuAnimationState.OpeningEnd ? 1.0 : 0.0,
 ///       child: data.child,
 ///     );
 ///   }
@@ -141,3 +157,6 @@ class AnimationComponent implements WidgetBuildingComponent {
 /// * [AnimationComponentData]
 
 typedef Widget AnimationBuilder(AnimationComponentData data);
+
+typedef void AnimationStateChanged();
+typedef void AnimationStateWillChangeAfter(Duration time);

@@ -81,7 +81,7 @@ class ExampleApp extends StatelessWidget {
   static Widget _triggerBuilder(TriggerComponentData data) {
     return RaisedButton(
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      onPressed: data.toggleMenu,
+      onPressed: data.triggerMenu,
       child: Text("Select Color"),
     );
   }
@@ -89,7 +89,7 @@ class ExampleApp extends StatelessWidget {
   static Widget _triggerFromItemBuilder(TriggerFromItemComponentData data) {
     return RaisedButton(
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      onPressed: data.toggleMenu,
+      onPressed: data.triggerMenu,
       color: Color(data.item.hex),
       child: Text(
         data.item.name,
@@ -100,40 +100,47 @@ class ExampleApp extends StatelessWidget {
     );
   }
 
-  Widget itemBuilder(BuildContext context, FlatColor color) {
-    TextStyle textStyle = Theme.of(context).textTheme.body1;
+  Widget itemBuilder(
+      BuildContext context, FlatColor color, OnItemTapped onItemTapped) {
+    TextStyle textStyle = Theme.of(context).textTheme.subtitle;
 
-    return Padding(
-      padding: EdgeInsets.all(5.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          ClipOval(
-            child: Container(
-              color: Color(color.hex),
-              height: 20,
-              width: 20,
-            ),
-          ),
-          Flexible(
-            fit: FlexFit.tight,
-            child: Padding(
-              padding: EdgeInsets.only(left: 3),
-              child: Text(
-                color.name,
-                style: textStyle,
+    return Material(
+      color: Colors.white,
+      child: InkWell(
+        onTap: onItemTapped,
+        child: Padding(
+          padding: EdgeInsets.all(10.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              ClipOval(
+                child: Container(
+                  color: Color(color.hex),
+                  height: 30,
+                  width: 30,
+                ),
               ),
-            ),
+              Flexible(
+                fit: FlexFit.tight,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 10.0),
+                  child: Text(
+                    color.name,
+                    style: textStyle,
+                  ),
+                ),
+              ),
+              Text(
+                ('#' + color.hex.toRadixString(16)).toUpperCase(),
+                style: textStyle.copyWith(
+                  color: Colors.grey.shade600,
+                  fontSize: textStyle.fontSize * 0.75,
+                ),
+              ),
+            ],
           ),
-          Text(
-            ('#' + color.hex.toRadixString(16)).toUpperCase(),
-            style: textStyle.copyWith(
-              color: Colors.grey.shade600,
-              fontSize: textStyle.fontSize * 0.75,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -153,15 +160,15 @@ class ExampleApp extends StatelessWidget {
 void main() => runApp(
       MaterialApp(
         theme: ThemeData.light().copyWith(
-          accentColor: Colors
-              .redAccent, // Used by the default Dialog Style of SelectionMenu
-        ),
+            accentColor: Colors
+                .redAccent, // Used by the default Dialog Style of SelectionMenu
+            cardTheme: ThemeData.light().cardTheme.copyWith(
+                  elevation: 5,
+                )),
         home: Material(
           child: Container(
-            color: Colors.black26,
-            child: Center(
-              child: ExampleApp(),
-            ),
+            color: Color(0xff95a5a6),
+            child: Center(child: ExampleApp()),
           ),
         ),
       ),
