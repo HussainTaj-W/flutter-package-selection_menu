@@ -89,4 +89,4 @@ class CircularWindowTriggerComponent extends TriggerComponent {
 For complete code, explained with details, see [main.dart](./main.dart).
 ## Result
 
-![Result Gif](./3_01.gif)
+![Result Gif](./3_02.gif)
