@@ -1,8 +1,8 @@
 name: selection_menu
 description: A highly customizable selection/select menu, that opens/closes with a tap of trigger, optionally provides search.
-version: 0.8.0
+version: 0.8.1
 author: Hussain Taj<hussaintajwork@gmail.com>
-homepage: https://github.com/HussainTaj-W/flutter-package-selection_menu.git
+homepage: https://github.com/HussainTaj-W/flutter-package-selection_menu
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
