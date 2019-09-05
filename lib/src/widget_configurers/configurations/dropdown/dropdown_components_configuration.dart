@@ -12,7 +12,7 @@ import '../components_configuration.dart';
 /// ![How the style looks](https://i.imgur.com/X0clpJD.gif)
 ///
 /// A series of examples/guides can be found
-/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).
+/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu-example).
 ///
 /// See [ComponentsConfiguration].
 class DropdownComponentsConfiguration<T> extends ComponentsConfiguration<T> {

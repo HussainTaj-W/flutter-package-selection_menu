@@ -10,7 +10,7 @@ import '../components_configuration.dart';
 /// ![How the style looks](https://i.imgur.com/XNFhN7Q.gif)
 ///
 /// A series of examples/guides can be found
-/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).
+/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu-example).
 ///
 /// See [ComponentsConfiguration].
 class DialogComponentsConfiguration<T> extends ComponentsConfiguration<T> {

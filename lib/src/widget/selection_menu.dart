@@ -28,7 +28,7 @@ import 'listview_menu.dart';
 /// * [DropdownComponentsConfiguration] a classic dropdown style appearance.
 ///
 /// The third style in the above image is part of an example which can be
-/// found [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).
+/// found [here](https://github.com/HussainTaj-W/flutter-package-selection_menu-example).
 ///
 /// ## Basic Usage
 ///
@@ -81,7 +81,7 @@ import 'listview_menu.dart';
 /// ```
 ///
 /// **A series of examples/guides can be found
-/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).**
+/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu-example).**
 ///
 /// See Also:
 /// * [ListViewMenu].

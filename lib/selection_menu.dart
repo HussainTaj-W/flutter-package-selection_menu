@@ -31,7 +31,7 @@
 /// ```
 ///
 /// **A series of detailed examples are available
-/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).**
+/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu-example).**
 ///
 /// ## Customization
 ///
@@ -81,7 +81,7 @@
 /// ## Examples
 ///
 /// A series of detailed examples are available
-/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).
+/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu-example).
 ///
 /// [Github Repo](https://github.com/HussainTaj-W/flutter-package-selection_menu).
 ///

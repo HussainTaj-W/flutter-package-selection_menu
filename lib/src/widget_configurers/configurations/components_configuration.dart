@@ -23,7 +23,7 @@ import 'package:selection_menu/src/widget_configurers/menu_configuration_classes
 /// * [DropdownComponentsConfiguration] a dropdown style appearance.
 ///
 /// **Related examples can be found
-/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).**
+/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu-example).**
 class ComponentsConfiguration<T> {
   /// Defines a builder that returns a Widget where a user can input text.
   ///

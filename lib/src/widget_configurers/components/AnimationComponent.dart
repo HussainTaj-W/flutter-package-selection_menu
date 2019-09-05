@@ -101,7 +101,8 @@ class AnimationComponentData implements ComponentData {
 /// );
 /// ```
 ///
-/// A series of detailed examples are available [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).
+/// A series of detailed examples are available
+/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu-example).
 ///
 /// <img src="https://i.imgur.com/QL67eib.jpg" width="658.5" height="384"/>
 ///

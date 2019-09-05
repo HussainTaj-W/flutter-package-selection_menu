@@ -19,7 +19,7 @@
 /// * [DropdownComponentsConfiguration] a dropdown style appearance.
 ///
 /// A series of examples/guides can be found
-/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).
+/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu-example).
 ///
 /// # Components
 ///
@@ -79,7 +79,8 @@
 /// dispose method, you can use [ComponentLifeCycleMixin].
 ///
 /// # Examples
-/// A series of detailed examples are available [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).
+/// A series of detailed examples are available
+/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu-example).
 ///
 /// [Github Repo](https://github.com/HussainTaj-W/flutter-package-selection_menu).
 library components_configurations;

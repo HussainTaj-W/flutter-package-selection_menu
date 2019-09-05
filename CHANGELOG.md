@@ -1,3 +1,3 @@
-## [0.8.0] - TODO: Add release date.
+## [0.8.0] - 5th September 2019
 
 * Initial Release

@@ -8,7 +8,7 @@ import 'package:selection_menu/selection_menu.dart';
 /// logical pixels or mixed.
 ///
 /// See related example
-/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).
+/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu-example).
 class MenuSizeConfiguration {
   /// Maximum fraction (0.0 - 1.0 inclusive) of screen width the menu should take.
   final double maxWidthFraction;
@@ -216,7 +216,7 @@ class TriggerPositionAndSize {
 /// The closing process is similar.
 ///
 /// See related example
-/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example).
+/// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu-example).
 ///
 /// ![Menu State Change gif](https://i.imgur.com/g5CEs5l.gif)
 enum MenuState {

@@ -1,10 +1,6 @@
 # Examples
 
-**There is a series of detailed examples available [here](https://github.com/HussainTaj-W/flutter-package-selection_menu/tree/master/example/lib)**.
-
-You can also visit the API docs for [selection_menu](https://github.com/HussainTaj-W/flutter-package-selection_menu../) 
-[here](TODO ADD)
-<!-- TODO-->
+**There is a series of detailed/brief examples available [here](https://github.com/HussainTaj-W/flutter-package-selection_menu-example)**.
 
 These examples only focus on explaining code related to [selection_menu](https://github.com/HussainTaj-W/flutter-package-selection_menu). 
 Flutter Widgets and their usage will not be explained here.
