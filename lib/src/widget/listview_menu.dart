@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:selection_menu/components_configurations.dart';
 import 'package:selection_menu/selection_menu.dart';
+import 'package:selection_menu/src/controller/controllers.dart';
 
 /// A callback [ListViewMenu] uses to get initially Selected item from
 /// [SelectionMenu].
@@ -120,6 +121,8 @@ class ListViewMenu<T> extends StatefulWidget {
   /// If not null, uses this callback to set the initial selected value.
   final GetSelectedItem<T> getSelectedItem;
 
+  final ListViewMenuController listViewMenuController;
+
   const ListViewMenu({
     Key key,
     @required this.itemBuilder,
@@ -130,6 +133,7 @@ class ListViewMenu<T> extends StatefulWidget {
     this.onMenuEmptySpaceTap,
     this.componentsConfiguration,
     this.searchLatency = const Duration(milliseconds: 500),
+    this.listViewMenuController,
   })  : assert(itemBuilder != null &&
             itemsList != null &&
             onItemSelected != null &&
@@ -161,6 +165,8 @@ class _ListViewMenuState<T> extends State<ListViewMenu<T>>
 
   T _currentSelectedItem;
 
+  ListViewMenuController _listViewMenuController;
+
   @override
   void initState() {
     super.initState();
@@ -180,6 +186,12 @@ class _ListViewMenuState<T> extends State<ListViewMenu<T>>
       _currentSelectedItem = widget.getSelectedItem();
     else
       _currentSelectedItem = null;
+
+    // Initialize Controller
+    _listViewMenuController =
+        widget.listViewMenuController ?? ListViewMenuController();
+    _listViewMenuController.itemsListUpdateNotifier
+        .addListener(_onListUpdatedNotification);
   }
 
   @override
@@ -294,10 +306,25 @@ class _ListViewMenuState<T> extends State<ListViewMenu<T>>
     widget.onItemSelected(_currentSelectedItem);
   }
 
+  void _onListUpdatedNotification() {
+    if (!_isSearching && _searchString.trim().isNotEmpty) {
+      setState(() {
+        _isSearching = true;
+      });
+      _performSearch(_searchString);
+    } else {
+      if (mounted) {
+        setState(() {});
+      }
+    }
+  }
+
   @override
   void dispose() {
     _searchTextController.dispose();
     _componentsConfiguration.disposeListViewMenuComponents();
+    _listViewMenuController.itemsListUpdateNotifier
+        .removeListener(_onListUpdatedNotification);
     super.dispose();
   }
 }

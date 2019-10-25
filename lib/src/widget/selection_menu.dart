@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:selection_menu/components_configurations.dart';
 import 'package:selection_menu/selection_menu.dart';
+import 'package:selection_menu/src/controller/controllers.dart';
 import 'package:selection_menu/src/widget_configurers/menu_configuration_classes.dart';
 
 import 'listview_menu.dart';
@@ -109,6 +110,11 @@ class SelectionMenu<T> extends StatefulWidget {
   /// See [ItemBuilder].
   final ItemBuilder<T> itemBuilder;
 
+  /// List of items to display in the menu.
+  ///
+  /// [SelectionMenu] stores a reference of the actual List.
+  /// If the actual list is updated, the changes will be reflected in the [SelectionMenu],
+  /// however, not necessarily immediately.
   final List<T> itemsList;
 
   /// Method that matches a search string with an item from the list [itemsList].
@@ -231,6 +237,8 @@ class SelectionMenu<T> extends StatefulWidget {
   /// See [MenuSizeConfiguration].
   final MenuSizeConfiguration menuSizeConfiguration;
 
+  final SelectionMenuController selectionMenuController;
+
   SelectionMenu({
     Key key,
     @required this.itemBuilder,
@@ -247,6 +255,7 @@ class SelectionMenu<T> extends StatefulWidget {
     this.searchLatency = const Duration(milliseconds: 500),
     this.menuSizeConfiguration,
     this.allowMenuToCloseBeforeOpenCompletes = true,
+    this.selectionMenuController,
   })  : assert(
             itemBuilder != null && itemsList != null && onItemSelected != null,
             "itemBuilder, itemsList, and OnItemSelected callback shounld not be null."),
@@ -276,8 +285,6 @@ class SelectionMenuState<T> extends State<SelectionMenu<T>>
   /// The menu that is displayed as an overlay.
   OverlayEntry _menuOverlay;
 
-  ListViewMenu<T> _listViewMenu;
-
   TriggerPositionAndSize _triggerPositionAndSize;
 
   Orientation _orientation;
@@ -292,23 +299,8 @@ class SelectionMenuState<T> extends State<SelectionMenu<T>>
 
   MenuState _menuState;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    _listViewMenu = ListViewMenu<T>(
-      itemSearchMatcher: widget.itemSearchMatcher,
-      itemBuilder: widget.itemBuilder,
-      onItemSelected: _onMenuItemSelected,
-      itemsList: widget.itemsList,
-      componentsConfiguration: _componentsConfiguration,
-      onMenuEmptySpaceTap: _onMenuEmptySpaceTap,
-      searchLatency: widget.searchLatency,
-      getSelectedItem: () {
-        return _currentSelectedItem;
-      },
-    );
-  }
+  SelectionMenuController _selectionMenuController;
+  ListViewMenuController _listViewMenuController;
 
   @override
   void initState() {
@@ -325,20 +317,6 @@ class SelectionMenuState<T> extends State<SelectionMenu<T>>
     }
     _componentsConfiguration.initSelectionMenuComponents();
 
-    // Initialize ListViewMenu
-    _listViewMenu = ListViewMenu<T>(
-      itemSearchMatcher: widget.itemSearchMatcher,
-      itemBuilder: widget.itemBuilder,
-      onItemSelected: _onMenuItemSelected,
-      itemsList: widget.itemsList,
-      componentsConfiguration: _componentsConfiguration,
-      onMenuEmptySpaceTap: _onMenuEmptySpaceTap,
-      searchLatency: widget.searchLatency,
-      getSelectedItem: () {
-        return _currentSelectedItem;
-      },
-    );
-
     // Initialize Current Selected Item
     _currentSelectedItem = null;
     if (widget.initiallySelectedItemIndex != null) {
@@ -351,6 +329,15 @@ class SelectionMenuState<T> extends State<SelectionMenu<T>>
 
     _triggerPositionAndSize =
         new TriggerPositionAndSize(size: Size(0, 0), position: Offset(0, 0));
+
+    // Initialize Controllers
+    _listViewMenuController = ListViewMenuController();
+
+    _selectionMenuController =
+        widget.selectionMenuController ?? SelectionMenuController();
+    _selectionMenuController.triggerNotifier.addListener(_onTriggered);
+    _selectionMenuController.itemsListUpdateNotifier
+        .addListener(_listViewMenuController.notifyListUpdated);
   }
 
   @override
@@ -421,13 +408,27 @@ class SelectionMenuState<T> extends State<SelectionMenu<T>>
         selectedItem: _currentSelectedItem,
       ));
 
+      ListViewMenu listViewMenu = ListViewMenu<T>(
+        itemSearchMatcher: widget.itemSearchMatcher,
+        itemBuilder: widget.itemBuilder,
+        onItemSelected: _onMenuItemSelected,
+        itemsList: widget.itemsList,
+        componentsConfiguration: _componentsConfiguration,
+        onMenuEmptySpaceTap: _onMenuEmptySpaceTap,
+        searchLatency: widget.searchLatency,
+        listViewMenuController: _listViewMenuController,
+        getSelectedItem: () {
+          return _currentSelectedItem;
+        },
+      );
+
       Widget front = CompositedTransformFollower(
         link: _triggerAndMenuLayerLink,
         child: _componentsConfiguration.animationComponent
             .build(AnimationComponentData(
           context: context,
           constraints: menuPositionAndSize.constraints,
-          child: _listViewMenu,
+          child: listViewMenu,
           menuState: _menuState,
           menuAnimationDurations:
               _componentsConfiguration.menuAnimationDurations,
@@ -574,6 +575,9 @@ class SelectionMenuState<T> extends State<SelectionMenu<T>>
     }
   }
 
+  // TODO: Remove in 1.0.0
+  @Deprecated('This method will be removed in selection_menu 1.0.0.'
+      'Use SelectionMenuController.trigger() to manually trigger the Menu.')
   void trigger() {
     _onTriggered();
   }
@@ -673,9 +677,21 @@ class SelectionMenuState<T> extends State<SelectionMenu<T>>
     });
   }
 
+  void _disposeOverlay() {
+    if (_menuState != MenuState.Closed) {
+      _menuOverlay.remove();
+      _menuState = MenuState.Closed;
+    }
+  }
+
   @override
   void dispose() {
+    _disposeOverlay();
     _componentsConfiguration.disposeSelectionMenuComponents();
+
+    _selectionMenuController.triggerNotifier.removeListener(_onTriggered);
+    _selectionMenuController.itemsListUpdateNotifier
+        .removeListener(_listViewMenuController.notifyListUpdated);
     super.dispose();
   }
 }
