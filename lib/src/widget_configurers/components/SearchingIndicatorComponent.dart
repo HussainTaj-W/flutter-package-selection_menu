@@ -20,12 +20,11 @@ class SearchingIndicatorComponentData implements ComponentData {
   final TickerProvider tickerProvider;
 
   SearchingIndicatorComponentData({
-    @required this.context,
-    @required this.isSearching,
-    @required this.tickerProvider,
-    @required this.selectedItem,
-  }) : assert(context != null && isSearching != null && tickerProvider != null,
-            ComponentAssertionMessages.nullAttributeInData);
+    required this.context,
+    required this.isSearching,
+    required this.tickerProvider,
+    required this.selectedItem,
+  });
   @override
   final dynamic selectedItem;
 }
@@ -56,10 +55,10 @@ class SearchingIndicatorComponent implements WidgetBuildingComponent {
   ///
   /// See also:
   /// * [SearchingIndicatorBuilder].
-  SearchingIndicatorBuilder builder;
+  SearchingIndicatorBuilder? builder;
 
   /// See [SearchingIndicatorBuilder].
-  SearchingIndicatorComponent({@required this.builder});
+  SearchingIndicatorComponent({this.builder});
 
   /// The method uses the [SearchingIndicatorComponent.builder] method to actually
   /// build the Widget.
@@ -68,10 +67,8 @@ class SearchingIndicatorComponent implements WidgetBuildingComponent {
   ///
   /// Used by [ListViewMenu].
   Widget build(SearchingIndicatorComponentData data) {
-    assert(
-        data != null, ComponentAssertionMessages.nullDataPassedToBuildMethod);
     assert(builder != null, ComponentAssertionMessages.nullBuilderMethod);
-    return builder(data);
+    return builder!(data);
   }
 }
 
@@ -94,4 +91,5 @@ class SearchingIndicatorComponent implements WidgetBuildingComponent {
 /// See Also:
 /// * [SearchingIndicatorComponent]
 /// * [SearchingIndicatorComponentData]
-typedef Widget SearchingIndicatorBuilder(SearchingIndicatorComponentData data);
+typedef SearchingIndicatorBuilder = Widget Function(
+    SearchingIndicatorComponentData data);

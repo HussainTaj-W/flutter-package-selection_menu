@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:selection_menu/selection_menu.dart';
 import 'package:selection_menu/src/widget_configurers/components/components.dart';
 import 'package:selection_menu/src/widget_configurers/menu_configuration_classes.dart';
@@ -44,7 +43,7 @@ class ComponentsConfiguration<T> {
   /// open/close menu, where the trigger reflects the currently selected item.
   ///
   /// See [TriggerFromItemComponent] for more details.
-  final TriggerFromItemComponent<T> triggerFromItemComponent;
+  final TriggerFromItemComponent<T>? triggerFromItemComponent;
 
   /// Returns a [MenuSizeAndPosition] after performing some calculation.
   ///
@@ -88,61 +87,43 @@ class ComponentsConfiguration<T> {
 
   final MenuAnimationCurves menuAnimationCurves;
 
-  List<ComponentLifeCycleMixin> _selectMenuComponents;
-  List<ComponentLifeCycleMixin> _listViewMenuComponents;
+  late List<ComponentLifeCycleMixin?> _selectMenuComponents;
+  late List<ComponentLifeCycleMixin> _listViewMenuComponents;
 
   ComponentsConfiguration({
-    @required this.searchFieldComponent,
-    @required this.menuComponent,
-    @required this.triggerComponent,
+    required this.searchFieldComponent,
+    required this.menuComponent,
+    required this.triggerComponent,
     this.triggerFromItemComponent,
-    @required this.menuPositionAndSizeComponent,
-    @required this.searchingIndicatorComponent,
-    @required this.animationComponent,
-    @required this.listViewComponent,
-    @required this.searchBarComponent,
-    @required this.menuFlexValues,
-    @required this.menuSizeConfiguration,
-    @required this.menuAnimationDurations,
-    @required this.menuAnimationCurves,
-  }) : assert(
-            searchFieldComponent != null &&
-                menuComponent != null &&
-                triggerComponent != null &&
-                menuPositionAndSizeComponent != null &&
-                searchingIndicatorComponent != null &&
-                animationComponent != null &&
-                listViewComponent != null &&
-                searchBarComponent != null &&
-                menuFlexValues != null &&
-                menuSizeConfiguration != null &&
-                menuAnimationDurations != null &&
-                menuAnimationCurves != null,
-            "All components and configurations are required. (except one 'triggerFromItemComponent').\n"
-            "If you wish to customize only a few components,\n"
-            "pick a ComponentsConfiguration class like DefaultComponentsConfiguration\n"
-            "and provide those sepecific builders in the constructor.\n"
-            "Furthermore, if you wish to pick several components\n"
-            "from different Builder Classes, you may use the copyWith method.\n") {
+    required this.menuPositionAndSizeComponent,
+    required this.searchingIndicatorComponent,
+    required this.animationComponent,
+    required this.listViewComponent,
+    required this.searchBarComponent,
+    required this.menuFlexValues,
+    required this.menuSizeConfiguration,
+    required this.menuAnimationDurations,
+    required this.menuAnimationCurves,
+  }) {
     _initLists();
   }
 
   /// Returns a [ComponentsConfiguration] constructed from the values of this,
   /// overwritten by the non-null arguments passed to the method.
   ComponentsConfiguration<T> copyWith({
-    SearchFieldComponent searchFieldComponent,
-    TriggerComponent triggerComponent,
-    MenuComponent menuComponent,
-    MenuPositionAndSizeComponent menuPositionAndSizeComponent,
-    TriggerFromItemComponent<T> triggerFromItemComponent,
-    SearchingIndicatorComponent searchingIndicatorComponent,
-    AnimationComponent animationComponent,
-    ListViewComponent listViewComponent,
-    SearchBarComponent searchBarComponent,
-    MenuFlexValues menuFlexValues,
-    MenuSizeConfiguration menuSizeConfiguration,
-    MenuAnimationDurations menuAnimationDurations,
-    MenuAnimationCurves menuAnimationCurves,
+    SearchFieldComponent? searchFieldComponent,
+    TriggerComponent? triggerComponent,
+    MenuComponent? menuComponent,
+    MenuPositionAndSizeComponent? menuPositionAndSizeComponent,
+    TriggerFromItemComponent<T>? triggerFromItemComponent,
+    SearchingIndicatorComponent? searchingIndicatorComponent,
+    AnimationComponent? animationComponent,
+    ListViewComponent? listViewComponent,
+    SearchBarComponent? searchBarComponent,
+    MenuFlexValues? menuFlexValues,
+    MenuSizeConfiguration? menuSizeConfiguration,
+    MenuAnimationDurations? menuAnimationDurations,
+    MenuAnimationCurves? menuAnimationCurves,
   }) {
     return ComponentsConfiguration<T>(
       triggerComponent: triggerComponent ?? this.triggerComponent,
@@ -169,7 +150,7 @@ class ComponentsConfiguration<T> {
   /// Initialize Components used by [SelectionMenu].
   void initSelectionMenuComponents() {
     _selectMenuComponents.forEach((x) {
-      x.init();
+      x!.init();
     });
   }
 
@@ -183,7 +164,7 @@ class ComponentsConfiguration<T> {
   /// Dispose Components used by [SelectionMenu].
   void disposeSelectionMenuComponents() {
     _selectMenuComponents.forEach((x) {
-      x.dispose();
+      x!.dispose();
     });
   }
 
@@ -223,7 +204,7 @@ class ComponentsConfiguration<T> {
     if (triggerFromItemComponent != null &&
         triggerFromItemComponent is ComponentLifeCycleMixin) {
       _selectMenuComponents
-          .add(triggerFromItemComponent as ComponentLifeCycleMixin);
+          .add(triggerFromItemComponent as ComponentLifeCycleMixin?);
     }
     if (animationComponent is ComponentLifeCycleMixin) {
       _selectMenuComponents.add(animationComponent as ComponentLifeCycleMixin);

@@ -22,12 +22,12 @@ class AnimationComponentData implements ComponentData {
   /// Must not be null.
   ///
   /// See [MenuState].
-  final MenuState menuState;
+  final MenuState? menuState;
 
   /// Constraints of the menu.
   ///
   /// Must not be null.
-  final BoxConstraints constraints;
+  final BoxConstraints? constraints;
 
   /// Must not be null.
   ///
@@ -48,31 +48,19 @@ class AnimationComponentData implements ComponentData {
   final dynamic selectedItem;
 
   AnimationComponentData({
-    @required this.context,
-    @required this.constraints,
-    @required this.tickerProvider,
-    @required this.menuAnimationDurations,
-    @required this.menuState,
-    @required this.child,
-    @required this.selectedItem,
-    @required this.opened,
-    @required this.closed,
-    @required this.willOpenAfter,
-    @required this.willCloseAfter,
-    @required this.menuAnimationCurves,
-  }) : assert(
-            context != null &&
-                constraints != null &&
-                tickerProvider != null &&
-                menuState != null &&
-                child != null &&
-                menuAnimationDurations != null &&
-                willOpenAfter != null &&
-                willCloseAfter != null &&
-                closed != null &&
-                opened != null &&
-                menuAnimationCurves != null,
-            ComponentAssertionMessages.nullAttributeInData);
+    required this.context,
+    required this.constraints,
+    required this.tickerProvider,
+    required this.menuAnimationDurations,
+    required this.menuState,
+    required this.child,
+    required this.selectedItem,
+    required this.opened,
+    required this.closed,
+    required this.willOpenAfter,
+    required this.willCloseAfter,
+    required this.menuAnimationCurves,
+  });
 }
 
 /// Defines builder that returns a Widget acts as a container that is capable
@@ -119,10 +107,10 @@ class AnimationComponent implements WidgetBuildingComponent {
   ///
   /// See also:
   /// * [AnimationBuilder].
-  AnimationBuilder builder;
+  AnimationBuilder? builder;
 
   /// See [AnimationBuilder].
-  AnimationComponent({@required this.builder});
+  AnimationComponent({this.builder});
 
   /// The method uses the [AnimationComponent.builder] method to actually
   /// build the Widget.
@@ -131,10 +119,8 @@ class AnimationComponent implements WidgetBuildingComponent {
   ///
   /// Used by [SelectionMenu].
   Widget build(AnimationComponentData data) {
-    assert(
-        data != null, ComponentAssertionMessages.nullDataPassedToBuildMethod);
     assert(builder != null, ComponentAssertionMessages.nullBuilderMethod);
-    return builder(data);
+    return builder!(data);
   }
 }
 
@@ -161,14 +147,14 @@ class AnimationComponent implements WidgetBuildingComponent {
 /// * [AnimationComponent].
 /// * [AnimationComponentData].
 /// * [MenuState].
-typedef Widget AnimationBuilder(AnimationComponentData data);
+typedef AnimationBuilder = Widget Function(AnimationComponentData data);
 
 /// A callback that informs about Menu state change.
 ///
 /// It is used by [AnimationComponent] to communicate with [SelectionMenu].
-typedef void MenuStateChanged();
+typedef MenuStateChanged = void Function();
 
 /// A callback that informs about Menu state change that will occur after [time].
 ///
 /// It is used by [AnimationComponent] to communicate with [SelectionMenu].
-typedef void MenuStateWillChangeAfter(Duration time);
+typedef MenuStateWillChangeAfter = void Function(Duration time);

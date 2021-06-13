@@ -41,21 +41,14 @@ class MenuComponentData implements ComponentData {
   final TickerProvider tickerProvider;
 
   MenuComponentData({
-    @required this.context,
-    @required this.searchBar,
-    @required this.menuFlexValues,
-    @required this.listView,
-    @required this.isSearchEnabled,
-    @required this.tickerProvider,
-    @required this.selectedItem,
-  }) : assert(
-            context != null &&
-                listView != null &&
-                menuFlexValues != null &&
-                searchBar != null &&
-                isSearchEnabled != null &&
-                tickerProvider != null,
-            ComponentAssertionMessages.nullAttributeInData);
+    required this.context,
+    required this.searchBar,
+    required this.menuFlexValues,
+    required this.listView,
+    required this.isSearchEnabled,
+    required this.tickerProvider,
+    required this.selectedItem,
+  });
 
   @override
   final dynamic selectedItem;
@@ -106,10 +99,10 @@ class MenuComponent implements WidgetBuildingComponent {
   /// * [MenuBuilder].
   /// * [SearchBarComponent].
   /// * [ListViewComponent].
-  MenuBuilder builder;
+  MenuBuilder? builder;
 
   /// See [MenuBuilder].
-  MenuComponent({@required this.builder});
+  MenuComponent({this.builder});
 
   /// The method uses the [MenuComponent.builder] method to actually
   /// build the Widget.
@@ -118,10 +111,8 @@ class MenuComponent implements WidgetBuildingComponent {
   ///
   /// Used by [ListViewMenu].
   Widget build(MenuComponentData data) {
-    assert(
-        data != null, ComponentAssertionMessages.nullDataPassedToBuildMethod);
     assert(builder != null, ComponentAssertionMessages.nullBuilderMethod);
-    return builder(data);
+    return builder!(data);
   }
 }
 
@@ -160,4 +151,4 @@ class MenuComponent implements WidgetBuildingComponent {
 /// See Also:
 /// * [MenuComponent]
 /// * [MenuComponentData]
-typedef Widget MenuBuilder(MenuComponentData data);
+typedef MenuBuilder = Widget Function(MenuComponentData data);

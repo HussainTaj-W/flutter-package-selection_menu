@@ -93,7 +93,6 @@ library selection_menu;
 
 import './components_configurations.dart';
 import './src/widget/listview_menu.dart';
-import './src/controller/controllers.dart';
 
 export './src/widget/listview_menu.dart';
 export './src/widget/selection_menu.dart';

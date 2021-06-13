@@ -17,7 +17,7 @@ class MenuPositionAndSizeComponentData implements ComponentData {
   /// [SelectionMenu] does the processing.
   ///
   /// Must not be null.
-  final BoxConstraints constraints;
+  final BoxConstraints? constraints;
 
   /// [TriggerPositionAndSize] of the [SelectionMenu], which is typically a button.
   ///
@@ -28,7 +28,7 @@ class MenuPositionAndSizeComponentData implements ComponentData {
   ///
   /// See also:
   /// * [TriggerPositionAndSize].
-  final TriggerPositionAndSize triggerPositionAndSize;
+  final TriggerPositionAndSize? triggerPositionAndSize;
 
   /// The same [MenuSizeConfiguration] that were passed to [SelectionMenu].
   ///
@@ -38,17 +38,13 @@ class MenuPositionAndSizeComponentData implements ComponentData {
   final MenuSizeConfiguration menuSizeConfiguration;
 
   MenuPositionAndSizeComponentData({
-    @required this.context,
-    @required this.constraints,
-    @required this.menuSizeConfiguration,
-    @required this.triggerPositionAndSize,
-    @required this.selectedItem,
-  }) : assert(
-            context != null &&
-                constraints != null &&
-                menuSizeConfiguration != null &&
-                triggerPositionAndSize != null,
-            ComponentAssertionMessages.nullAttributeInData);
+    required this.context,
+    required this.constraints,
+    required this.menuSizeConfiguration,
+    required this.triggerPositionAndSize,
+    required this.selectedItem,
+  });
+
   @override
   final dynamic selectedItem;
 }
@@ -81,10 +77,10 @@ class MenuPositionAndSizeComponent {
   ///
   /// See also:
   /// * [MenuPositionAndSizeBuilder].
-  MenuPositionAndSizeBuilder builder;
+  MenuPositionAndSizeBuilder? builder;
 
   /// See [MenuPositionAndSizeBuilder].
-  MenuPositionAndSizeComponent({@required this.builder});
+  MenuPositionAndSizeComponent({this.builder});
 
   /// The method uses the [MenuPositionAndSizeComponent.builder] method to actually
   /// build the Widget.
@@ -93,10 +89,8 @@ class MenuPositionAndSizeComponent {
   ///
   /// Used by [SelectionMenu].
   MenuPositionAndSize build(MenuPositionAndSizeComponentData data) {
-    assert(
-        data != null, ComponentAssertionMessages.nullDataPassedToBuildMethod);
     assert(builder != null, ComponentAssertionMessages.nullBuilderMethod);
-    return builder(data);
+    return builder!(data);
   }
 }
 
@@ -122,5 +116,5 @@ class MenuPositionAndSizeComponent {
 /// See Also:
 /// * [MenuPositionAndSizeComponent]
 /// * [MenuPositionAndSizeComponentData]
-typedef MenuPositionAndSize MenuPositionAndSizeBuilder(
+typedef MenuPositionAndSizeBuilder = MenuPositionAndSize Function(
     MenuPositionAndSizeComponentData data);

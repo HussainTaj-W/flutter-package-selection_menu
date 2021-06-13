@@ -26,15 +26,11 @@ class SearchFieldComponentData implements ComponentData {
   final TickerProvider tickerProvider;
 
   SearchFieldComponentData({
-    @required this.context,
-    @required this.searchTextController,
-    @required this.tickerProvider,
-    @required this.selectedItem,
-  }) : assert(
-            context != null &&
-                searchTextController != null &&
-                tickerProvider != null,
-            ComponentAssertionMessages.nullAttributeInData);
+    required this.context,
+    required this.searchTextController,
+    required this.tickerProvider,
+    required this.selectedItem,
+  });
   @override
   final dynamic selectedItem;
 }
@@ -68,10 +64,10 @@ class SearchFieldComponent implements WidgetBuildingComponent {
   ///
   /// See also:
   /// * [SearchFieldBuilder].
-  SearchFieldBuilder builder;
+  SearchFieldBuilder? builder;
 
   /// See [SearchFieldBuilder].
-  SearchFieldComponent({@required this.builder});
+  SearchFieldComponent({this.builder});
 
   /// The method uses the [SearchFieldComponent.builder] method to actually
   /// build the Widget.
@@ -80,10 +76,8 @@ class SearchFieldComponent implements WidgetBuildingComponent {
   ///
   /// Used by [ListViewMenu].
   Widget build(SearchFieldComponentData data) {
-    assert(
-        data != null, ComponentAssertionMessages.nullDataPassedToBuildMethod);
     assert(builder != null, ComponentAssertionMessages.nullBuilderMethod);
-    return builder(data);
+    return builder!(data);
   }
 }
 
@@ -108,4 +102,4 @@ class SearchFieldComponent implements WidgetBuildingComponent {
 /// See Also:
 /// * [SearchFieldComponent]
 /// * [SearchFieldComponentData]
-typedef Widget SearchFieldBuilder(SearchFieldComponentData data);
+typedef SearchFieldBuilder = Widget Function(SearchFieldComponentData data);

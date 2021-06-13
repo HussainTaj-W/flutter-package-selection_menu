@@ -30,7 +30,7 @@ class SearchBarComponentData implements ComponentData {
   /// like whether to show it or not.
   ///
   /// Must not be null.
-  final bool isSearching;
+  final bool? isSearching;
 
   /// These are the flex values for [Flexible] or [Expanded] if the layout
   /// of returned Widget uses Flex to arrange the two Widgets [searchField] and
@@ -46,21 +46,15 @@ class SearchBarComponentData implements ComponentData {
   final TickerProvider tickerProvider;
 
   SearchBarComponentData({
-    @required this.context,
-    @required this.searchField,
-    @required this.isSearching,
-    @required this.menuFlexValues,
-    @required this.searchingIndicator,
-    @required this.tickerProvider,
-    @required this.selectedItem,
-  }) : assert(
-            context != null &&
-                searchingIndicator != null &&
-                menuFlexValues != null &&
-                isSearching != null &&
-                searchField != null &&
-                tickerProvider != null,
-            ComponentAssertionMessages.nullAttributeInData);
+    required this.context,
+    required this.searchField,
+    required this.isSearching,
+    required this.menuFlexValues,
+    required this.searchingIndicator,
+    required this.tickerProvider,
+    required this.selectedItem,
+  });
+
   @override
   final dynamic selectedItem;
 }
@@ -103,10 +97,10 @@ class SearchBarComponent implements WidgetBuildingComponent {
   ///
   /// See also:
   /// * [SearchBarBuilder].
-  SearchBarBuilder builder;
+  SearchBarBuilder? builder;
 
   /// See [SearchBarBuilder].
-  SearchBarComponent({@required this.builder});
+  SearchBarComponent({this.builder});
 
   /// The method uses the [SearchBarComponent.builder] method to actually
   /// build the Widget.
@@ -115,10 +109,8 @@ class SearchBarComponent implements WidgetBuildingComponent {
   ///
   /// Used by [ListViewMenu].
   Widget build(SearchBarComponentData data) {
-    assert(
-        data != null, ComponentAssertionMessages.nullDataPassedToBuildMethod);
     assert(builder != null, ComponentAssertionMessages.nullBuilderMethod);
-    return builder(data);
+    return builder!(data);
   }
 }
 
@@ -153,4 +145,4 @@ class SearchBarComponent implements WidgetBuildingComponent {
 /// See Also:
 /// * [SearchBarComponent]
 /// * [SearchBarComponentData]
-typedef Widget SearchBarBuilder(SearchBarComponentData data);
+typedef SearchBarBuilder = Widget Function(SearchBarComponentData data);

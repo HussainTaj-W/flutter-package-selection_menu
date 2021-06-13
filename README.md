@@ -84,3 +84,7 @@ and configurations.
 
 **A series of examples can be found 
 [here](https://github.com/HussainTaj-W/flutter-package-selection_menu-example).**
+
+## Contributions
+
+You may make changes and open pull requests on GitHub. :) 

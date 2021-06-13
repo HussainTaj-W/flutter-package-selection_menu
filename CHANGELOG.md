@@ -1,3 +1,27 @@
+## [1.0.0] - 13th June 2021
+
+* Updated Examples
+
+## [1.0.0-nullsafety.2] - 13th June 2021
+## [1.0.0-nullsafety.1] - 13th June 2021
+
+**Fixed:**
+
+* Code formatting
+
+## [1.0.0-nullsafety.0] - 13th June 2021
+
+**Added/Upgraded:**
+
+* Null Safety
+* sdk version constraints '>=2.12.0 <3.0.0'
+
+**Fixed:**
+
+* [Change selected item programmatically](https://github.com/HussainTaj-W/flutter-package-selection_menu/issues/4)
+* [Add the ability to change padding size in DropdownAnimationComponent.](https://github.com/HussainTaj-W/flutter-package-selection_menu/issues/5)
+
+
 ## [0.9.0] - 26th October 2019
 
 **Added:** 

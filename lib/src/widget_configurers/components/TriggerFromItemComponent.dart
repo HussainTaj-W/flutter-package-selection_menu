@@ -32,22 +32,17 @@ class TriggerFromItemComponentData<T> implements ComponentData {
   /// Current state of the Menu.
   ///
   /// See [MenuState].
-  final MenuState menuState;
+  final MenuState? menuState;
 
   TriggerFromItemComponentData({
-    @required this.context,
-    @required this.triggerMenu,
-    @required this.item,
-    @required this.tickerProvider,
-    @required this.selectedItem,
-    @required this.menuState,
-  }) : assert(
-            context != null &&
-                triggerMenu != null &&
-                item != null &&
-                tickerProvider != null &&
-                menuState != null,
-            ComponentAssertionMessages.nullAttributeInData);
+    required this.context,
+    required this.triggerMenu,
+    required this.item,
+    required this.tickerProvider,
+    required this.selectedItem,
+    required this.menuState,
+  });
+
   @override
   final dynamic selectedItem;
 }
@@ -82,10 +77,10 @@ class TriggerFromItemComponent<T> implements WidgetBuildingComponent {
   ///
   /// See also:
   /// * [TriggerFromItemBuilder].
-  TriggerFromItemBuilder<T> builder;
+  TriggerFromItemBuilder<T>? builder;
 
   /// See [TriggerFromItemBuilder].
-  TriggerFromItemComponent({@required this.builder});
+  TriggerFromItemComponent({this.builder});
 
   /// The method uses the [TriggerFromItemComponent.builder] method to actually
   /// build the Widget.
@@ -94,10 +89,8 @@ class TriggerFromItemComponent<T> implements WidgetBuildingComponent {
   ///
   /// Used by [SelectionMenu].
   Widget build(TriggerFromItemComponentData<T> data) {
-    assert(
-        data != null, ComponentAssertionMessages.nullDataPassedToBuildMethod);
     assert(builder != null, ComponentAssertionMessages.nullBuilderMethod);
-    return builder(data);
+    return builder!(data);
   }
 }
 
@@ -124,4 +117,5 @@ class TriggerFromItemComponent<T> implements WidgetBuildingComponent {
 /// See Also:
 /// * [TriggerFromItemComponent]
 /// * [TriggerFromItemComponentData]
-typedef Widget TriggerFromItemBuilder<T>(TriggerFromItemComponentData<T> data);
+typedef TriggerFromItemBuilder<T> = Widget Function(
+    TriggerFromItemComponentData<T> data);

@@ -11,52 +11,52 @@ import 'package:selection_menu/selection_menu.dart';
 /// [here](https://github.com/HussainTaj-W/flutter-package-selection_menu-example).
 class MenuSizeConfiguration {
   /// Maximum fraction (0.0 - 1.0 inclusive) of screen width the menu should take.
-  final double maxWidthFraction;
+  final double? maxWidthFraction;
 
   /// Maximum fraction (0.0 - 1.0 inclusive) of screen height the menu should take.
-  final double maxHeightFraction;
+  final double? maxHeightFraction;
 
   /// Minimum fraction (0.0 - 1.0 inclusive) of screen width the menu should take.
-  final double minWidthFraction;
+  final double? minWidthFraction;
 
   /// Minimum fraction (0.0 - 1.0 inclusive) of screen height the menu should take.
-  final double minHeightFraction;
+  final double? minHeightFraction;
 
   /// Minimum width of menu in logical pixels.
   ///
   /// Takes preference over [minWidthFraction].
-  final double minWidth;
+  final double? minWidth;
 
   /// Minimum height of menu in logical pixels.
   ///
   /// Takes preference over [minHeightFraction].
-  final double minHeight;
+  final double? minHeight;
 
   /// Maximum width of menu in logical pixels.
   ///
   /// Takes preference over [maxWidthFraction].
-  final double maxWidth;
+  final double? maxWidth;
 
   /// Maximum height of menu in logical pixels.
   ///
   /// Takes preference over [maxHeightFraction].
-  final double maxHeight;
+  final double? maxHeight;
 
   /// Preferred Width of menu in logical pixels.
   ///
   /// Preferred over [widthFraction];
-  final double width;
+  final double? width;
 
   /// Preferred Height of menu in logical pixels.
   ///
   /// Preferred over [heightFraction];
-  final double height;
+  final double? height;
 
   /// Preferred Width of menu in fraction (0.0 - 1.0 inclusive) of screen width.
-  final double widthFraction;
+  final double? widthFraction;
 
   /// Preferred Height of menu in fraction (0.0 - 1.0 inclusive) of screen height.
-  final double heightFraction;
+  final double? heightFraction;
 
   /// Defines if the menu's minimum width should be forced to match the width of
   /// the button for the menu.
@@ -131,20 +131,17 @@ class MenuSizeConfiguration {
 
   /// Returns BoxConstraints calculated from the configuration.
   BoxConstraints getConstraints(Size triggerSize, Size screenSize) {
-    assert(triggerSize != null && screenSize != null,
-        "Constraints cannot be constructed if triggerSize and screensize Both are available.");
-
     double minWidth = (this.enforceMinWidthToMatchTrigger
         ? triggerSize.width
-        : this.minWidth ?? minWidthFraction * screenSize.width);
+        : this.minWidth ?? minWidthFraction! * screenSize.width);
     double maxWidth = (this.enforceMaxWidthToMatchTrigger
         ? triggerSize.width
-        : this.maxWidth ?? screenSize.width * this.maxWidthFraction);
+        : this.maxWidth ?? screenSize.width * this.maxWidthFraction!);
 
     double maxHeight =
-        this.maxHeight ?? screenSize.height * this.maxHeightFraction;
+        this.maxHeight ?? screenSize.height * this.maxHeightFraction!;
     double minHeight =
-        this.minHeight ?? this.minHeightFraction * screenSize.height;
+        this.minHeight ?? this.minHeightFraction! * screenSize.height;
 
     return BoxConstraints(
       minWidth: minWidth,
@@ -155,12 +152,12 @@ class MenuSizeConfiguration {
   }
 
   /// Returns Size calculated from the configuration.
-  Size getPreferredSize(Size screenSize) {
+  Size? getPreferredSize(Size screenSize) {
     if ((width != null || widthFraction != null) &&
         (height != null || heightFraction != null)) {
       return Size(
-        width ?? widthFraction * screenSize.width,
-        height ?? heightFraction * screenSize.height,
+        width ?? widthFraction! * screenSize.width,
+        height ?? heightFraction! * screenSize.height,
       );
     }
     return null;
@@ -172,20 +169,19 @@ class MenuSizeConfiguration {
 /// See [MenuPositionAndSizeComponent].
 class MenuPositionAndSize {
   /// Size of menu is defined by BoxConstraints.
-  final BoxConstraints constraints;
+  final BoxConstraints? constraints;
 
   /// Preferred size of the menu.
-  final Size size;
+  final Size? size;
 
   /// Offset of top-left corner Menu, where top-left corner of the button is the origin.
   final Offset positionOffset;
 
   const MenuPositionAndSize({
-    @required this.constraints,
-    @required this.positionOffset,
+    required this.constraints,
+    required this.positionOffset,
     this.size,
-  }) : assert(constraints != null && positionOffset != null,
-            "Both positionOffset and constraints are required to place the menu in place");
+  });
 }
 
 /// Container for Trigger's Size and position.
@@ -198,10 +194,9 @@ class TriggerPositionAndSize {
   Offset position;
 
   TriggerPositionAndSize({
-    @required this.size,
-    @required this.position,
-  }) : assert(size != null && position != null,
-            "Both position and size are required.");
+    required this.size,
+    required this.position,
+  });
 }
 
 /// States the menu goes through during opening and closing.
@@ -243,10 +238,10 @@ enum MenuState {
 /// * [SearchBarComponent].
 /// * [MenuComponent].
 class MenuFlexValues {
-  final int searchField;
-  final int searchingIndicator;
-  final int listView;
-  final int searchBar;
+  final int? searchField;
+  final int? searchingIndicator;
+  final int? listView;
+  final int? searchBar;
 
   const MenuFlexValues({
     this.searchBar,
@@ -267,10 +262,7 @@ class MenuAnimationDurations {
   /// Duration of animation when menu is closing.
   final Duration reverse;
 
-  const MenuAnimationDurations({@required this.forward, @required this.reverse})
-      : assert(
-            forward != null && reverse != null, """Both Durations are required. 
-            If there is no animation required then pass Duration.zero.""");
+  const MenuAnimationDurations({required this.forward, required this.reverse});
 }
 
 /// Curves used by the animations of menu in [SelectionMenu].
@@ -278,7 +270,5 @@ class MenuAnimationCurves {
   final Curve forward;
   final Curve reverse;
 
-  const MenuAnimationCurves({@required this.forward, @required this.reverse})
-      : assert(forward != null && reverse != null, """Both Curves are required. 
-            If there is no Curve required then pass Curves.linear.""");
+  const MenuAnimationCurves({required this.forward, required this.reverse});
 }

@@ -28,17 +28,12 @@ class ListViewComponentData implements ComponentData {
   final TickerProvider tickerProvider;
 
   ListViewComponentData({
-    @required this.context,
-    @required this.itemBuilder,
-    @required this.tickerProvider,
-    @required this.itemCount,
-    @required this.selectedItem,
-  }) : assert(
-            context != null &&
-                itemBuilder != null &&
-                itemCount != null &&
-                tickerProvider != null,
-            ComponentAssertionMessages.nullAttributeInData);
+    required this.context,
+    required this.itemBuilder,
+    required this.tickerProvider,
+    required this.itemCount,
+    required this.selectedItem,
+  });
 
   @override
   final dynamic selectedItem;
@@ -73,10 +68,10 @@ class ListViewComponent implements WidgetBuildingComponent {
   ///
   /// See also:
   /// * [ListViewBuilder].
-  ListViewBuilder builder;
+  ListViewBuilder? builder;
 
   /// See [ListViewBuilder].
-  ListViewComponent({@required this.builder});
+  ListViewComponent({this.builder});
 
   /// The method uses the [ListViewComponent.builder] method to actually
   /// build the Widget.
@@ -85,10 +80,8 @@ class ListViewComponent implements WidgetBuildingComponent {
   ///
   /// Used by [SelectionMenu].
   Widget build(ListViewComponentData data) {
-    assert(
-        data != null, ComponentAssertionMessages.nullDataPassedToBuildMethod);
     assert(builder != null, ComponentAssertionMessages.nullBuilderMethod);
-    return builder(data);
+    return builder!(data);
   }
 }
 
@@ -113,4 +106,4 @@ class ListViewComponent implements WidgetBuildingComponent {
 /// See Also:
 /// * [ListViewComponent]
 /// * [ListViewComponentData]
-typedef Widget ListViewBuilder(ListViewComponentData data);
+typedef ListViewBuilder = Widget Function(ListViewComponentData data);

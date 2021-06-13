@@ -23,20 +23,16 @@ class TriggerComponentData implements ComponentData {
   /// Must not be null.
   final TickerProvider tickerProvider;
 
-  final MenuState menuState;
+  final MenuState? menuState;
 
   TriggerComponentData({
-    @required this.context,
-    @required this.triggerMenu,
-    @required this.tickerProvider,
-    @required this.selectedItem,
-    @required this.menuState,
-  }) : assert(
-            context != null &&
-                triggerMenu != null &&
-                tickerProvider != null &&
-                menuState != null,
-            ComponentAssertionMessages.nullAttributeInData);
+    required this.context,
+    required this.triggerMenu,
+    required this.tickerProvider,
+    required this.selectedItem,
+    required this.menuState,
+  });
+
   @override
   final dynamic selectedItem;
 }
@@ -69,10 +65,10 @@ class TriggerComponent implements WidgetBuildingComponent {
   ///
   /// See also:
   /// * [TriggerBuilder].
-  TriggerBuilder builder;
+  TriggerBuilder? builder;
 
   /// See [TriggerBuilder].
-  TriggerComponent({@required this.builder});
+  TriggerComponent({this.builder});
 
   /// The method uses the [TriggerComponent.builder] method to actually
   /// build the Widget.
@@ -81,10 +77,8 @@ class TriggerComponent implements WidgetBuildingComponent {
   ///
   /// Used by [SelectionMenu].
   Widget build(TriggerComponentData data) {
-    assert(
-        data != null, ComponentAssertionMessages.nullDataPassedToBuildMethod);
     assert(builder != null, ComponentAssertionMessages.nullBuilderMethod);
-    return builder(data);
+    return builder!(data);
   }
 }
 
@@ -110,7 +104,7 @@ class TriggerComponent implements WidgetBuildingComponent {
 /// See Also:
 /// * [TriggerComponent]
 /// * [TriggerComponentData]
-typedef Widget TriggerBuilder(TriggerComponentData data);
+typedef TriggerBuilder = Widget Function(TriggerComponentData data);
 
 /// Callback to Open/Close the menu.
-typedef void TriggerMenu();
+typedef TriggerMenu = void Function();

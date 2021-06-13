@@ -15,21 +15,21 @@ import '../components_configuration.dart';
 /// See [ComponentsConfiguration].
 class DialogComponentsConfiguration<T> extends ComponentsConfiguration<T> {
   DialogComponentsConfiguration({
-    SearchFieldComponent searchFieldComponent,
-    TriggerComponent triggerComponent,
-    MenuComponent menuComponent,
-    MenuPositionAndSizeComponent menuPositionAndSizeComponent,
-    SearchingIndicatorComponent searchingIndicatorComponent,
-    AnimationComponent animationComponent,
-    ListViewComponent listViewComponent,
-    SearchBarComponent searchBarComponent,
+    SearchFieldComponent? searchFieldComponent,
+    TriggerComponent? triggerComponent,
+    MenuComponent? menuComponent,
+    MenuPositionAndSizeComponent? menuPositionAndSizeComponent,
+    SearchingIndicatorComponent? searchingIndicatorComponent,
+    AnimationComponent? animationComponent,
+    ListViewComponent? listViewComponent,
+    SearchBarComponent? searchBarComponent,
     //
-    TriggerFromItemComponent<T> triggerFromItemComponent,
+    TriggerFromItemComponent<T>? triggerFromItemComponent,
     //
-    MenuFlexValues menuFlexValues,
-    MenuSizeConfiguration menuSizeConfiguration,
-    MenuAnimationDurations menuAnimationDurations,
-    MenuAnimationCurves menuAnimationCurves,
+    MenuFlexValues? menuFlexValues,
+    MenuSizeConfiguration? menuSizeConfiguration,
+    MenuAnimationDurations? menuAnimationDurations,
+    MenuAnimationCurves? menuAnimationCurves,
   }) : super(
           searchFieldComponent:
               searchFieldComponent ?? DialogSearchFieldComponent(),
@@ -81,8 +81,8 @@ class DialogComponentsConfiguration<T> extends ComponentsConfiguration<T> {
 
   static MenuAnimationDurations defaultMenuAnimationDurations =
       const MenuAnimationDurations(
-    forward: const Duration(milliseconds: 500),
-    reverse: const Duration(milliseconds: 500),
+    forward: Duration(milliseconds: 500),
+    reverse: Duration(milliseconds: 500),
   );
 
   static MenuAnimationCurves defaultMenuAnimationCurves =
@@ -104,12 +104,13 @@ class DialogSearchFieldComponent extends SearchFieldComponent {
       controller: data.searchTextController,
       expands: false,
       maxLines: 1,
-      textAlignVertical: TextAlignVertical.bottom,
-      style: Theme.of(data.context).textTheme.body1.copyWith(),
+      textAlignVertical: TextAlignVertical.center,
+      style: Theme.of(data.context).textTheme.bodyText2!.copyWith(),
       decoration: InputDecoration(
         border: InputBorder.none,
         hintText: "Search...",
-        contentPadding: EdgeInsets.all(5),
+        isDense: true,
+        contentPadding: const EdgeInsets.all(5),
       ),
     );
   }
@@ -123,12 +124,14 @@ class DialogSearchingIndicatorComponent extends SearchingIndicatorComponent {
 
   Widget _builder(SearchingIndicatorComponentData data) {
     double size = Theme.of(data.context).iconTheme.size ??
-        Theme.of(data.context).textTheme.body1.fontSize ??
+        Theme.of(data.context).textTheme.bodyText2!.fontSize ??
         15;
     return Center(
       child: SizedBox(
         child: CircularProgressIndicator(
           strokeWidth: size / 5,
+          valueColor:
+              AlwaysStoppedAnimation(Theme.of(data.context).accentColor),
         ),
         width: size,
         height: size,
@@ -154,15 +157,15 @@ class DialogSearchBarComponent extends SearchBarComponent {
     ));
 
     rowChildren.add(Flexible(
-      flex: data.menuFlexValues.searchField,
+      flex: data.menuFlexValues.searchField!,
       child: data.searchField,
     ));
 
     rowChildren.add(Flexible(
-      flex: data.menuFlexValues.searchingIndicator,
+      flex: data.menuFlexValues.searchingIndicator!,
       child: Opacity(
         child: data.searchingIndicator,
-        opacity: data.isSearching ? 1 : 0,
+        opacity: data.isSearching! ? 1 : 0,
       ),
     ));
     return Center(
@@ -180,6 +183,7 @@ class DialogSearchBarComponent extends SearchBarComponent {
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: rowChildren,
         ),
       ),
@@ -214,7 +218,7 @@ class DialogMenuComponent extends MenuComponent {
     if (data.isSearchEnabled) {
       columnChildren.add(
         Expanded(
-          flex: data.menuFlexValues.searchBar,
+          flex: data.menuFlexValues.searchBar!,
           child: data.searchBar,
         ),
       );
@@ -222,7 +226,7 @@ class DialogMenuComponent extends MenuComponent {
 
     columnChildren.add(
       Expanded(
-        flex: data.menuFlexValues.listView,
+        flex: data.menuFlexValues.listView!,
         child: data.listView,
       ),
     );
@@ -242,9 +246,9 @@ class DialogAnimationComponent extends AnimationComponent
     super.builder = _builder;
   }
 
-  AnimationController _animationController;
-  Animation _animation;
-  MenuState _state;
+  AnimationController? _animationController;
+  late Animation _animation;
+  MenuState? _state;
 
   Widget _builder(AnimationComponentData data) {
     if (_animationController == null) {
@@ -254,7 +258,7 @@ class DialogAnimationComponent extends AnimationComponent
         reverseDuration: data.menuAnimationDurations.reverse,
       );
 
-      _animationController.addStatusListener((status) {
+      _animationController!.addStatusListener((status) {
         switch (status) {
           case AnimationStatus.forward:
             _state = MenuState.Opened;
@@ -275,13 +279,13 @@ class DialogAnimationComponent extends AnimationComponent
         }
       });
       _animation = CurvedAnimation(
-        parent: _animationController,
+        parent: _animationController!,
         curve: data.menuAnimationCurves.forward,
         reverseCurve: data.menuAnimationCurves.reverse,
       );
     }
     if (data.menuState == MenuState.OpeningEnd) {
-      _animationController.forward();
+      _animationController!.forward();
     }
 
     if (data.menuState == MenuState.ClosingEnd) {
@@ -292,8 +296,8 @@ class DialogAnimationComponent extends AnimationComponent
       if (duration < const Duration(milliseconds: 10)) {
         data.closed();
       } else {
-        _animationController.reverseDuration = duration;
-        _animationController.reverse();
+        _animationController!.reverseDuration = duration;
+        _animationController!.reverse();
       }
     }
 
@@ -315,7 +319,7 @@ class DialogAnimationComponent extends AnimationComponent
 
     return AnimatedBuilder(
       animation: _animation,
-      builder: (BuildContext context, Widget toAnimate) {
+      builder: (BuildContext context, Widget? toAnimate) {
         return Transform.scale(
           scale: _animation.value,
           child: toAnimate,
@@ -346,11 +350,11 @@ class DialogMenuPositionAndSizeComponent extends MenuPositionAndSizeComponent {
   MenuPositionAndSize _builder(MenuPositionAndSizeComponentData data) {
     MediaQueryData mqData = MediaQuery.of(data.context);
 
-    BoxConstraints constraints = data.constraints;
+    BoxConstraints? constraints = data.constraints;
     if (data.menuSizeConfiguration.requestConstantHeight) {
       constraints = BoxConstraints.tight(
           data.menuSizeConfiguration.getPreferredSize(mqData.size) ??
-              data.constraints.biggest);
+              data.constraints!.biggest);
     }
 
     // Available Height for the menu to be shown in.
@@ -364,7 +368,7 @@ class DialogMenuPositionAndSizeComponent extends MenuPositionAndSizeComponent {
       height = mqData.size.height - mqData.viewPadding.top;
     }
 
-    if (height < constraints.maxHeight) {
+    if (height < constraints!.maxHeight) {
       constraints = constraints.copyWith(maxHeight: height).normalize();
     }
     if (mqData.size.width < constraints.maxWidth) {
@@ -385,8 +389,8 @@ class DialogMenuPositionAndSizeComponent extends MenuPositionAndSizeComponent {
 
     return MenuPositionAndSize(
       positionOffset: Offset(
-        startX - data.triggerPositionAndSize.position.dx,
-        startY - data.triggerPositionAndSize.position.dy,
+        startX - data.triggerPositionAndSize!.position.dx,
+        startY - data.triggerPositionAndSize!.position.dy,
       ),
       constraints: constraints,
     );
@@ -400,8 +404,7 @@ class DialogTriggerComponent extends TriggerComponent {
   }
 
   Widget _builder(TriggerComponentData data) {
-    return RaisedButton(
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    return ElevatedButton(
       onPressed: data.triggerMenu,
       child: Row(
         mainAxisSize: MainAxisSize.min,

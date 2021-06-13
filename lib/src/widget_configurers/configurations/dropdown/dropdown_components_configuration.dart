@@ -17,21 +17,21 @@ import '../components_configuration.dart';
 /// See [ComponentsConfiguration].
 class DropdownComponentsConfiguration<T> extends ComponentsConfiguration<T> {
   DropdownComponentsConfiguration({
-    SearchFieldComponent searchFieldComponent,
-    TriggerComponent triggerComponent,
-    MenuComponent menuComponent,
-    MenuPositionAndSizeComponent menuPositionAndSizeComponent,
-    SearchingIndicatorComponent searchingIndicatorComponent,
-    AnimationComponent animationComponent,
-    ListViewComponent listViewComponent,
-    SearchBarComponent searchBarComponent,
+    SearchFieldComponent? searchFieldComponent,
+    TriggerComponent? triggerComponent,
+    MenuComponent? menuComponent,
+    MenuPositionAndSizeComponent? menuPositionAndSizeComponent,
+    SearchingIndicatorComponent? searchingIndicatorComponent,
+    AnimationComponent? animationComponent,
+    ListViewComponent? listViewComponent,
+    SearchBarComponent? searchBarComponent,
     //
-    TriggerFromItemComponent<T> triggerFromItemComponent,
+    TriggerFromItemComponent<T>? triggerFromItemComponent,
     //
-    MenuFlexValues menuFlexValues,
-    MenuSizeConfiguration menuSizeConfiguration,
-    MenuAnimationDurations menuAnimationDurations,
-    MenuAnimationCurves menuAnimationCurves,
+    MenuFlexValues? menuFlexValues,
+    MenuSizeConfiguration? menuSizeConfiguration,
+    MenuAnimationDurations? menuAnimationDurations,
+    MenuAnimationCurves? menuAnimationCurves,
   }) : super(
           searchFieldComponent:
               searchFieldComponent ?? DropdownSearchFieldComponent(),
@@ -85,8 +85,8 @@ class DropdownComponentsConfiguration<T> extends ComponentsConfiguration<T> {
 
   static MenuAnimationDurations defaultMenuAnimationDurations =
       const MenuAnimationDurations(
-    forward: const Duration(milliseconds: 500),
-    reverse: const Duration(milliseconds: 500),
+    forward: Duration(milliseconds: 500),
+    reverse: Duration(milliseconds: 500),
   );
 
   static MenuAnimationCurves defaultMenuAnimationCurves =
@@ -99,11 +99,12 @@ class DropdownComponentsConfiguration<T> extends ComponentsConfiguration<T> {
 /// A [AnimationComponent] used by [DropdownComponentsConfiguration].
 class DropdownAnimationComponent extends AnimationComponent
     with ComponentLifeCycleMixin {
-  AnimationController _animationController;
-  Animation<double> _animation;
-  MenuState _state;
+  AnimationController? _animationController;
+  late Animation<double> _animation;
+  MenuState? _state;
+  final double padding;
 
-  DropdownAnimationComponent() {
+  DropdownAnimationComponent({this.padding = 8.0}) {
     super.builder = _builder;
   }
 
@@ -115,7 +116,7 @@ class DropdownAnimationComponent extends AnimationComponent
         reverseDuration: data.menuAnimationDurations.reverse,
       );
 
-      _animationController.addStatusListener((status) {
+      _animationController!.addStatusListener((status) {
         switch (status) {
           case AnimationStatus.forward:
             _state = MenuState.Opened;
@@ -136,13 +137,13 @@ class DropdownAnimationComponent extends AnimationComponent
         }
       });
       _animation = CurvedAnimation(
-        parent: _animationController,
+        parent: _animationController!,
         curve: data.menuAnimationCurves.forward,
         reverseCurve: data.menuAnimationCurves.reverse,
       );
     }
     if (data.menuState == MenuState.OpeningEnd) {
-      _animationController.forward();
+      _animationController!.forward();
     }
 
     if (data.menuState == MenuState.ClosingEnd) {
@@ -153,8 +154,8 @@ class DropdownAnimationComponent extends AnimationComponent
       if (duration < const Duration(milliseconds: 10)) {
         data.closed();
       } else {
-        _animationController.reverseDuration = duration;
-        _animationController.reverse();
+        _animationController!.reverseDuration = duration;
+        _animationController!.reverse();
       }
     }
 
@@ -166,13 +167,13 @@ class DropdownAnimationComponent extends AnimationComponent
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 500),
           curve: Curves.easeOut,
-          padding: EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(padding),
           child: SizeTransition(
             axisAlignment: -1.0,
             sizeFactor: _animation,
             child: data.child,
           ),
-          constraints: BoxConstraints.loose(data.constraints.biggest),
+          constraints: BoxConstraints.loose(data.constraints!.biggest),
         ),
       ),
     );
@@ -212,7 +213,7 @@ class DropdownSearchFieldComponent extends SearchFieldComponent {
         child: TextField(
           cursorColor: accentColor,
           controller: data.searchTextController,
-          style: Theme.of(data.context).textTheme.body1,
+          style: Theme.of(data.context).textTheme.bodyText2,
           expands: false,
           maxLines: 1,
           decoration: InputDecoration(
@@ -234,7 +235,7 @@ class DropdownSearchingIndicatorComponent extends SearchingIndicatorComponent {
 
   Widget _builder(SearchingIndicatorComponentData data) {
     double size = Theme.of(data.context).iconTheme.size ??
-        Theme.of(data.context).textTheme.body1.fontSize ??
+        Theme.of(data.context).textTheme.bodyText2!.fontSize ??
         15;
     return Center(
       child: SizedBox(
@@ -258,13 +259,13 @@ class DropdownSearchBarComponent extends SearchBarComponent {
     List<Widget> columnChildren = [];
 
     columnChildren.add(Flexible(
-      flex: data.menuFlexValues.searchField,
+      flex: data.menuFlexValues.searchField!,
       child: data.searchField,
     ));
 
-    if (data.isSearching) {
+    if (data.isSearching!) {
       columnChildren.add(Flexible(
-        flex: data.menuFlexValues.searchingIndicator,
+        flex: data.menuFlexValues.searchingIndicator!,
         child: data.searchingIndicator,
       ));
     }
@@ -304,7 +305,7 @@ class DropdownMenuComponent extends MenuComponent {
     if (data.isSearchEnabled) {
       columnChildren.add(
         Expanded(
-          flex: data.menuFlexValues.searchBar,
+          flex: data.menuFlexValues.searchBar!,
           child: data.searchBar,
         ),
       );
@@ -312,7 +313,7 @@ class DropdownMenuComponent extends MenuComponent {
 
     columnChildren.add(
       Expanded(
-        flex: data.menuFlexValues.listView,
+        flex: data.menuFlexValues.listView!,
         child: data.listView,
       ),
     );
@@ -335,16 +336,16 @@ class DropdownMenuPositionAndSizeComponent
   MenuPositionAndSize _builder(MenuPositionAndSizeComponentData data) {
     MediaQueryData mqData = MediaQuery.of(data.context);
 
-    final Offset buttonPosition = data.triggerPositionAndSize.position;
-    final Size buttonSize = data.triggerPositionAndSize.size;
-    BoxConstraints constraints = data.constraints;
+    final Offset buttonPosition = data.triggerPositionAndSize!.position;
+    final Size buttonSize = data.triggerPositionAndSize!.size;
+    BoxConstraints constraints = data.constraints!;
 
     // Height of visible screen area.
     double heightAvailable = constraints.maxHeight;
 
     // If constant height is requested.
     if (data.menuSizeConfiguration.requestConstantHeight) {
-      Size size = data.menuSizeConfiguration.getPreferredSize(mqData.size);
+      Size? size = data.menuSizeConfiguration.getPreferredSize(mqData.size);
       constraints = BoxConstraints.tight(size ?? constraints.biggest);
     }
     if (data.menuSizeConfiguration.requestAvoidBottomInset) {
@@ -444,8 +445,7 @@ class DropdownTriggerComponent extends TriggerComponent {
   }
 
   Widget _builder(TriggerComponentData data) {
-    return RaisedButton(
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    return ElevatedButton(
       onPressed: data.triggerMenu,
       child: Row(
         mainAxisSize: MainAxisSize.min,
