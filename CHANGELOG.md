@@ -1,3 +1,8 @@
+## [2.0.0] - 25th May 2022
+
+* Updated Examples
+* Fixed issues in Flutter 3
+
 ## [1.0.0] - 13th June 2021
 
 * Updated Examples

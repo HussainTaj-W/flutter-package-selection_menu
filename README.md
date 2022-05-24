@@ -25,7 +25,7 @@ SelectionMenu<String>(
     itemsList: <String>['A','B','C'],
     onItemSelected: (String selectedItem)
     {
-    print(selectedItem);
+      print(selectedItem);
     },
     itemBuilder: (BuildContext context, String item, OnItemTapped onItemTapped)
     {
