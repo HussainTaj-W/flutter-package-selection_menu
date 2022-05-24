@@ -5,7 +5,6 @@ import 'package:selection_menu/selection_menu.dart';
 import 'common/ComponentAssertionMessages.dart';
 import 'common/ComponentData.dart';
 import 'common/WidgetBuildingComponent.dart';
-import 'components.dart';
 
 /// Carries the data that might be used in [TriggerFromItemComponent.builder].
 ///

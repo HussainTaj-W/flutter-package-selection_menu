@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
 import 'package:selection_menu/selection_menu.dart';
-import 'package:selection_menu/src/widget/listview_menu.dart';
 import 'package:selection_menu/src/widget_configurers/menu_configuration_classes.dart';
 
 import 'common/ComponentAssertionMessages.dart';

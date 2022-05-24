@@ -1,3 +1,7 @@
+## [2.0.1] - 25th May 2022
+
+* Migrate accentColor to colorScheme.secondary
+
 ## [2.0.0] - 25th May 2022
 
 * Updated Examples

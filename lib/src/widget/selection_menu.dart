@@ -1,11 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:selection_menu/components_configurations.dart';
 import 'package:selection_menu/selection_menu.dart';
-import 'package:selection_menu/src/controller/controllers.dart';
-import 'package:selection_menu/src/widget_configurers/menu_configuration_classes.dart';
 
-import 'listview_menu.dart';
 
 /// A Widget that opens/closes a menu for selecting an item when triggered.
 ///

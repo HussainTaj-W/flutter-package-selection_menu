@@ -100,7 +100,7 @@ class DialogSearchFieldComponent extends SearchFieldComponent {
 
   Widget _builder(SearchFieldComponentData data) {
     return TextField(
-      cursorColor: Theme.of(data.context).accentColor,
+      cursorColor: Theme.of(data.context).colorScheme.secondary,
       controller: data.searchTextController,
       expands: false,
       maxLines: 1,
@@ -131,7 +131,7 @@ class DialogSearchingIndicatorComponent extends SearchingIndicatorComponent {
         child: CircularProgressIndicator(
           strokeWidth: size / 5,
           valueColor:
-              AlwaysStoppedAnimation(Theme.of(data.context).accentColor),
+              AlwaysStoppedAnimation(Theme.of(data.context).colorScheme.secondary),
         ),
         width: size,
         height: size,
@@ -152,7 +152,7 @@ class DialogSearchBarComponent extends SearchBarComponent {
     rowChildren.add(Flexible(
       child: Icon(
         Icons.search,
-        color: Theme.of(data.context).accentColor,
+        color: Theme.of(data.context).colorScheme.secondary,
       ),
     ));
 
@@ -175,7 +175,7 @@ class DialogSearchBarComponent extends SearchBarComponent {
         decoration: ShapeDecoration(
           shape: StadiumBorder(
             side: BorderSide(
-              color: Theme.of(data.context).accentColor,
+              color: Theme.of(data.context).colorScheme.secondary,
               style: BorderStyle.solid,
               width: 2,
             ),

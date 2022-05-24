@@ -3,9 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:selection_menu/components_configurations.dart';
 import 'package:selection_menu/selection_menu.dart';
-import 'package:selection_menu/src/widget_configurers/components/components.dart';
 
-import '../components_configuration.dart';
 
 /// Defines the appearance of [SelectionMenu] as a typical dropdown menu.
 ///
@@ -198,7 +196,7 @@ class DropdownSearchFieldComponent extends SearchFieldComponent {
   }
 
   Widget _builder(SearchFieldComponentData data) {
-    Color accentColor = Theme.of(data.context).accentColor;
+    Color accentColor = Theme.of(data.context).colorScheme.secondary;
     return Container(
       margin: const EdgeInsets.only(bottom: 5.0),
       decoration: BoxDecoration(

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:selection_menu/components_configurations.dart';
 import 'package:selection_menu/selection_menu.dart';
-import 'package:selection_menu/src/controller/controllers.dart';
 
 /// A callback [ListViewMenu] uses to get initially Selected item from
 /// [SelectionMenu].
