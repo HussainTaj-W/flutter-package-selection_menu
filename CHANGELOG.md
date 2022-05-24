@@ -1,3 +1,7 @@
+## [2.0.2] - 25th May 2022
+
+* Fixed formatting. I just want the package to score 130/130.y
+
 ## [2.0.1] - 25th May 2022
 
 * Migrate accentColor to colorScheme.secondary
