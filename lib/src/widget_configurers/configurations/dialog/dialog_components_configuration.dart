@@ -130,8 +130,8 @@ class DialogSearchingIndicatorComponent extends SearchingIndicatorComponent {
       child: SizedBox(
         child: CircularProgressIndicator(
           strokeWidth: size / 5,
-          valueColor:
-              AlwaysStoppedAnimation(Theme.of(data.context).colorScheme.secondary),
+          valueColor: AlwaysStoppedAnimation(
+              Theme.of(data.context).colorScheme.secondary),
         ),
         width: size,
         height: size,

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:selection_menu/components_configurations.dart';
 import 'package:selection_menu/selection_menu.dart';
 
-
 /// A Widget that opens/closes a menu for selecting an item when triggered.
 ///
 /// The type parameter T describes the type of data each Item of the menu is.

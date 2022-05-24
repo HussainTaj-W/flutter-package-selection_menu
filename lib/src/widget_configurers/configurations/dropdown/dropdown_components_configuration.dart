@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:selection_menu/components_configurations.dart';
 import 'package:selection_menu/selection_menu.dart';
 
-
 /// Defines the appearance of [SelectionMenu] as a typical dropdown menu.
 ///
 /// ![How the style looks](https://i.imgur.com/X0clpJD.gif)
