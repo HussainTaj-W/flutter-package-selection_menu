@@ -352,7 +352,7 @@ class SelectionMenuState<T> extends State<SelectionMenu<T>>
     if (_menuOverlay == null) {
       initMenuOverlay();
     } else {
-      WidgetsBinding.instance!.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         _menuOverlay!.markNeedsBuild();
       });
     }
@@ -466,7 +466,7 @@ class SelectionMenuState<T> extends State<SelectionMenu<T>>
   /// We need to make appropriate calculations, which is handled by this method.
   void _handleOrientationChange(BuildContext context) {
     _orientation = MediaQuery.of(context).orientation;
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _calculateTriggerPositionAndSize();
       _menuOverlay!.markNeedsBuild();
       _menuConstraints = _componentsConfiguration!.menuSizeConfiguration
@@ -499,7 +499,7 @@ class SelectionMenuState<T> extends State<SelectionMenu<T>>
   void _handleAnimationState() {
     switch (_menuState) {
       case MenuState.OpeningStart:
-        WidgetsBinding.instance!.addPostFrameCallback((_) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
           setState(() {
             _menuState = MenuState.OpeningEnd;
           });
@@ -512,7 +512,7 @@ class SelectionMenuState<T> extends State<SelectionMenu<T>>
       case MenuState.OpeningEnd:
         break;
       case MenuState.ClosingStart:
-        WidgetsBinding.instance!.addPostFrameCallback((_) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
           setState(() {
             _menuState = MenuState.ClosingEnd;
           });
@@ -660,7 +660,7 @@ class SelectionMenuState<T> extends State<SelectionMenu<T>>
   void _onMenuClosedCallback() {
     if (_menuState != MenuState.Closed) {
       _menuOverlay!.remove();
-      WidgetsBinding.instance!.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
           _menuState = MenuState.Closed;
         });
